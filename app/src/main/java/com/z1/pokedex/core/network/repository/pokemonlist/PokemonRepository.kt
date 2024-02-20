@@ -1,9 +1,8 @@
 package com.z1.pokedex.core.network.repository.pokemonlist
 
-import androidx.paging.PagingData
-import com.z1.pokedex.core.network.model.PokemonResponse
-import kotlinx.coroutines.flow.Flow
+import com.z1.pokedex.core.network.model.NetworkResult
+import com.z1.pokedex.feature.home.presentation.model.PokemonPage
 
 interface PokemonRepository {
-    fun fetchPokemonList(page: Int, offset: Int): Flow<PagingData<PokemonResponse>>
+    suspend fun fetchPokemonPage(page: Int): NetworkResult<PokemonPage>
 }
