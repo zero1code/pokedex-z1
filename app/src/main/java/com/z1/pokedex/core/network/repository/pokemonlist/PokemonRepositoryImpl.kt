@@ -1,23 +1,17 @@
 package com.z1.pokedex.core.network.repository.pokemonlist
 
-import com.z1.pokedex.core.network.PokedexApi
-import com.z1.pokedex.core.network.mapper.PokemonPageMapper
-import com.z1.pokedex.core.network.model.NetworkResult
-import com.z1.pokedex.core.network.util.Constants.PAGE_SIZE
+import com.z1.pokedex.core.network.datasource.PokemonPageDataSource
 import com.z1.pokedex.feature.home.presentation.model.PokemonPage
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 class PokemonRepositoryImpl(
-    private val api: PokedexApi,
-    private val pokemonPageMapper: PokemonPageMapper
+    private val pokemonPageDataSource: PokemonPageDataSource,
+    private val dispatcher: CoroutineDispatcher
 ) : PokemonRepository {
-    override suspend fun fetchPokemonPage(page: Int): NetworkResult<PokemonPage> = runCatching {
-        val offset = page * PAGE_SIZE
-        val response = api.fetchPokemonPage(offset, PAGE_SIZE)
-        response.takeIf { it.isSuccessful }?.body()
-            ?.let { NetworkResult.Success(pokemonPageMapper.mapDtoToModel(it)) }
-            ?: NetworkResult.Error(response.errorBody().toString())
-    }.getOrElse {
-        it.printStackTrace()
-        NetworkResult.Exception(it)
-    }
+    override suspend fun fetchPokemonPage(page: Int): Flow<PokemonPage> =
+        flow { emit(pokemonPageDataSource.fetchPokemonPage(page)) }
+            .flowOn(dispatcher)
 }

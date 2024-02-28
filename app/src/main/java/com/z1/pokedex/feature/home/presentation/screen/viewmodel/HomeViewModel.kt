@@ -1,11 +1,12 @@
 package com.z1.pokedex.feature.home.presentation.screen.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.z1.pokedex.core.network.model.NetworkResult
 import com.z1.pokedex.core.network.repository.pokemonlist.PokemonRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -34,31 +35,28 @@ class HomeViewModel(
 
     private fun fetchPokemonPage(page: Int = 0) {
         viewModelScope.launch {
-            when(val newPage = pokemonRepository.fetchPokemonPage(page)) {
-                is NetworkResult.Success -> {
+            pokemonRepository.fetchPokemonPage(page)
+                .catch { e ->
+                    Log.d("TAG", e.message ?: "Algo deu errado")
+                }
+                .collect { newPage ->
                     _uiState.update {
                         it.copy(
                             pokemonPage = it.pokemonPage.copy(
-                                count = newPage.data.count,
-                                previousPage = newPage.data.previousPage,
-                                nextPage = newPage.data.nextPage,
-                                pokemonList = it.pokemonPage.pokemonList + newPage.data.pokemonList
+                                count = newPage.count,
+                                previousPage = newPage.previousPage,
+                                nextPage = newPage.nextPage,
+                                pokemonList = it.pokemonPage.pokemonList + newPage.pokemonList
                             )
                         )
+
                     }
+                    _nextPage++
                 }
-                is NetworkResult.Error -> {
-
-                }
-                is NetworkResult.Exception -> {
-
-                }
-            }
         }
     }
 
     private fun loadNextPage() {
-        _nextPage += 1
         fetchPokemonPage(_nextPage)
     }
 }
