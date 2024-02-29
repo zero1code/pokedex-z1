@@ -2,7 +2,7 @@ package com.z1.pokedex.core.network.di
 
 import com.z1.pokedex.BuildConfig
 import com.z1.pokedex.core.network.PokedexApi
-import com.z1.pokedex.core.network.datasource.PokemonPageDataSource
+import com.z1.pokedex.core.datasource.PokemonPageDataSource
 import com.z1.pokedex.core.network.mapper.PokemonMapper
 import com.z1.pokedex.core.network.mapper.PokemonPageMapper
 import com.z1.pokedex.core.network.repository.pokemonlist.PokemonRepository

@@ -1,6 +1,6 @@
 package com.z1.pokedex.core.network.repository.pokemonlist
 
-import com.z1.pokedex.core.network.datasource.PokemonPageDataSource
+import com.z1.pokedex.core.datasource.PokemonPageDataSource
 import com.z1.pokedex.feature.home.presentation.model.PokemonPage
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow

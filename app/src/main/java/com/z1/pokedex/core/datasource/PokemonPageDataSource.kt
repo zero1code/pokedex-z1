@@ -1,8 +1,10 @@
-package com.z1.pokedex.core.network.datasource
+package com.z1.pokedex.core.datasource
 
+import com.z1.pokedex.core.datasource.model.ResultData
 import com.z1.pokedex.core.network.PokedexApi
 import com.z1.pokedex.core.network.mapper.PokemonPageMapper
 import com.z1.pokedex.core.network.model.NetworkResult
+import com.z1.pokedex.core.network.model.PokemonPageDto
 import com.z1.pokedex.core.network.util.Constants.PAGE_SIZE
 import com.z1.pokedex.feature.home.presentation.model.PokemonPage
 
@@ -12,11 +14,16 @@ class PokemonPageDataSource(
 ): BaseDataSource() {
     suspend fun  fetchPokemonPage(page: Int): PokemonPage {
         val offset = page * PAGE_SIZE
-        val response = safeApiCall { api.fetchPokemonPage(offset, PAGE_SIZE) }
+        val response = safeApiCall {
+            api.fetchPokemonPage(offset, PAGE_SIZE)
+                .takeIf { it.isSuccessful }
+                ?.body()
+                ?: throw Exception("Response data is null")
+        }
 
         return when(response) {
-            is NetworkResult.Success -> pokemonPageMapper.mapDtoToModel(response.data)
-            is NetworkResult.Error -> throw Exception(response.message)
+            is ResultData.Success -> pokemonPageMapper.mapDtoToModel(response.data)
+            is ResultData.Error -> throw Exception(response.message)
         }
     }
 }
