@@ -1,4 +1,4 @@
-package com.z1.pokedex.core.designsystem.theme
+package com.z1.pokedex.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.z1.pokedex.core.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
 import com.z1.pokedex.feature.home.presentation.MainContainer
 
 class MainActivity : ComponentActivity() {

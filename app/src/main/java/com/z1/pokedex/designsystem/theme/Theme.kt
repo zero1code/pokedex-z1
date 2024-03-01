@@ -1,4 +1,4 @@
-package com.z1.pokedex.core.designsystem.theme
+package com.z1.pokedex.designsystem.theme
 
 import android.app.Activity
 import android.os.Build

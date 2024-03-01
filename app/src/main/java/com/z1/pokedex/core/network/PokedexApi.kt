@@ -1,8 +1,7 @@
 package com.z1.pokedex.core.network
 
 import com.z1.pokedex.core.network.model.PokemonDTO
-import com.z1.pokedex.core.network.model.PokemonResponse
-import com.z1.pokedex.core.network.util.Constants
+import com.z1.pokedex.core.network.model.PokemonPageDto
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -10,11 +9,11 @@ import retrofit2.http.Query
 
 interface PokedexApi {
 
-    @GET("pokemon/")
-    suspend fun getPokemonList(
-        @Query("limit") limit: Int = Constants.PAGE_SIZE,
-        @Query("offset") offset: Int = Constants.POKEMON_STARTING_OFFSET,
-    ): Response<PokemonResponse>
+    @GET("pokemon")
+    suspend fun fetchPokemonPage(
+        @Query("offset") offset: Int,
+        @Query("limit") limit: Int
+    ): Response<PokemonPageDto>
 
     @GET("pokemon/{name}")
     suspend fun getPokemon(
