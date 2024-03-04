@@ -5,5 +5,7 @@ import com.z1.pokedex.feature.home.presentation.model.PokemonPage
 
 data class UiState(
     val selectedPokemon: Pokemon = Pokemon(""),
-    val pokemonPage: PokemonPage = PokemonPage()
+    val pokemonPage: PokemonPage = PokemonPage(),
+    val isLoadingPage: Boolean = true,
+    val isFirstLoading: Boolean = true
 )

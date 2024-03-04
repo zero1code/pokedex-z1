@@ -35,9 +35,16 @@ class HomeViewModel(
 
     private fun fetchPokemonPage(page: Int = 0) {
         viewModelScope.launch {
+            _uiState.update { it.copy(isLoadingPage = true) }
             pokemonRepository.fetchPokemonPage(page)
                 .catch { e ->
-                    Log.d("TAG", e.message ?: "Algo deu errado")
+                    e.printStackTrace()
+                    _uiState.update {
+                        it.copy(
+                            isLoadingPage = false,
+                            isFirstLoading = false
+                        )
+                    }
                 }
                 .collect { newPage ->
                     _uiState.update {
@@ -47,7 +54,9 @@ class HomeViewModel(
                                 previousPage = newPage.previousPage,
                                 nextPage = newPage.nextPage,
                                 pokemonList = it.pokemonPage.pokemonList + newPage.pokemonList
-                            )
+                            ),
+                            isLoadingPage = false,
+                            isFirstLoading = false
                         )
 
                     }
