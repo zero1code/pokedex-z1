@@ -1,9 +1,8 @@
 package com.z1.pokedex.feature.home.presentation.screen.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.z1.pokedex.core.network.repository.pokemonlist.PokemonRepository
+import com.z1.pokedex.feature.home.domain.PokemonUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -12,7 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val pokemonRepository: PokemonRepository,
+    private val pokemonUseCase: PokemonUseCase,
 ) : ViewModel() {
     private var _nextPage = 0
 
@@ -23,10 +22,6 @@ class HomeViewModel(
         initialValue = _uiState.value
     )
 
-    init {
-        fetchPokemonPage()
-    }
-
     fun onEvent(newEvent: Event) {
         when (newEvent) {
             is Event.LoadNextPage -> loadNextPage()
@@ -36,7 +31,7 @@ class HomeViewModel(
     private fun fetchPokemonPage(page: Int = 0) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoadingPage = true) }
-            pokemonRepository.fetchPokemonPage(page)
+            pokemonUseCase.fetchPokemonPage(page)
                 .catch { e ->
                     e.printStackTrace()
                     _uiState.update {
