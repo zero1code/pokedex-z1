@@ -14,6 +14,7 @@ import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -48,7 +49,7 @@ private val provideDispatcherIo = module {
 }
 
 private val providePokemonRepository = module {
-    single<PokemonRepository>{ PokemonRepositoryImpl(get(), get()) }
+    single<PokemonRepository>{ PokemonRepositoryImpl(androidContext(), get(), get()) }
 }
 
 private val providePokemonPageDataSource = module {

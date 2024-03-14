@@ -7,7 +7,8 @@ class PokemonMapper : BaseMapper<Pokemon, PokemonDTO>() {
     override fun mapDtoToModel(dto: PokemonDTO): Pokemon =
         dto.run {
             Pokemon(
-                name = name
+                name = name,
+                url = url
             )
         }
 
@@ -15,7 +16,7 @@ class PokemonMapper : BaseMapper<Pokemon, PokemonDTO>() {
         model.run {
             PokemonDTO(
                 name = name,
-                url = ""
+                url = url
             )
         }
 }
