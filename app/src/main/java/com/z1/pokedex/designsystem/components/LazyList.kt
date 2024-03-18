@@ -92,18 +92,7 @@ fun <T> CustomLazyList(
                 item(
                     span = { GridItemSpan(maxLineSpan) }
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp),
-                        contentAlignment = Alignment.BottomStart
-                    ) {
-                        Text(
-                            text = "Escolha um pokemon",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onBackground,
-                        )
-                    }
+                    headerContent()
                 }
 
                 itemsIndexed(
