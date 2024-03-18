@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -61,7 +62,11 @@ import com.z1.pokedex.designsystem.components.ImageWithShadow
 import com.z1.pokedex.designsystem.components.ListType
 import com.z1.pokedex.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.designsystem.extensions.normalizedItemPosition
+import com.z1.pokedex.designsystem.theme.LocalGridPokemonSpacing
+import com.z1.pokedex.designsystem.theme.IPokemonDimensions
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.designsystem.theme.LocalPokemonSpacing
+import com.z1.pokedex.designsystem.theme.LocalSpacing
 import com.z1.pokedex.feature.home.presentation.model.Pokemon
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.UiState
@@ -76,6 +81,12 @@ fun HomeScreen(
     var isShowGridList by remember {
         mutableStateOf(false)
     }
+
+    val spacing = LocalSpacing.current
+
+    val pokemonDimensions =
+        if (isShowGridList) LocalGridPokemonSpacing.current
+        else LocalPokemonSpacing.current
 
     val threshold = remember { 5 }
     val infiniteTransition = rememberInfiniteTransition(label = "infiniteTransition")
@@ -145,37 +156,40 @@ fun HomeScreen(
                 if (isShowGridList) ListType.GRID_VERTICAL
                 else ListType.VERTICAL,
                 headerContent = {
-                    Box(
+                    Text(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp),
-                        contentAlignment = Alignment.BottomStart
-                    ) {
-                        Text(
-                            text = "Escolha um pokemon",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.onBackground,
-                        )
-                    }
+                            .padding(
+                                top = pokemonDimensions.headerSize,
+                                bottom = spacing.medium
+                            ),
+                        text = stringResource(id = R.string.label_select_pokemon),
+
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
                 },
                 key = { _, pokemon -> pokemon.name },
-                contentPadding = PaddingValues(16.dp),
+                contentPadding = PaddingValues(spacing.medium),
                 itemContent = { _, item ->
-                    if (isShowGridList) {
-                        PokemonItemGrid(pokemon = item)
-                    } else {
-                        PokemonItemVertical(
-                            imageModifier = Modifier
+                    val imageModifier =
+                        if (isShowGridList) Modifier
+                        else {
+                            Modifier
                                 .graphicsLayer {
                                     val value =
                                         1 - (listState.layoutInfo.normalizedItemPosition(item.name).absoluteValue * 0.25F)
                                     //alpha = value
                                     scaleX = value
                                     scaleY = value
-                                },
-                            pokemon = item,
-                        )
-                    }
+                                }
+                        }
+                    PokemonItemVertical(
+                        dimen = pokemonDimensions,
+                        isShowGridList = isShowGridList,
+                        imageModifier = imageModifier,
+                        pokemon = item,
+                    )
                 },
                 isLastPage = uiState.pokemonPage.nextPage == null,
                 isLoadingPage = uiState.isLoadingPage,
@@ -195,7 +209,7 @@ fun HomeScreen(
                                     bottom.linkTo(parent.bottom)
                                     start.linkTo(parent.start)
                                 }
-                                .size(100.dp)
+                                .size(pokemonDimensions.footerSize)
                                 .rotate(animationRotation),
                             painter = painterResource(id = R.drawable.pokeball_placeholder),
                             contentDescription = ""
@@ -203,12 +217,12 @@ fun HomeScreen(
                         Text(
                             modifier = Modifier
                                 .constrainAs(text) {
-                                    top.linkTo(image.bottom, 16.dp)
+                                    top.linkTo(image.bottom, spacing.medium)
                                     end.linkTo(parent.end)
-                                    bottom.linkTo(parent.bottom, 16.dp)
+                                    bottom.linkTo(parent.bottom, spacing.medium)
                                     start.linkTo(parent.start)
                                 },
-                            text = "Carregando mais pokemons...",
+                            text = stringResource(id = R.string.label_loading_more_pokemon),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onBackground,
                         )
@@ -218,12 +232,12 @@ fun HomeScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
-                            .height(100.dp),
+                            .padding(spacing.medium)
+                            .height(pokemonDimensions.footerSize),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Você viu todos os pokemons, parabéns!",
+                            text = stringResource(id = R.string.label_saw_all_pokemon),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onBackground,
                         )
@@ -244,7 +258,9 @@ fun HomeScreen(
 fun PokemonItemVertical(
     modifier: Modifier = Modifier,
     imageModifier: Modifier = Modifier,
-    pokemon: Pokemon
+    pokemon: Pokemon,
+    dimen: IPokemonDimensions,
+    isShowGridList: Boolean
 ) {
     val brush = Brush.linearGradient(
         colors = listOf(Color(pokemon.dominantColor()), Color(pokemon.vibrantDarkColor())),
@@ -254,14 +270,14 @@ fun PokemonItemVertical(
     ConstraintLayout(
         modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp)
+            .padding(vertical = dimen.normal)
     ) {
         val (image, name, card, canva, textNumber) = createRefs()
         Box(
             modifier = Modifier
                 .background(
                     brush = brush,
-                    shape = RoundedCornerShape(30.dp)
+                    shape = RoundedCornerShape(dimen.brushShape)
                 )
                 .constrainAs(card) {
                     top.linkTo(parent.top)
@@ -270,16 +286,13 @@ fun PokemonItemVertical(
                     end.linkTo(parent.end)
                 }
                 .fillMaxWidth()
-                .height(300.dp)
+                .height(dimen.boxSize)
         ) {
             Image(
                 modifier = Modifier
-                    .size(200.dp)
+                    .size(dimen.imagePlaceHolderSize)
                     .alpha(0.4f)
-                    .padding(16.dp)
-                    .graphicsLayer {
-
-                    },
+                    .padding(dimen.normal),
                 painter = painterResource(id = R.drawable.pokeball_placeholder),
                 colorFilter = ColorFilter.tint(Color.White),
                 contentDescription = ""
@@ -287,7 +300,7 @@ fun PokemonItemVertical(
         }
 
         Canvas(modifier = imageModifier
-            .size(150.dp)
+            .size(dimen.canvaSize)
             .constrainAs(canva) {
                 top.linkTo(image.top)
                 bottom.linkTo(image.bottom)
@@ -313,159 +326,44 @@ fun PokemonItemVertical(
         pokemon.image?.asImageBitmap()?.let {
             ImageWithShadow(
                 modifier = imageModifier
-                    .requiredWidth(150.dp)
+                    .requiredWidth(dimen.imageSize)
                     .constrainAs(image) {
                         top.linkTo(parent.top)
-                        end.linkTo(parent.end, 16.dp)
+                        end.linkTo(parent.end, dimen.imageMarginEnd)
                     }
                     .scale(1.3f),
                 imageBitmap = it,
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Fit,
+                offsetX = dimen.offsetX,
+                offsetY = dimen.offsetY
             )
         }
 
         Text(
             modifier = Modifier
-                .padding(end = 16.dp)
+                .padding(end = dimen.normal)
                 .constrainAs(name) {
-                    start.linkTo(card.start, 16.dp)
-                    bottom.linkTo(card.bottom, 16.dp)
+                    start.linkTo(card.start, dimen.normal)
+                    bottom.linkTo(card.bottom, dimen.normal)
                 },
             text = pokemon.name,
             color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleMedium,
+            style =
+            if (isShowGridList) MaterialTheme.typography.titleSmall
+            else MaterialTheme.typography.titleMedium,
         )
 
         Text(
             modifier = Modifier
                 .constrainAs(textNumber) {
-                    top.linkTo(card.top, 16.dp)
-                    start.linkTo(card.start, 16.dp)
+                    top.linkTo(card.top, dimen.normal)
+                    start.linkTo(card.start, dimen.normal)
                 },
             text = String.format("#%03d", pokemon.getIndex()),
             color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleMedium,
-        )
-    }
-}
-
-@Composable
-fun PokemonItemGrid(
-    modifier: Modifier = Modifier,
-    pokemon: Pokemon
-) {
-    val brush = Brush.linearGradient(
-        colors = listOf(Color(pokemon.dominantColor()), Color(pokemon.vibrantDarkColor())),
-        start = Offset(0f, Float.POSITIVE_INFINITY),
-        end = Offset(Float.POSITIVE_INFINITY, 0f)
-    )
-    ConstraintLayout(
-        modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        val (image, name, card, canva, textNumber) = createRefs()
-        Box(
-            modifier = Modifier
-                .background(
-                    brush = brush,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .constrainAs(card) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-                .fillMaxWidth()
-                .height(150.dp)
-        ) {
-            Image(
-                modifier = Modifier
-                    .size(100.dp)
-                    .alpha(0.4f)
-                    .padding(8.dp)
-                    .graphicsLayer {
-
-                    },
-                painter = painterResource(id = R.drawable.pokeball_placeholder),
-                colorFilter = ColorFilter.tint(Color.White),
-                contentDescription = ""
-            )
-        }
-
-        Canvas(modifier = Modifier
-            .size(50.dp)
-            .constrainAs(canva) {
-                top.linkTo(image.top)
-                bottom.linkTo(image.bottom)
-                start.linkTo(image.start)
-                end.linkTo(image.end)
-            }
-            .graphicsLayer {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val blur = 150f
-                    renderEffect = RenderEffect
-                        .createBlurEffect(
-                            blur, blur, Shader.TileMode.DECAL
-                        )
-                        .asComposeRenderEffect()
-                }
-            }
-        ) {
-            pokemon.palette?.let {
-                drawCircle(Color(0xFFFFFFFF))
-            }
-        }
-
-        pokemon.image?.asImageBitmap()?.let {
-            ImageWithShadow(
-                modifier = Modifier
-                    .requiredWidth(60.dp)
-                    .constrainAs(image) {
-                        top.linkTo(parent.top)
-                        end.linkTo(parent.end, 16.dp)
-                    }
-                    .scale(1.3f),
-                imageBitmap = it,
-                contentScale = ContentScale.Fit
-            )
-        }
-
-        Text(
-            modifier = Modifier
-                .padding(end = 8.dp)
-                .constrainAs(name) {
-                    start.linkTo(card.start, 8.dp)
-                    bottom.linkTo(card.bottom, 8.dp)
-                },
-            text = pokemon.name,
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleSmall,
-        )
-
-        Text(
-            modifier = Modifier
-                .constrainAs(textNumber) {
-                    start.linkTo(card.start, 8.dp)
-                    top.linkTo(card.top, 8.dp)
-                },
-            text = String.format("#%03d", pokemon.getIndex()),
-            color = MaterialTheme.colorScheme.onSurface,
-            style = MaterialTheme.typography.titleSmall,
-        )
-    }
-}
-
-@Preview
-@Composable
-fun PokemonItemHorizontalPreview() {
-    PokedexZ1Theme {
-        PokemonItemGrid(
-            pokemon = Pokemon(
-                "Pikachu",
-                "https://pokeapi.co/api/v2/pokemon/1/"
-            )
+            style =
+            if (isShowGridList) MaterialTheme.typography.titleSmall
+            else MaterialTheme.typography.titleMedium,
         )
     }
 }
@@ -478,7 +376,9 @@ fun PokemonItemVerticalPreview() {
             pokemon = Pokemon(
                 "Pikachu",
                 "https://pokeapi.co/api/v2/pokemon/1/"
-            )
+            ),
+            dimen = LocalPokemonSpacing.current,
+            isShowGridList = false
         )
     }
 }

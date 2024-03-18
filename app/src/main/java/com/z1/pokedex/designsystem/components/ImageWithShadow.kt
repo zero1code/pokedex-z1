@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
 
@@ -17,14 +18,16 @@ import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
 fun ImageWithShadow(
     modifier: Modifier = Modifier,
     imageBitmap: ImageBitmap,
-    contentScale: ContentScale
+    contentScale: ContentScale,
+    offsetX: Dp,
+    offsetY: Dp
 ) {
     Box(
         modifier = modifier
     ) {
         Image(
             modifier = modifier
-                .offset(5.dp, 5.dp),
+                .offset(offsetX, offsetY),
             bitmap = imageBitmap,
             contentScale = contentScale,
             contentDescription = "back",

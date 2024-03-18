@@ -6,6 +6,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,16 +15,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
+import com.z1.pokedex.designsystem.theme.LocalSpacing
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
 
 @Composable
 fun CustomLoadingScreen(
     modifier: Modifier = Modifier
 ) {
+    val spacing = LocalSpacing.current
     val infiniteTransition = rememberInfiniteTransition(label = "infiniteTransition")
     val animationRotation by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -34,7 +38,7 @@ fun CustomLoadingScreen(
         label = "animationRotation"
     )
     ConstraintLayout(
-        modifier = modifier.size(350.dp),
+        modifier = modifier.fillMaxSize(),
     ) {
         val (image, text) = createRefs()
 
@@ -46,7 +50,7 @@ fun CustomLoadingScreen(
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                 }
-                .size(100.dp)
+                .size(spacing.loadingIcon)
                 .rotate(animationRotation),
             painter = painterResource(id = R.drawable.pokeball_placeholder),
             contentDescription = ""
@@ -54,11 +58,11 @@ fun CustomLoadingScreen(
         Text(
             modifier = Modifier
                 .constrainAs(text) {
-                    top.linkTo(image.bottom, 16.dp)
+                    top.linkTo(image.bottom, spacing.medium)
                     end.linkTo(parent.end)
                     start.linkTo(parent.start)
                 },
-            text = "Carregando pokemons...",
+            text = stringResource(id = R.string.label_loading_pokemon),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onBackground,
         )
