@@ -1,10 +1,10 @@
-@file:OptIn(ExperimentalFoundationApi::class)
-
 package com.z1.pokedex.feature.home.presentation.screen
 
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.os.Build
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -16,7 +16,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,12 +34,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
@@ -50,26 +54,31 @@ import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
 import com.z1.pokedex.designsystem.components.CustomLazyList
 import com.z1.pokedex.designsystem.components.CustomLoadingScreen
+import com.z1.pokedex.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.designsystem.components.ImageWithShadow
 import com.z1.pokedex.designsystem.components.ListType
-import com.z1.pokedex.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.designsystem.extensions.normalizedItemPosition
-import com.z1.pokedex.designsystem.theme.LocalGridPokemonSpacing
 import com.z1.pokedex.designsystem.theme.IPokemonDimensions
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.designsystem.theme.LocalGridPokemonSpacing
 import com.z1.pokedex.designsystem.theme.LocalPokemonSpacing
 import com.z1.pokedex.designsystem.theme.LocalSpacing
+import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.feature.details.screen.DetailsScreen
 import com.z1.pokedex.feature.home.presentation.model.Pokemon
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.UiState
+import com.z1.pokedex.feature.utils.SharedElementData
+import com.z1.pokedex.feature.utils.toDp
 import kotlin.math.absoluteValue
 
 @Composable
@@ -82,13 +91,79 @@ fun HomeScreen(
         mutableStateOf(false)
     }
 
-    val spacing = LocalSpacing.current
+    LaunchedEffect(key1 = true) {
+        onEvent(Event.LoadNextPage)
+    }
 
+    val animScope = rememberCoroutineScope()
+    var toDetails by remember { mutableStateOf(ToDetails.None) }
+    var sharedElementTransitioned by remember { mutableStateOf(false) }
+    var sharedElementParams by remember { mutableStateOf(SharedElementData.NONE) }
+    val density = LocalDensity.current
+
+    val goBackFromDetailsScreen: () -> Unit = remember {
+        {
+            sharedElementTransitioned = false
+        }
+    }
+
+    AnimatedVisibility(
+        visible = uiState.isFirstLoading,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        CustomLoadingScreen()
+    }
+
+    AnimatedVisibility(
+        visible = uiState.isFirstLoading.not(),
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        PokemonList(
+            modifier = modifier,
+            uiState = uiState,
+            onEvent = { onEvent(it) },
+            isShowGridList = isShowGridList,
+            onLayoutListChange = { isShowGridList = it },
+            onPokemonClick = { clickedPokemon, offset, size ->
+                sharedElementParams =
+                    SharedElementData(
+                        offset.x.toDp(density),
+                        offset.y.toDp(density),
+                        size.toDp(density)
+                    )
+                sharedElementTransitioned = true
+                toDetails = ToDetails.Stable
+            }
+        )
+    }
+
+    if (toDetails == ToDetails.Stable) {
+        DetailsScreen(sharedElementParams = sharedElementParams, isAppearing = sharedElementTransitioned)
+    }
+
+    BackHandler(sharedElementTransitioned) {
+        when {
+            sharedElementTransitioned -> goBackFromDetailsScreen()
+        }
+    }
+}
+
+@Composable
+fun PokemonList(
+    modifier: Modifier = Modifier,
+    uiState: UiState,
+    onEvent: (Event) -> Unit,
+    isShowGridList: Boolean,
+    onLayoutListChange: (Boolean) -> Unit,
+    onPokemonClick: (pokemon: Pokemon, offset: Offset, size: Int) -> Unit
+) {
+    val spacing = LocalSpacing.current
     val pokemonDimensions =
         if (isShowGridList) LocalGridPokemonSpacing.current
         else LocalPokemonSpacing.current
 
-    val threshold = remember { 5 }
     val infiniteTransition = rememberInfiniteTransition(label = "infiniteTransition")
     val animationRotation by infiniteTransition.animateFloat(
         initialValue = 0f,
@@ -102,6 +177,7 @@ fun HomeScreen(
     val gridListState = rememberLazyGridState()
     val listState = rememberLazyListState()
 
+    val threshold = remember { 5 }
     val isLastItemVisible by remember {
         derivedStateOf {
             if (isShowGridList) {
@@ -130,138 +206,128 @@ fun HomeScreen(
         }
     }
 
-    AnimatedVisibility(
-        visible = uiState.isFirstLoading,
-        enter = fadeIn(),
-        exit = fadeOut()
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.TopCenter
     ) {
-        CustomLoadingScreen()
-    }
+        CustomLazyList(
+            data = uiState.pokemonPage.pokemonList,
+            listState = listState,
+            gridListState = gridListState,
+            listType =
+            if (isShowGridList) ListType.GRID_VERTICAL
+            else ListType.VERTICAL,
+            headerContent = {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = pokemonDimensions.headerSize,
+                            bottom = spacing.medium
+                        ),
+                    text = stringResource(id = R.string.label_select_pokemon),
 
-    AnimatedVisibility(
-        visible = uiState.isFirstLoading.not(),
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+            },
+            key = { _, pokemon -> pokemon.name },
+            contentPadding = PaddingValues(spacing.medium),
+            itemContent = { _, item ->
+                val imageModifier =
+                    if (isShowGridList) Modifier
+                    else {
+                        Modifier
+                            .graphicsLayer {
+                                val value =
+                                    1 - (listState.layoutInfo.normalizedItemPosition(item.name).absoluteValue * 0.25F)
+                                //alpha = value
+                                scaleX = value
+                                scaleY = value
+                            }
+                    }
+                PokemonItem(
+                    dimen = pokemonDimensions,
+                    isShowGridList = isShowGridList,
+                    imageModifier = imageModifier,
+                    pokemon = item,
+                    onPokemonClick = { clickedPokemon, offset, size ->
+                        onPokemonClick(clickedPokemon, offset, size)
+                    }
+                )
+            },
+            isLastPage = uiState.pokemonPage.nextPage == null,
+            isLoadingPage = uiState.isLoadingPage,
+            loadingContent = {
+                ConstraintLayout(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                ) {
+                    val (image, text) = createRefs()
 
-        Box(
-            contentAlignment = Alignment.TopCenter
-        ) {
-            CustomLazyList(
-                modifier = modifier,
-                data = uiState.pokemonPage.pokemonList,
-                listState = listState,
-                gridListState = gridListState,
-                listType =
-                if (isShowGridList) ListType.GRID_VERTICAL
-                else ListType.VERTICAL,
-                headerContent = {
+                    Image(
+                        modifier = Modifier
+                            .constrainAs(image) {
+                                top.linkTo(parent.top)
+                                end.linkTo(parent.end)
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                            }
+                            .size(pokemonDimensions.footerSize)
+                            .rotate(animationRotation),
+                        painter = painterResource(id = R.drawable.pokeball_placeholder),
+                        contentDescription = ""
+                    )
                     Text(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                top = pokemonDimensions.headerSize,
-                                bottom = spacing.medium
-                            ),
-                        text = stringResource(id = R.string.label_select_pokemon),
-
-                        style = MaterialTheme.typography.titleMedium,
+                            .constrainAs(text) {
+                                top.linkTo(image.bottom, spacing.medium)
+                                end.linkTo(parent.end)
+                                bottom.linkTo(parent.bottom, spacing.medium)
+                                start.linkTo(parent.start)
+                            },
+                        text = stringResource(id = R.string.label_loading_more_pokemon),
+                        style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
-                },
-                key = { _, pokemon -> pokemon.name },
-                contentPadding = PaddingValues(spacing.medium),
-                itemContent = { _, item ->
-                    val imageModifier =
-                        if (isShowGridList) Modifier
-                        else {
-                            Modifier
-                                .graphicsLayer {
-                                    val value =
-                                        1 - (listState.layoutInfo.normalizedItemPosition(item.name).absoluteValue * 0.25F)
-                                    //alpha = value
-                                    scaleX = value
-                                    scaleY = value
-                                }
-                        }
-                    PokemonItemVertical(
-                        dimen = pokemonDimensions,
-                        isShowGridList = isShowGridList,
-                        imageModifier = imageModifier,
-                        pokemon = item,
+                }
+            },
+            footerContent = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(spacing.medium)
+                        .height(pokemonDimensions.footerSize),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.label_saw_all_pokemon),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onBackground,
                     )
-                },
-                isLastPage = uiState.pokemonPage.nextPage == null,
-                isLoadingPage = uiState.isLoadingPage,
-                loadingContent = {
-                    ConstraintLayout(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                    ) {
-                        val (image, text) = createRefs()
-
-                        Image(
-                            modifier = Modifier
-                                .constrainAs(image) {
-                                    top.linkTo(parent.top)
-                                    end.linkTo(parent.end)
-                                    bottom.linkTo(parent.bottom)
-                                    start.linkTo(parent.start)
-                                }
-                                .size(pokemonDimensions.footerSize)
-                                .rotate(animationRotation),
-                            painter = painterResource(id = R.drawable.pokeball_placeholder),
-                            contentDescription = ""
-                        )
-                        Text(
-                            modifier = Modifier
-                                .constrainAs(text) {
-                                    top.linkTo(image.bottom, spacing.medium)
-                                    end.linkTo(parent.end)
-                                    bottom.linkTo(parent.bottom, spacing.medium)
-                                    start.linkTo(parent.start)
-                                },
-                            text = stringResource(id = R.string.label_loading_more_pokemon),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onBackground,
-                        )
-                    }
-                },
-                footerContent = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(spacing.medium)
-                            .height(pokemonDimensions.footerSize),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.label_saw_all_pokemon),
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onBackground,
-                        )
-                    }
                 }
-            )
-            CustomTopAppBar(
-                isShowGridList = isShowGridList,
-                onActionClick = {
-                    isShowGridList = !isShowGridList
-                }
-            )
-        }
+            }
+        )
+        CustomTopAppBar(
+            isShowGridList = isShowGridList,
+            onActionClick = { onLayoutListChange(!isShowGridList) }
+        )
     }
 }
 
 @Composable
-fun PokemonItemVertical(
+fun PokemonItem(
     modifier: Modifier = Modifier,
     imageModifier: Modifier = Modifier,
     pokemon: Pokemon,
     dimen: IPokemonDimensions,
-    isShowGridList: Boolean
+    isShowGridList: Boolean,
+    onPokemonClick: (pokemon: Pokemon, offset: Offset, size: Int) -> Unit
 ) {
+    var parentOffset by remember { mutableStateOf(Offset.Unspecified) }
+    var mySize by remember { mutableIntStateOf(0) }
+
     val brush = Brush.linearGradient(
         colors = listOf(Color(pokemon.dominantColor()), Color(pokemon.vibrantDarkColor())),
         start = Offset(0f, Float.POSITIVE_INFINITY),
@@ -275,10 +341,7 @@ fun PokemonItemVertical(
         val (image, name, card, canva, textNumber) = createRefs()
         Box(
             modifier = Modifier
-                .background(
-                    brush = brush,
-                    shape = RoundedCornerShape(dimen.brushShape)
-                )
+                .clip(RoundedCornerShape(dimen.brushShape))
                 .constrainAs(card) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -287,6 +350,14 @@ fun PokemonItemVertical(
                 }
                 .fillMaxWidth()
                 .height(dimen.boxSize)
+                .drawBehind {
+                    drawRoundRect(brush = brush)
+                }
+                .onGloballyPositioned { coordinates ->
+                    parentOffset = coordinates.positionInRoot()
+                    mySize = coordinates.size.width
+                }
+                .clickable { onPokemonClick(pokemon, parentOffset, mySize) }
         ) {
             Image(
                 modifier = Modifier
@@ -372,13 +443,14 @@ fun PokemonItemVertical(
 @Composable
 fun PokemonItemVerticalPreview() {
     PokedexZ1Theme {
-        PokemonItemVertical(
+        PokemonItem(
             pokemon = Pokemon(
                 "Pikachu",
                 "https://pokeapi.co/api/v2/pokemon/1/"
             ),
             dimen = LocalPokemonSpacing.current,
-            isShowGridList = false
+            isShowGridList = false,
+            onPokemonClick = { _, _, _ ->}
         )
     }
 }
