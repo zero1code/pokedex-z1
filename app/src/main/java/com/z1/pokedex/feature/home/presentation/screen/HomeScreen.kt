@@ -3,8 +3,6 @@ package com.z1.pokedex.feature.home.presentation.screen
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.os.Build
-import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -14,7 +12,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -34,10 +31,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,9 +49,6 @@ import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -73,12 +65,9 @@ import com.z1.pokedex.designsystem.theme.LocalGridPokemonSpacing
 import com.z1.pokedex.designsystem.theme.LocalPokemonSpacing
 import com.z1.pokedex.designsystem.theme.LocalSpacing
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
-import com.z1.pokedex.feature.details.screen.DetailsScreen
 import com.z1.pokedex.feature.home.presentation.model.Pokemon
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.UiState
-import com.z1.pokedex.feature.utils.SharedElementData
-import com.z1.pokedex.feature.utils.toDp
 import kotlin.math.absoluteValue
 
 @Composable
@@ -93,18 +82,6 @@ fun HomeScreen(
 
     LaunchedEffect(key1 = true) {
         onEvent(Event.LoadNextPage)
-    }
-
-    val animScope = rememberCoroutineScope()
-    var toDetails by remember { mutableStateOf(ToDetails.None) }
-    var sharedElementTransitioned by remember { mutableStateOf(false) }
-    var sharedElementParams by remember { mutableStateOf(SharedElementData.NONE) }
-    val density = LocalDensity.current
-
-    val goBackFromDetailsScreen: () -> Unit = remember {
-        {
-            sharedElementTransitioned = false
-        }
     }
 
     AnimatedVisibility(
@@ -126,27 +103,10 @@ fun HomeScreen(
             onEvent = { onEvent(it) },
             isShowGridList = isShowGridList,
             onLayoutListChange = { isShowGridList = it },
-            onPokemonClick = { clickedPokemon, offset, size ->
-                sharedElementParams =
-                    SharedElementData(
-                        offset.x.toDp(density),
-                        offset.y.toDp(density),
-                        size.toDp(density)
-                    )
-                sharedElementTransitioned = true
-                toDetails = ToDetails.Stable
+            onPokemonClick = { clickedPokemon ->
+
             }
         )
-    }
-
-    if (toDetails == ToDetails.Stable) {
-        DetailsScreen(sharedElementParams = sharedElementParams, isAppearing = sharedElementTransitioned)
-    }
-
-    BackHandler(sharedElementTransitioned) {
-        when {
-            sharedElementTransitioned -> goBackFromDetailsScreen()
-        }
     }
 }
 
@@ -157,7 +117,7 @@ fun PokemonList(
     onEvent: (Event) -> Unit,
     isShowGridList: Boolean,
     onLayoutListChange: (Boolean) -> Unit,
-    onPokemonClick: (pokemon: Pokemon, offset: Offset, size: Int) -> Unit
+    onPokemonClick: (pokemon: Pokemon) -> Unit
 ) {
     val spacing = LocalSpacing.current
     val pokemonDimensions =
@@ -251,8 +211,8 @@ fun PokemonList(
                     isShowGridList = isShowGridList,
                     imageModifier = imageModifier,
                     pokemon = item,
-                    onPokemonClick = { clickedPokemon, offset, size ->
-                        onPokemonClick(clickedPokemon, offset, size)
+                    onPokemonClick = { clickedPokemon ->
+                        onPokemonClick(clickedPokemon)
                     }
                 )
             },
@@ -323,10 +283,8 @@ fun PokemonItem(
     pokemon: Pokemon,
     dimen: IPokemonDimensions,
     isShowGridList: Boolean,
-    onPokemonClick: (pokemon: Pokemon, offset: Offset, size: Int) -> Unit
+    onPokemonClick: (pokemon: Pokemon) -> Unit
 ) {
-    var parentOffset by remember { mutableStateOf(Offset.Unspecified) }
-    var mySize by remember { mutableIntStateOf(0) }
 
     val brush = Brush.linearGradient(
         colors = listOf(Color(pokemon.dominantColor()), Color(pokemon.vibrantDarkColor())),
@@ -353,11 +311,7 @@ fun PokemonItem(
                 .drawBehind {
                     drawRoundRect(brush = brush)
                 }
-                .onGloballyPositioned { coordinates ->
-                    parentOffset = coordinates.positionInRoot()
-                    mySize = coordinates.size.width
-                }
-                .clickable { onPokemonClick(pokemon, parentOffset, mySize) }
+                .clickable { onPokemonClick(pokemon) }
         ) {
             Image(
                 modifier = Modifier
@@ -450,7 +404,7 @@ fun PokemonItemVerticalPreview() {
             ),
             dimen = LocalPokemonSpacing.current,
             isShowGridList = false,
-            onPokemonClick = { _, _, _ ->}
+            onPokemonClick = { _ ->}
         )
     }
 }
