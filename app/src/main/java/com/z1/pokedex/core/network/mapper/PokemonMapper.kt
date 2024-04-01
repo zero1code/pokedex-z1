@@ -1,7 +1,7 @@
 package com.z1.pokedex.core.network.mapper
 
 import com.z1.pokedex.core.network.model.PokemonDTO
-import com.z1.pokedex.feature.home.presentation.model.Pokemon
+import com.z1.pokedex.feature.home.domain.model.Pokemon
 
 class PokemonMapper : BaseMapper<Pokemon, PokemonDTO>() {
     override fun mapDtoToModel(dto: PokemonDTO): Pokemon =

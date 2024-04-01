@@ -85,7 +85,7 @@ import com.z1.pokedex.designsystem.theme.LocalPokemonSpacing
 import com.z1.pokedex.designsystem.theme.LocalSpacing
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
 import com.z1.pokedex.designsystem.theme.RedColor
-import com.z1.pokedex.feature.home.presentation.model.Pokemon
+import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.UiState
 import kotlin.math.absoluteValue
@@ -190,16 +190,20 @@ fun PokemonList(
     )
 
     val threshold = remember { 5 }
-    val isLastItemVisible by remember {
-        derivedStateOf {
-            if (isShowGridList) {
+    val isLastItemVisible by if (isShowGridList) {
+        remember {
+            derivedStateOf {
                 val layoutInfo =
                     gridListState.layoutInfo
                 val totalItems = layoutInfo.totalItemsCount
                 val lastVisibleItemIndex =
                     (layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) + 1
                 lastVisibleItemIndex > (totalItems - threshold)
-            } else {
+            }
+        }
+    } else {
+        remember {
+            derivedStateOf {
                 val layoutInfo =
                     listState.layoutInfo
                 val totalItems = layoutInfo.totalItemsCount

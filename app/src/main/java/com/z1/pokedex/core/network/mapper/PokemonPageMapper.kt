@@ -1,7 +1,7 @@
 package com.z1.pokedex.core.network.mapper
 
 import com.z1.pokedex.core.network.model.PokemonPageDto
-import com.z1.pokedex.feature.home.presentation.model.PokemonPage
+import com.z1.pokedex.feature.home.domain.model.PokemonPage
 
 class PokemonPageMapper(
     private val pokemonMapper: PokemonMapper
