@@ -4,4 +4,5 @@
     <string name="label_select_pokemon">Select a pokemon</string>
     <string name="label_loading_more_pokemon">Loading more pokemons…</string>
     <string name="label_saw_all_pokemon">You saw all the pokemon, congratulations!</string>
+    <string name="label_pokemon_details">Details</string>
 </resources>
