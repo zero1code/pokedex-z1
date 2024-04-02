@@ -2,15 +2,14 @@ package com.z1.pokedex.core.network.di
 
 import com.z1.pokedex.BuildConfig
 import com.z1.pokedex.core.network.PokedexApi
-import com.z1.pokedex.core.network.mapper.PokemonMapper
-import com.z1.pokedex.core.network.mapper.PokemonPageMapper
+import com.z1.pokedex.core.network.service.PokedexClient
 import com.z1.pokedex.core.network.util.Constants
 import com.z1.pokedex.core.network.util.NullOrEmptyConverterFactory
-import kotlinx.coroutines.Dispatchers
 import okhttp3.ConnectionPool
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -40,21 +39,11 @@ private val provideApi = module {
     }
 }
 
-private val provideDispatcherIo = module {
-    single { Dispatchers.IO }
-}
-
-private val providePokemonMapper = module {
-    single<PokemonMapper>{ PokemonMapper() }
-}
-
-private val providePokemonPageMapper = module {
-    single<PokemonPageMapper>{ PokemonPageMapper(get()) }
+private val providePokedexClient = module {
+    single { PokedexClient(androidContext(), get()) }
 }
 
 val networkModule = listOf(
     provideApi,
-    provideDispatcherIo,
-    providePokemonMapper,
-    providePokemonPageMapper,
+    providePokedexClient
 )

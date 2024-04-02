@@ -72,6 +72,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
+import com.z1.pokedex.core.common.orZero
 import com.z1.pokedex.designsystem.components.CustomIconButton
 import com.z1.pokedex.designsystem.components.CustomLazyList
 import com.z1.pokedex.designsystem.components.CustomLoadingScreen
@@ -197,7 +198,7 @@ fun PokemonList(
                     gridListState.layoutInfo
                 val totalItems = layoutInfo.totalItemsCount
                 val lastVisibleItemIndex =
-                    (layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) + 1
+                    (layoutInfo.visibleItemsInfo.lastOrNull()?.index.orZero()).plus(1)
                 lastVisibleItemIndex > (totalItems - threshold)
             }
         }
@@ -208,7 +209,7 @@ fun PokemonList(
                     listState.layoutInfo
                 val totalItems = layoutInfo.totalItemsCount
                 val lastVisibleItemIndex =
-                    (layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0) + 1
+                    (layoutInfo.visibleItemsInfo.lastOrNull()?.index.orZero()).plus(1)
                 lastVisibleItemIndex > (totalItems - threshold)
             }
         }

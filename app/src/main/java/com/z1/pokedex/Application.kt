@@ -18,9 +18,11 @@ class Application: Application() {
         startKoin {
             androidContext(this@Application)
             modules(
-                datasourceModule +
-                networkModule +
-                homeScreenModule
+                listOf(
+                    datasourceModule,
+                    networkModule,
+                    homeScreenModule
+                ).flatten()
             )
         }
     }
