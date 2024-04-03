@@ -1,6 +1,7 @@
 package com.z1.pokedex
 
 import android.app.Application
+import com.z1.pokedex.core.datasource.di.datasourceModule
 import com.z1.pokedex.core.network.di.networkModule
 import com.z1.pokedex.feature.home.di.homeScreenModule
 import org.koin.android.ext.koin.androidContext
@@ -17,8 +18,11 @@ class Application: Application() {
         startKoin {
             androidContext(this@Application)
             modules(
-                networkModule +
-                homeScreenModule
+                listOf(
+                    datasourceModule,
+                    networkModule,
+                    homeScreenModule
+                ).flatten()
             )
         }
     }

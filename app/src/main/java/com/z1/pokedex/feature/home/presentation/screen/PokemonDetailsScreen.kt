@@ -53,7 +53,7 @@ import com.z1.pokedex.R
 import com.z1.pokedex.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.designsystem.components.ImageWithShadow
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
-import com.z1.pokedex.feature.home.presentation.model.Pokemon
+import com.z1.pokedex.feature.home.domain.model.Pokemon
 
 @Composable
 fun PokemonDetailsScreen(

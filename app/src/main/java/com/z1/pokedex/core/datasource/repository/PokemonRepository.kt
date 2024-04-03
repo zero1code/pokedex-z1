@@ -1,7 +1,7 @@
-package com.z1.pokedex.core.network.repository.pokemonlist
+package com.z1.pokedex.core.datasource.repository
 
 import android.graphics.drawable.Drawable
-import com.z1.pokedex.feature.home.presentation.model.PokemonPage
+import com.z1.pokedex.feature.home.domain.model.PokemonPage
 import kotlinx.coroutines.flow.Flow
 
 interface PokemonRepository {

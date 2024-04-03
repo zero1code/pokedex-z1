@@ -1,15 +1,12 @@
-package com.z1.pokedex.feature.home.domain
+package com.z1.pokedex.feature.home.domain.usecase
 
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
 import androidx.palette.graphics.Palette
-import com.z1.pokedex.core.network.repository.pokemonlist.PokemonRepository
-import com.z1.pokedex.feature.home.presentation.model.Pokemon
-import com.z1.pokedex.feature.home.presentation.model.PokemonPage
+import com.z1.pokedex.core.datasource.repository.PokemonRepository
+import com.z1.pokedex.feature.home.domain.model.PokemonPage
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 
 class PokemonUseCaseImpl(
     private val pokemonRepository: PokemonRepository

@@ -1,7 +1,7 @@
 package com.z1.pokedex.feature.home.di
 
-import com.z1.pokedex.feature.home.domain.PokemonUseCase
-import com.z1.pokedex.feature.home.domain.PokemonUseCaseImpl
+import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCase
+import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCaseImpl
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.HomeViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -17,5 +17,4 @@ private val providePokemonUseCase = module {
 val homeScreenModule = listOf(
     provideHomeViewModel,
     providePokemonUseCase
-
 )
