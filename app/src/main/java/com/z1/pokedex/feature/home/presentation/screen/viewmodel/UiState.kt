@@ -5,5 +5,6 @@ import com.z1.pokedex.feature.home.domain.model.PokemonPage
 data class UiState(
     val pokemonPage: PokemonPage = PokemonPage(),
     val isLoadingPage: Boolean = false,
-    val isFirstLoading: Boolean = true
+    val isFirstLoading: Boolean = true,
+    val pokemonClickedList: Set<String> = emptySet()
 )

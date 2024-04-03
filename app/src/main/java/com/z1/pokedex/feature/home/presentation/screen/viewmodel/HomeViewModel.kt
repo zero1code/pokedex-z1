@@ -2,6 +2,7 @@ package com.z1.pokedex.feature.home.presentation.screen.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,6 +26,7 @@ class HomeViewModel(
     fun onEvent(newEvent: Event) {
         when (newEvent) {
             is Event.LoadNextPage -> loadNextPage()
+            is Event.UpdateSelectedPokemon -> updateClickedPokemonList(newEvent.pokemonName)
         }
     }
 
@@ -59,6 +61,13 @@ class HomeViewModel(
                 }
         }
     }
+
+    private fun updateClickedPokemonList(pokemonName: String) =
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(pokemonClickedList = it.pokemonClickedList + pokemonName)
+            }
+        }
 
     private fun loadNextPage() {
         fetchPokemonPage(_nextPage)

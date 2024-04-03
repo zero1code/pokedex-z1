@@ -7,8 +7,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.EaseIn
-import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
@@ -140,7 +138,8 @@ fun HomeScreen(
                     pokemon = pokemonClicked,
                     onNavigationIconClick = {
                         pokemonDetails = null
-                    }
+                    },
+                    onEvent = { onEvent(it) }
                 )
             } else {
                 PokemonList(
@@ -165,7 +164,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun PokemonList(
+private fun PokemonList(
     modifier: Modifier = Modifier,
     uiState: UiState,
     onEvent: (Event) -> Unit,
@@ -268,6 +267,7 @@ fun PokemonList(
                     isShowGridList = isShowGridList,
                     imageModifier = imageModifier,
                     pokemon = item,
+                    pokemonClickedList = uiState.pokemonClickedList,
                     onPokemonClick = { clickedPokemon ->
                         onPokemonClick(clickedPokemon)
                     }
@@ -364,14 +364,17 @@ fun PokemonList(
 }
 
 @Composable
-fun PokemonItem(
+private fun PokemonItem(
     modifier: Modifier = Modifier,
     imageModifier: Modifier = Modifier,
     pokemon: Pokemon,
+    pokemonClickedList: Set<String>,
     dimen: IPokemonDimensions,
     isShowGridList: Boolean,
     onPokemonClick: (pokemon: Pokemon) -> Unit
 ) {
+
+    val pokemonAlreadyClicked = pokemonClickedList.contains(pokemon.name)
 
     val brush = Brush.linearGradient(
         colors = listOf(Color(pokemon.dominantColor()), Color(pokemon.vibrantDarkColor())),
@@ -446,6 +449,9 @@ fun PokemonItem(
                     .scale(1.3f),
                 imageBitmap = it,
                 contentScale = ContentScale.Fit,
+                colorFilter =
+                if (pokemonAlreadyClicked) null
+                else ColorFilter.tint(Color(0, 0, 0, 255)),
                 offsetX = dimen.offsetX,
                 offsetY = dimen.offsetY
             )
@@ -457,6 +463,20 @@ fun PokemonItem(
                 .constrainAs(name) {
                     start.linkTo(card.start, dimen.normal)
                     bottom.linkTo(card.bottom, dimen.normal)
+                }
+                .graphicsLayer {
+                    if (pokemonAlreadyClicked.not()) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            val blur = 20f
+                            renderEffect = RenderEffect
+                                .createBlurEffect(
+                                    blur, blur, Shader.TileMode.DECAL
+                                )
+                                .asComposeRenderEffect()
+                        } else {
+                            alpha = 0f
+                        }
+                    }
                 },
             text = pokemon.name,
             color = MaterialTheme.colorScheme.onSurface,
@@ -491,7 +511,8 @@ fun PokemonItemVerticalPreview() {
             ),
             dimen = LocalPokemonSpacing.current,
             isShowGridList = false,
-            onPokemonClick = { _ ->}
+            onPokemonClick = { _ ->},
+            pokemonClickedList = emptySet()
         )
     }
 }
