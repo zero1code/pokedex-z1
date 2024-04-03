@@ -180,7 +180,7 @@ fun PokemonDetail(
             easing = FastOutSlowInEasing
         ),
         finishedListener = { pokemonScaleState = PokemonScale.FINISH },
-        label = "scale"
+        label = "scale-pokemon"
     )
 
     val brush = Brush.linearGradient(
@@ -237,6 +237,17 @@ fun PokemonDetail(
             drawCircle(brush)
         }
 
+        Text(
+            modifier = Modifier
+                .constrainAs(textNumber) {
+                    top.linkTo(parent.top, 16.dp)
+                    start.linkTo(parent.start, 16.dp)
+                },
+            text = String.format("#%03d", pokemon.getIndex()),
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleMedium,
+        )
+
         pokemon.image?.asImageBitmap()?.let {
             ImageWithShadow(
                 modifier = Modifier
@@ -270,147 +281,7 @@ fun PokemonDetail(
             animationDelay = TimeUnit.SECONDS.toMillis(4),
             text = pokemon.name
         )
-
-//            Text(
-//                modifier = Modifier
-//                    .padding(end = 16.dp)
-//                    .constrainAs(name) {
-//                        top.linkTo(canva.bottom, 64.dp)
-//                        start.linkTo(canva.start)
-//                        end.linkTo(canva.end)
-//                        bottom.linkTo(parent.bottom, 16.dp)
-//                    },
-//                text = pokemon.name,
-//                color = MaterialTheme.colorScheme.onBackground,
-//                style = MaterialTheme.typography.titleMedium,
-//            )
-
-        Text(
-            modifier = Modifier
-                .constrainAs(textNumber) {
-                    top.linkTo(parent.top, 16.dp)
-                    start.linkTo(parent.start, 16.dp)
-                },
-            text = String.format("#%03d", pokemon.getIndex()),
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.titleMedium,
-        )
     }
-
-//    Card(
-//        modifier = modifier
-//            .padding(top = 80.dp, start = 16.dp, end = 16.dp)
-//            .statusBarsPadding()
-//            .clip(RoundedCornerShape(30.dp)),
-//        elevation = CardDefaults.cardElevation(
-//            defaultElevation = 0.dp
-//        ),
-//        colors = CardDefaults.cardColors(
-//            containerColor = MaterialTheme.colorScheme.background
-//        ),
-//        shape = RoundedCornerShape(30.dp)
-//    ) {
-//        ConstraintLayout(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//        ) {
-//            val (image, name, canva, textNumber) = createRefs()
-//
-//            Canvas(modifier = Modifier
-//                .size(200.dp)
-//                .constrainAs(canva) {
-//                    top.linkTo(image.top)
-//                    bottom.linkTo(image.bottom)
-//                    start.linkTo(image.start)
-//                    end.linkTo(image.end)
-//                }
-//                .graphicsLayer {
-//                    scaleX = scale
-//                    scaleY = scale
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//                        val blur = 150f
-//                        renderEffect = RenderEffect
-//                            .createBlurEffect(
-//                                blur, blur, Shader.TileMode.DECAL
-//                            )
-//                            .asComposeRenderEffect()
-//                    }
-//                }
-//            ) {
-//                drawCircle(brush)
-//            }
-//
-////        Image(
-////            modifier = Modifier
-////                .requiredWidth(150.dp)
-////                .constrainAs(image) {
-////                    top.linkTo(textNumber.top)
-////                    end.linkTo(parent.end)
-////                    start.linkTo(parent.start)
-////                }
-////                .scale(1.3f),
-////            painter = painterResource(id = R.drawable.pokemon_image),
-////            contentDescription = ""
-////        )
-//
-//            pokemon.image?.asImageBitmap()?.let {
-//                ImageWithShadow(
-//                    modifier = Modifier
-//                        .requiredWidth(150.dp)
-//                        .constrainAs(image) {
-//                            top.linkTo(textNumber.bottom)
-//                            end.linkTo(parent.end)
-//                            start.linkTo(parent.start)
-//                        }
-//                        .scale(scalePokemon),
-//                    imageBitmap = it,
-//                    contentScale = ContentScale.Fit,
-//                    offsetX = 5.dp,
-//                    offsetY = 5.dp
-//                )
-//            }
-//
-//            if (pokemonScaleState == PokemonScale.FINISH) {
-//                AnimatedText(
-//                    modifier = Modifier
-//                        .constrainAs(name) {
-//                            top.linkTo(canva.bottom, 64.dp)
-//                            start.linkTo(canva.start)
-//                            end.linkTo(canva.end)
-//                            bottom.linkTo(parent.bottom, 16.dp)
-//                        },
-//                    useAnimation = true,
-//                    animationDelay = TimeUnit.MILLISECONDS.toMillis(500),
-//                    text = pokemon.name
-//                )
-//            }
-//
-////            Text(
-////                modifier = Modifier
-////                    .padding(end = 16.dp)
-////                    .constrainAs(name) {
-////                        top.linkTo(canva.bottom, 64.dp)
-////                        start.linkTo(canva.start)
-////                        end.linkTo(canva.end)
-////                        bottom.linkTo(parent.bottom, 16.dp)
-////                    },
-////                text = pokemon.name,
-////                color = MaterialTheme.colorScheme.onBackground,
-////                style = MaterialTheme.typography.titleMedium,
-////            )
-//
-//            Text(
-//                modifier = Modifier
-//                    .constrainAs(textNumber) {
-//                        top.linkTo(parent.top, 16.dp)
-//                        start.linkTo(parent.start, 16.dp)
-//                    },
-//                text = String.format("#%03d", pokemon.getIndex()),
-//                color = MaterialTheme.colorScheme.onBackground,
-//                style = MaterialTheme.typography.titleMedium,
-//            )
-//        }
-//    }
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFF44336)
