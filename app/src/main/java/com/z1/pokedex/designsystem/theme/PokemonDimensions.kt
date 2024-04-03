@@ -5,7 +5,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 interface IPokemonDimensions {
-    val default: Dp
     val normal: Dp
     val headerSize: Dp
     val footerSize: Dp
@@ -20,7 +19,6 @@ interface IPokemonDimensions {
 }
 
 data class PokemonDimensions(
-    override val default: Dp = 0.dp,
     override val normal: Dp = 16.dp,
     override val headerSize: Dp = 100.dp,
     override val footerSize: Dp = 100.dp,
@@ -36,7 +34,6 @@ data class PokemonDimensions(
 ): IPokemonDimensions
 
 data class GridPokemonDimensions(
-    override val default: Dp = 0.dp,
     override val normal: Dp = 8.dp,
     override val headerSize: Dp = 100.dp,
     override val footerSize: Dp = 100.dp,

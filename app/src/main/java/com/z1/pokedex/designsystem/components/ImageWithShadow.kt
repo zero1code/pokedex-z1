@@ -19,6 +19,7 @@ fun ImageWithShadow(
     modifier: Modifier = Modifier,
     imageBitmap: ImageBitmap,
     contentScale: ContentScale,
+    colorFilter: ColorFilter? = null,
     offsetX: Dp,
     offsetY: Dp
 ) {
@@ -38,6 +39,7 @@ fun ImageWithShadow(
             modifier = modifier,
             bitmap = imageBitmap,
             contentScale = contentScale,
+            colorFilter = colorFilter,
             contentDescription = "front"
         )
     }

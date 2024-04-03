@@ -1,4 +1,4 @@
-package com.z1.pokedex.feature.home.presentation.model
+package com.z1.pokedex.feature.home.domain.model
 
 import android.graphics.Bitmap
 import androidx.palette.graphics.Palette
