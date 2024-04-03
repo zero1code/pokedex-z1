@@ -1,8 +1,8 @@
 package com.z1.pokedex.core.datasource.di
 
 
-import com.z1.pokedex.core.datasource.mapper.PokemonMapper
-import com.z1.pokedex.core.datasource.mapper.PokemonPageMapper
+import com.z1.pokedex.feature.home.domain.mapper.PokemonMapper
+import com.z1.pokedex.feature.home.domain.mapper.PokemonPageMapper
 import com.z1.pokedex.core.datasource.repository.PokemonRepository
 import com.z1.pokedex.core.datasource.repository.PokemonRepositoryImpl
 import org.koin.dsl.module

@@ -1,4 +1,4 @@
-package com.z1.pokedex.core.bases
+package com.z1.pokedex.feature.home.domain.mapper
 
 abstract class BaseMapper<Model, Entity> {
     abstract fun asModel(entity: Entity): Model

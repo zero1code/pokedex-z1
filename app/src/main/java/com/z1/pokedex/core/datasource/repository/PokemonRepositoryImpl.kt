@@ -1,6 +1,6 @@
 package com.z1.pokedex.core.datasource.repository
 
-import com.z1.pokedex.core.datasource.mapper.PokemonPageMapper
+import com.z1.pokedex.feature.home.domain.mapper.PokemonPageMapper
 import com.z1.pokedex.core.network.service.PokedexClient
 import com.z1.pokedex.feature.home.domain.model.PokemonPage
 import kotlinx.coroutines.flow.Flow
