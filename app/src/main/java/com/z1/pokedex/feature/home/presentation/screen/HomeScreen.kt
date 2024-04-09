@@ -83,7 +83,7 @@ import com.z1.pokedex.designsystem.theme.LocalGridPokemonSpacing
 import com.z1.pokedex.designsystem.theme.LocalPokemonSpacing
 import com.z1.pokedex.designsystem.theme.LocalSpacing
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
-import com.z1.pokedex.designsystem.theme.RedColor
+import com.z1.pokedex.designsystem.theme.CoralRed
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.UiState
@@ -334,7 +334,7 @@ private fun PokemonList(
                     Image(
                         modifier = Modifier.size(32.dp),
                         painter = painterResource(id = R.drawable.pokeball_placeholder),
-                        colorFilter = ColorFilter.tint(RedColor),
+                        colorFilter = ColorFilter.tint(CoralRed),
                         contentDescription = ""
                     )
                     Text(

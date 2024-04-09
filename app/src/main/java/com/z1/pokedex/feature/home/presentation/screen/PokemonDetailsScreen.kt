@@ -3,11 +3,11 @@ package com.z1.pokedex.feature.home.presentation.screen
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.os.Build
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
+import androidx.annotation.StringRes
+import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.EaseInOut
-import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -17,11 +17,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
@@ -34,29 +36,27 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -65,9 +65,15 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
 import com.z1.pokedex.designsystem.components.AnimatedText
+import com.z1.pokedex.designsystem.components.CustomStatisticsProgress
 import com.z1.pokedex.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.designsystem.components.ImageWithShadow
+import com.z1.pokedex.designsystem.theme.CelticBlue
+import com.z1.pokedex.designsystem.theme.CoralRed
+import com.z1.pokedex.designsystem.theme.Glacier
 import com.z1.pokedex.designsystem.theme.LocalPokemonSpacing
+import com.z1.pokedex.designsystem.theme.MediumSeaGreen
+import com.z1.pokedex.designsystem.theme.OrangePeel
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
@@ -93,8 +99,9 @@ fun PokemonDetailsScreen(
         onEvent(Event.UpdateSelectedPokemon(pokemon.name))
     }
 
+    val colors = listOf(Color(pokemon.dominantColor()), Color(pokemon.vibrantDarkColor()))
     val brush = Brush.linearGradient(
-        colors = listOf(Color(pokemon.dominantColor()), Color(pokemon.vibrantDarkColor())),
+        colors = colors,
         start = Offset(0f, Float.POSITIVE_INFINITY),
         end = Offset(Float.POSITIVE_INFINITY, 0f)
     )
@@ -106,7 +113,12 @@ fun PokemonDetailsScreen(
             },
         contentAlignment = Alignment.TopCenter
     ) {
-        PokemonDetail(pokemon = pokemon)
+        Column {
+            PokemonCard(pokemon = pokemon)
+            PokemonDetails(
+                chipColor = colors
+            )
+        }
         Header(
             onNavigationIconClick = onNavigationIconClick
         )
@@ -114,7 +126,7 @@ fun PokemonDetailsScreen(
 }
 
 @Composable
-fun Header(
+private fun Header(
     modifier: Modifier = Modifier,
     onNavigationIconClick: () -> Unit
 ) {
@@ -154,7 +166,7 @@ fun Header(
 }
 
 @Composable
-fun PokemonDetail(
+private fun PokemonCard(
     modifier: Modifier = Modifier,
     pokemon: Pokemon
 ) {
@@ -183,8 +195,9 @@ fun PokemonDetail(
         label = "scale-pokemon"
     )
 
+    val colors = listOf(Color(pokemon.vibrantDarkColor()), Color(pokemon.dominantColor()))
     val brush = Brush.linearGradient(
-        colors = listOf(Color(pokemon.vibrantDarkColor()), Color(pokemon.dominantColor())),
+        colors = colors,
         start = Offset(0f, Float.POSITIVE_INFINITY),
         end = Offset(Float.POSITIVE_INFINITY, 0f)
     )
@@ -284,14 +297,199 @@ fun PokemonDetail(
     }
 }
 
+@Composable
+private fun PokemonDetails(
+    modifier: Modifier = Modifier,
+    chipColor: List<Color>
+) {
+    ConstraintLayout(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        val (title, card) = createRefs()
+
+        Text(
+            modifier = Modifier
+                .constrainAs(title) {
+                    top.linkTo(parent.top, 32.dp)
+                    end.linkTo(parent.end)
+                    start.linkTo(parent.start)
+                },
+            text = "Basics statistics",
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleMedium,
+        )
+
+        Card(
+            modifier = Modifier
+                .constrainAs(card) {
+                    top.linkTo(title.bottom)
+                    end.linkTo(parent.end)
+                    start.linkTo(parent.start)
+                }
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 0.dp
+            ),
+            shape = RoundedCornerShape(30.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.background
+            )
+        ) {
+
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .heightIn(min = 300.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                PokemonType(
+                    chipColor = chipColor
+                )
+                PhysicsDetails(
+                    weight = "8,5 Kg",
+                    height = "0,6 M"
+                )
+                HabilityDetails()
+            }
+        }
+    }
+}
+
+@Composable
+fun PokemonType(
+    modifier: Modifier = Modifier,
+    chipColor: List<Color>
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "infinite-transition")
+    val color by infiniteTransition.animateColor(
+        initialValue = chipColor[0],
+        targetValue = chipColor[1],
+        animationSpec = infiniteRepeatable(
+            animation = tween(5000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "chip-color"
+    )
+    SuggestionChip(
+        modifier = modifier,
+        shape = RoundedCornerShape(30.dp),
+        colors = SuggestionChipDefaults.suggestionChipColors(
+            containerColor = color
+        ),
+        border = null,
+        label = {
+                Text(
+                    text = "Fire",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleSmall
+                )
+        },
+        onClick = {},
+    )
+}
+
+@Composable
+fun PhysicsDetails(
+    modifier: Modifier = Modifier,
+    weight: String,
+    height: String
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround
+    ) {
+        PhysicsDetailsItem(
+            label = R.string.label_weight,
+            value = weight
+        )
+        PhysicsDetailsItem(
+            label = R.string.label_height,
+            value = height
+        )
+    }
+}
+
+@Composable
+private fun PhysicsDetailsItem(
+    modifier: Modifier = Modifier,
+    @StringRes label: Int,
+    value: String
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = value,
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Text(
+            text = stringResource(id = label),
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.labelMedium,
+        )
+    }
+}
+
+@Composable
+private fun HabilityDetails() {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        CustomStatisticsProgress(
+            statisticsLabel = "HP",
+            progressColor = MediumSeaGreen,
+            currentProgress = 249f,
+            maxProgress = 250f
+
+        )
+        CustomStatisticsProgress(
+            statisticsLabel = "ATK"
+            , progressColor = CoralRed,
+            currentProgress = 65f,
+            maxProgress = 150f
+        )
+        CustomStatisticsProgress(
+            statisticsLabel = "DEF",
+            progressColor = CelticBlue,
+            currentProgress = 120f,
+            maxProgress = 300f
+        )
+        CustomStatisticsProgress(
+            statisticsLabel = "SPD",
+            progressColor = OrangePeel,
+            currentProgress = 90f,
+            maxProgress = 100f
+        )
+        CustomStatisticsProgress(
+            statisticsLabel = "EXP",
+            progressColor = Glacier,
+            currentProgress = 470f,
+            maxProgress = 500f
+        )
+    }
+}
+
 @Preview(showBackground = true, backgroundColor = 0xFFF44336)
 @Composable
-private fun PokemonDetailsPreview() {
+private fun PokemonCardPreview() {
     PokedexZ1Theme {
         PokemonDetailsScreen(
             pokemon = Pokemon("Picachu", "https://pokeapi.co/api/v2/pokemon/1/"),
             onNavigationIconClick = {},
             onEvent = {}
         )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFF44336)
+@Composable
+private fun PokemonDetailsPreview() {
+    PokedexZ1Theme {
+        PokemonDetailsPreview()
     }
 }

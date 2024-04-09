@@ -5,4 +5,6 @@
     <string name="label_loading_more_pokemon">Loading more pokemons…</string>
     <string name="label_saw_all_pokemon">You saw all the pokemon, congratulations!</string>
     <string name="label_pokemon_details">Details</string>
+    <string name="label_weight">Weight</string>
+    <string name="label_height">Height</string>
 </resources>
