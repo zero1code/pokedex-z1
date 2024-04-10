@@ -56,7 +56,7 @@ fun CustomStatisticsProgress(
 
     LaunchedEffect(key1 = Unit) {
 
-        progress = (currentProgress / maxProgress) //.toBigDecimal().setScale(1, RoundingMode.DOWN).toFloat()
+        progress = (currentProgress / maxProgress)
     }
 
     Row(

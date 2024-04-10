@@ -7,4 +7,5 @@
     <string name="label_pokemon_details">Details</string>
     <string name="label_weight">Weight</string>
     <string name="label_height">Height</string>
+    <string name="label_loading_pokemon_details">Loading Details</string>
 </resources>

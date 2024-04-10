@@ -4,6 +4,7 @@ import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.os.Build
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -14,6 +15,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -64,7 +68,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
+import com.z1.pokedex.core.network.model.PokemonDetailsDTO
 import com.z1.pokedex.designsystem.components.AnimatedText
+import com.z1.pokedex.designsystem.components.CustomLoadingScreen
 import com.z1.pokedex.designsystem.components.CustomStatisticsProgress
 import com.z1.pokedex.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.designsystem.components.ImageWithShadow
@@ -76,6 +82,12 @@ import com.z1.pokedex.designsystem.theme.MediumSeaGreen
 import com.z1.pokedex.designsystem.theme.OrangePeel
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
 import com.z1.pokedex.feature.home.domain.model.Pokemon
+import com.z1.pokedex.feature.home.domain.model.PokemonDetails
+import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_ATTACK
+import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_DEFENSE
+import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_EXP
+import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_HP
+import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_SPEED
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
@@ -90,6 +102,7 @@ enum class PokemonScale {
 fun PokemonDetailsScreen(
     modifier: Modifier = Modifier,
     pokemon: Pokemon,
+    pokemonDetails: PokemonDetails?,
     onNavigationIconClick: () -> Unit,
     onEvent: (Event) -> Unit
 ) {
@@ -97,6 +110,10 @@ fun PokemonDetailsScreen(
     LaunchedEffect(key1 = true) {
         delay(500)
         onEvent(Event.UpdateSelectedPokemon(pokemon.name))
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        onEvent(Event.GetPokemonDetails(pokemon.name))
     }
 
     val colors = listOf(Color(pokemon.dominantColor()), Color(pokemon.vibrantDarkColor()))
@@ -115,8 +132,9 @@ fun PokemonDetailsScreen(
     ) {
         Column {
             PokemonCard(pokemon = pokemon)
-            PokemonDetails(
-                chipColor = colors
+            PokemonDetailsCard(
+                chipColor = colors,
+                pokemonDetails = pokemonDetails
             )
         }
         Header(
@@ -154,7 +172,7 @@ private fun Header(
         },
         actions = {
             IconButton(
-                onClick = {  }
+                onClick = { }
             ) {
                 Image(
                     imageVector = Icons.Rounded.FavoriteBorder,
@@ -202,7 +220,7 @@ private fun PokemonCard(
         end = Offset(Float.POSITIVE_INFINITY, 0f)
     )
 
-    val infiniteTransition = rememberInfiniteTransition("scale-inifinte")
+    val infiniteTransition = rememberInfiniteTransition("scale-infinite")
     val scale by infiniteTransition.animateFloat(
         initialValue = 0.5f,
         targetValue = 1.3f,
@@ -216,7 +234,11 @@ private fun PokemonCard(
     ConstraintLayout(
         modifier
             .fillMaxWidth()
-            .padding(top = 80.dp, start = 16.dp, end = 16.dp)
+            .padding(
+                top = PokedexZ1Theme.dimen.topBar,
+                start = PokedexZ1Theme.dimen.medium,
+                end = PokedexZ1Theme.dimen.medium
+            )
             .statusBarsPadding()
             .background(
                 color = MaterialTheme.colorScheme.background,
@@ -252,9 +274,13 @@ private fun PokemonCard(
 
         Text(
             modifier = Modifier
+                .padding(
+                    top = PokedexZ1Theme.dimen.medium,
+                    start =PokedexZ1Theme.dimen.medium
+                )
                 .constrainAs(textNumber) {
-                    top.linkTo(parent.top, 16.dp)
-                    start.linkTo(parent.start, 16.dp)
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
                 },
             text = String.format("#%03d", pokemon.getIndex()),
             color = MaterialTheme.colorScheme.onBackground,
@@ -280,15 +306,19 @@ private fun PokemonCard(
 
         AnimatedText(
             modifier = Modifier
+                .padding(
+                    top = PokedexZ1Theme.dimen.large,
+                    bottom = PokedexZ1Theme.dimen.medium
+                )
                 .alpha(
                     if (pokemonScaleState == PokemonScale.FINISH) 1f
                     else 0f
                 )
                 .constrainAs(name) {
-                    top.linkTo(canva.bottom, 64.dp)
+                    top.linkTo(canva.bottom)
                     start.linkTo(canva.start)
                     end.linkTo(canva.end)
-                    bottom.linkTo(parent.bottom, 16.dp)
+                    bottom.linkTo(parent.bottom)
                 },
             useAnimation = true,
             animationDelay = TimeUnit.SECONDS.toMillis(4),
@@ -298,9 +328,10 @@ private fun PokemonCard(
 }
 
 @Composable
-private fun PokemonDetails(
+private fun PokemonDetailsCard(
     modifier: Modifier = Modifier,
-    chipColor: List<Color>
+    chipColor: List<Color>,
+    pokemonDetails: PokemonDetails?
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -310,8 +341,11 @@ private fun PokemonDetails(
 
         Text(
             modifier = Modifier
+                .padding(
+                    top = PokedexZ1Theme.dimen.large
+                )
                 .constrainAs(title) {
-                    top.linkTo(parent.top, 32.dp)
+                    top.linkTo(parent.top)
                     end.linkTo(parent.end)
                     start.linkTo(parent.start)
                 },
@@ -328,31 +362,53 @@ private fun PokemonDetails(
                     start.linkTo(parent.start)
                 }
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = PokedexZ1Theme.dimen.medium),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 0.dp
             ),
-            shape = RoundedCornerShape(30.dp),
+            shape = MaterialTheme.shapes.large,
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.background
             )
         ) {
 
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .heightIn(min = 300.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly
-            ) {
-                PokemonType(
-                    chipColor = chipColor
-                )
-                PhysicsDetails(
-                    weight = "8,5 Kg",
-                    height = "0,6 M"
-                )
-                HabilityDetails()
+            AnimatedContent(
+                targetState = pokemonDetails,
+                transitionSpec = {
+                    scaleIn() togetherWith scaleOut()
+                },
+                label = "pokemon-details"
+            ) { details ->
+
+                if (details != null) {
+                    Column(
+                        modifier = Modifier
+                            .padding(
+                                horizontal = PokedexZ1Theme.dimen.medium
+                            )
+                            .heightIn(min = 300.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        PokemonType(
+                            chipColor = chipColor,
+                            types = details.types
+                        )
+                        PhysicsDetails(
+                            weight = details.getWeightString(),
+                            height = details.getHeightString()
+                        )
+                        HabilityDetails(details)
+                    }
+                } else {
+                    CustomLoadingScreen(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 300.dp),
+                        label = R.string.label_loading_pokemon_details
+                    )
+                }
+
             }
         }
     }
@@ -361,7 +417,8 @@ private fun PokemonDetails(
 @Composable
 fun PokemonType(
     modifier: Modifier = Modifier,
-    chipColor: List<Color>
+    chipColor: List<Color>,
+    types: List<PokemonDetailsDTO.TypeResponse>
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "infinite-transition")
     val color by infiniteTransition.animateColor(
@@ -373,22 +430,30 @@ fun PokemonType(
         ),
         label = "chip-color"
     )
-    SuggestionChip(
-        modifier = modifier,
-        shape = RoundedCornerShape(30.dp),
-        colors = SuggestionChipDefaults.suggestionChipColors(
-            containerColor = color
-        ),
-        border = null,
-        label = {
-                Text(
-                    text = "Fire",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleSmall
-                )
-        },
-        onClick = {},
-    )
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(PokedexZ1Theme.dimen.normal),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        types.forEach { type ->
+            SuggestionChip(
+                modifier = modifier,
+                shape = MaterialTheme.shapes.large,
+                colors = SuggestionChipDefaults.suggestionChipColors(
+                    containerColor = color
+                ),
+                border = null,
+                label = {
+                    Text(
+                        text = type.type.name,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                },
+                onClick = {},
+            )
+        }
+    }
 }
 
 @Composable
@@ -436,40 +501,39 @@ private fun PhysicsDetailsItem(
 }
 
 @Composable
-private fun HabilityDetails() {
+private fun HabilityDetails(details: PokemonDetails) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(PokedexZ1Theme.dimen.normal)
     ) {
         CustomStatisticsProgress(
             statisticsLabel = "HP",
             progressColor = MediumSeaGreen,
-            currentProgress = 249f,
-            maxProgress = 250f
+            currentProgress = details.hp.toFloat(),
+            maxProgress = MAX_HP.toFloat()
 
         )
         CustomStatisticsProgress(
-            statisticsLabel = "ATK"
-            , progressColor = CoralRed,
-            currentProgress = 65f,
-            maxProgress = 150f
+            statisticsLabel = "ATK", progressColor = CoralRed,
+            currentProgress = details.attack.toFloat(),
+            maxProgress = MAX_ATTACK.toFloat()
         )
         CustomStatisticsProgress(
             statisticsLabel = "DEF",
             progressColor = CelticBlue,
-            currentProgress = 120f,
-            maxProgress = 300f
+            currentProgress = details.defense.toFloat(),
+            maxProgress = MAX_DEFENSE.toFloat()
         )
         CustomStatisticsProgress(
             statisticsLabel = "SPD",
             progressColor = OrangePeel,
-            currentProgress = 90f,
-            maxProgress = 100f
+            currentProgress = details.speed.toFloat(),
+            maxProgress = MAX_SPEED.toFloat()
         )
         CustomStatisticsProgress(
             statisticsLabel = "EXP",
             progressColor = Glacier,
-            currentProgress = 470f,
-            maxProgress = 500f
+            currentProgress = details.exp.toFloat(),
+            maxProgress = MAX_EXP.toFloat()
         )
     }
 }
@@ -480,6 +544,7 @@ private fun PokemonCardPreview() {
     PokedexZ1Theme {
         PokemonDetailsScreen(
             pokemon = Pokemon("Picachu", "https://pokeapi.co/api/v2/pokemon/1/"),
+            pokemonDetails = null,
             onNavigationIconClick = {},
             onEvent = {}
         )

@@ -2,7 +2,6 @@ package com.z1.pokedex.feature.home.presentation.screen.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,10 +22,11 @@ class HomeViewModel(
         initialValue = _uiState.value
     )
 
-    fun onEvent(newEvent: Event) {
-        when (newEvent) {
+    fun onEvent(event: Event) {
+        when (event) {
             is Event.LoadNextPage -> loadNextPage()
-            is Event.UpdateSelectedPokemon -> updateClickedPokemonList(newEvent.pokemonName)
+            is Event.UpdateSelectedPokemon -> updateClickedPokemonList(event.pokemonName)
+            is Event.GetPokemonDetails -> getPokemonDetails(event.pokemonName)
         }
     }
 
@@ -66,6 +66,29 @@ class HomeViewModel(
         viewModelScope.launch {
             _uiState.update {
                 it.copy(pokemonClickedList = it.pokemonClickedList + pokemonName)
+            }
+        }
+
+    private fun getPokemonDetails(pokemonName: String) =
+        viewModelScope.launch {
+            if (_uiState.value.pokemonDetails?.name == pokemonName) return@launch
+            else resetPokemonDetails()
+
+            pokemonUseCase.fetchPokemonDetails(pokemonName)
+                .catch {
+                    it.printStackTrace()
+                }
+                .collect { pokemonDetails ->
+                    _uiState.update {
+                        it.copy(pokemonDetails = pokemonDetails)
+                    }
+                }
+        }
+
+    private fun resetPokemonDetails() =
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(pokemonDetails = null)
             }
         }
 

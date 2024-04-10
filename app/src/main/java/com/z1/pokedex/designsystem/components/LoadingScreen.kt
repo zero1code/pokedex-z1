@@ -1,5 +1,6 @@
 package com.z1.pokedex.designsystem.components
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -25,7 +26,8 @@ import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
 
 @Composable
 fun CustomLoadingScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    @StringRes label: Int
 ) {
     val spacing = LocalSpacing.current
     val infiniteTransition = rememberInfiniteTransition(label = "infiniteTransition")
@@ -38,7 +40,7 @@ fun CustomLoadingScreen(
         label = "animationRotation"
     )
     ConstraintLayout(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
     ) {
         val (image, text) = createRefs()
 
@@ -62,7 +64,7 @@ fun CustomLoadingScreen(
                     end.linkTo(parent.end)
                     start.linkTo(parent.start)
                 },
-            text = stringResource(id = R.string.label_loading_pokemon),
+            text = stringResource(id = label),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onBackground,
         )
@@ -73,6 +75,8 @@ fun CustomLoadingScreen(
 @Composable
 fun PreviewCustomLoadingScreen() {
     PokedexZ1Theme {
-        CustomLoadingScreen()
+        CustomLoadingScreen(
+            label = R.string.label_loading_pokemon
+        )
     }
 }

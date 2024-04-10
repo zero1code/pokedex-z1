@@ -24,6 +24,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -85,6 +86,7 @@ import com.z1.pokedex.designsystem.theme.LocalSpacing
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
 import com.z1.pokedex.designsystem.theme.CoralRed
 import com.z1.pokedex.feature.home.domain.model.Pokemon
+import com.z1.pokedex.feature.home.domain.model.PokemonDetails
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.UiState
 import kotlin.math.absoluteValue
@@ -96,7 +98,7 @@ fun HomeScreen(
     onEvent: (Event) -> Unit,
 ) {
     var isShowGridList by remember { mutableStateOf(false) }
-    var pokemonDetails: Pokemon? by remember { mutableStateOf(null) }
+    var pokemon: Pokemon? by remember { mutableStateOf(null) }
 
     val gridListState = rememberLazyGridState()
     val listState = rememberLazyListState()
@@ -110,7 +112,10 @@ fun HomeScreen(
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        CustomLoadingScreen()
+        CustomLoadingScreen(
+            modifier = Modifier.fillMaxSize(),
+            label = R.string.label_loading_pokemon
+        )
     }
 
     AnimatedVisibility(
@@ -119,7 +124,7 @@ fun HomeScreen(
         exit = fadeOut()
     ) {
         AnimatedContent(
-            targetState = pokemonDetails,
+            targetState = pokemon,
             transitionSpec = {
                 if (targetState != null) {
                     slideInHorizontally(
@@ -132,12 +137,13 @@ fun HomeScreen(
                 }
             },
             label = "pokemon-details"
-        ) { pokemonClicked ->
-            if (pokemonClicked != null) {
+        ) { pokemonState ->
+            if (pokemonState != null) {
                 PokemonDetailsScreen(
-                    pokemon = pokemonClicked,
+                    pokemon = pokemonState,
+                    pokemonDetails = uiState.pokemonDetails,
                     onNavigationIconClick = {
-                        pokemonDetails = null
+                        pokemon = null
                     },
                     onEvent = { onEvent(it) }
                 )
@@ -150,16 +156,16 @@ fun HomeScreen(
                     onEvent = { onEvent(it) },
                     isShowGridList = isShowGridList,
                     onLayoutListChange = { isShowGridList = it },
-                    onPokemonClick = { clickedPokemon ->
-                        pokemonDetails = clickedPokemon
+                    onPokemonClick = { pokemonClicked ->
+                        pokemon = pokemonClicked
                     }
                 )
             }
         }
     }
 
-    BackHandler(pokemonDetails != null) {
-        if (pokemonDetails != null) pokemonDetails = null
+    BackHandler(pokemon != null) {
+        if (pokemon != null) pokemon = null
     }
 }
 
