@@ -3,6 +3,7 @@ package com.z1.pokedex.feature.home.di
 import com.z1.pokedex.feature.home.domain.mapper.PokemonDetailsMapper
 import com.z1.pokedex.feature.home.domain.mapper.PokemonMapper
 import com.z1.pokedex.feature.home.domain.mapper.PokemonPageMapper
+import com.z1.pokedex.feature.home.domain.mapper.PokemonTypeMapper
 import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCase
 import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCaseImpl
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.HomeViewModel
@@ -26,7 +27,11 @@ private val providePokemonPageMapper = module {
 }
 
 private val providePokemonDetailsMapper = module {
-    single<PokemonDetailsMapper> { PokemonDetailsMapper() }
+    single<PokemonDetailsMapper> { PokemonDetailsMapper(get()) }
+}
+
+private val providePokemonTypeMapper = module {
+    single<PokemonTypeMapper> { PokemonTypeMapper() }
 }
 
 
@@ -35,5 +40,6 @@ val homeScreenModule = listOf(
     providePokemonUseCase,
     providePokemonMapper,
     providePokemonPageMapper,
-    providePokemonDetailsMapper
+    providePokemonDetailsMapper,
+    providePokemonTypeMapper
 )

@@ -5,7 +5,9 @@ import com.z1.pokedex.core.network.model.PokemonPageDto
 import com.z1.pokedex.feature.home.domain.model.PokemonDetails
 import com.z1.pokedex.feature.home.domain.model.PokemonPage
 
-class PokemonDetailsMapper() : BaseMapper<PokemonDetails, PokemonDetailsDTO>() {
+class PokemonDetailsMapper(
+    private val pokemonTypeMapper: PokemonTypeMapper
+) : BaseMapper<PokemonDetails, PokemonDetailsDTO>() {
 
     override fun asModel(entity: PokemonDetailsDTO) =
         entity.run {
@@ -15,7 +17,7 @@ class PokemonDetailsMapper() : BaseMapper<PokemonDetails, PokemonDetailsDTO>() {
                 height,
                 weight,
                 experience,
-                types
+                pokemonTypeMapper.asModelList(types)
             )
         }
 }

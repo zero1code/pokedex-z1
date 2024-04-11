@@ -418,7 +418,7 @@ private fun PokemonDetailsCard(
 fun PokemonType(
     modifier: Modifier = Modifier,
     chipColor: List<Color>,
-    types: List<PokemonDetailsDTO.TypeResponse>
+    types: List<PokemonDetails.Type>
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "infinite-transition")
     val color by infiniteTransition.animateColor(
@@ -445,7 +445,7 @@ fun PokemonType(
                 border = null,
                 label = {
                     Text(
-                        text = type.type.name,
+                        text = type.name,
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleSmall
                     )
@@ -506,34 +506,34 @@ private fun HabilityDetails(details: PokemonDetails) {
         verticalArrangement = Arrangement.spacedBy(PokedexZ1Theme.dimen.normal)
     ) {
         CustomStatisticsProgress(
-            statisticsLabel = "HP",
+            statisticsLabel = R.string.label_hp,
             progressColor = MediumSeaGreen,
-            currentProgress = details.hp.toFloat(),
-            maxProgress = MAX_HP.toFloat()
+            currentProgress = details.hp,
+            maxProgress = MAX_HP
 
         )
         CustomStatisticsProgress(
-            statisticsLabel = "ATK", progressColor = CoralRed,
-            currentProgress = details.attack.toFloat(),
-            maxProgress = MAX_ATTACK.toFloat()
+            statisticsLabel = R.string.label_atk, progressColor = CoralRed,
+            currentProgress = details.attack,
+            maxProgress = MAX_ATTACK
         )
         CustomStatisticsProgress(
-            statisticsLabel = "DEF",
+            statisticsLabel = R.string.label_def,
             progressColor = CelticBlue,
-            currentProgress = details.defense.toFloat(),
-            maxProgress = MAX_DEFENSE.toFloat()
+            currentProgress = details.defense,
+            maxProgress = MAX_DEFENSE
         )
         CustomStatisticsProgress(
-            statisticsLabel = "SPD",
+            statisticsLabel = R.string.label_spd,
             progressColor = OrangePeel,
-            currentProgress = details.speed.toFloat(),
-            maxProgress = MAX_SPEED.toFloat()
+            currentProgress = details.speed,
+            maxProgress = MAX_SPEED
         )
         CustomStatisticsProgress(
-            statisticsLabel = "EXP",
+            statisticsLabel = R.string.label_exp,
             progressColor = Glacier,
-            currentProgress = details.exp.toFloat(),
-            maxProgress = MAX_EXP.toFloat()
+            currentProgress = details.exp,
+            maxProgress = MAX_EXP
         )
     }
 }
