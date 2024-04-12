@@ -1,6 +1,6 @@
 package com.z1.pokedex.core.network
 
-import com.z1.pokedex.core.network.model.PokemonDTO
+import com.z1.pokedex.core.network.model.PokemonDetailsDTO
 import com.z1.pokedex.core.network.model.PokemonPageDto
 import retrofit2.Response
 import retrofit2.http.GET
@@ -16,7 +16,7 @@ interface PokedexApi {
     ): Response<PokemonPageDto>
 
     @GET("pokemon/{name}")
-    suspend fun getPokemon(
-        @Path("name") name: String?
-    ): Response<PokemonDTO>
+    suspend fun fetchPokemonDetails(
+        @Path("name") name: String
+    ): Response<PokemonDetailsDTO>
 }

@@ -73,7 +73,7 @@ val Typography = Typography(
     titleSmall = TextStyle(
         fontFamily = ClashDisplay,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 16.sp,
+        fontSize = 20.sp,
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
