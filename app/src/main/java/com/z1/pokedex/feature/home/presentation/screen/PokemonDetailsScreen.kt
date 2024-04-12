@@ -68,7 +68,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
-import com.z1.pokedex.core.network.model.PokemonDetailsDTO
 import com.z1.pokedex.designsystem.components.AnimatedText
 import com.z1.pokedex.designsystem.components.CustomLoadingScreen
 import com.z1.pokedex.designsystem.components.CustomStatisticsProgress
@@ -92,10 +91,10 @@ import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
 
-enum class PokemonScale {
-    STAND_BY,
-    START,
-    FINISH
+enum class PokemonScale(val scale: Float, val seconds: Int) {
+    STAND_BY(0f, 0),
+    START(1.7f, 2000),
+    FINISH(1.3f, 2000)
 }
 
 @Composable
@@ -107,7 +106,7 @@ fun PokemonDetailsScreen(
     onEvent: (Event) -> Unit
 ) {
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = Unit) {
         delay(500)
         onEvent(Event.UpdateSelectedPokemon(pokemon.name))
     }
@@ -192,21 +191,13 @@ private fun PokemonCard(
 
     var pokemonScaleState: PokemonScale by remember { mutableStateOf(PokemonScale.STAND_BY) }
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = Unit) {
         pokemonScaleState = PokemonScale.START
     }
     val scalePokemon by animateFloatAsState(
-        targetValue = when (pokemonScaleState) {
-            PokemonScale.STAND_BY -> 0f
-            PokemonScale.START -> 1.7f
-            PokemonScale.FINISH -> 1.3f
-        },
+        targetValue = pokemonScaleState.scale,
         animationSpec = tween(
-            durationMillis = when (pokemonScaleState) {
-                PokemonScale.STAND_BY -> 0
-                PokemonScale.START -> TimeUnit.SECONDS.toMillis(2)
-                PokemonScale.FINISH -> TimeUnit.SECONDS.toMillis(2)
-            }.toInt(),
+            durationMillis = pokemonScaleState.seconds,
             easing = FastOutSlowInEasing
         ),
         finishedListener = { pokemonScaleState = PokemonScale.FINISH },
