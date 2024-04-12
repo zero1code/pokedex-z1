@@ -1,5 +1,6 @@
 package com.z1.pokedex.designsystem.components
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
@@ -30,10 +31,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.z1.pokedex.R
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
 import kotlinx.coroutines.delay
 import java.math.RoundingMode
@@ -43,9 +46,9 @@ import kotlin.math.roundToInt
 fun CustomStatisticsProgress(
     modifier: Modifier = Modifier,
     progressColor: Color,
-    statisticsLabel: String,
+    @StringRes statisticsLabel: Int,
     currentProgress: Float,
-    maxProgress: Float
+    maxProgress: Int
 ) {
     var progress by remember { mutableFloatStateOf(0F) }
     val animateProgress by animateFloatAsState(
@@ -55,8 +58,7 @@ fun CustomStatisticsProgress(
     )
 
     LaunchedEffect(key1 = Unit) {
-
-        progress = (currentProgress / maxProgress) //.toBigDecimal().setScale(1, RoundingMode.DOWN).toFloat()
+        progress = (currentProgress / maxProgress.toFloat())
     }
 
     Row(
@@ -68,7 +70,7 @@ fun CustomStatisticsProgress(
         Text(
             modifier = Modifier
                 .weight(0.2f),
-            text = statisticsLabel,
+            text = stringResource(id = statisticsLabel),
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.labelMedium,
         )
@@ -101,16 +103,16 @@ private fun CustomStatisticsProgressPreview() {
         Column {
             CustomStatisticsProgress(
                 progressColor = Color.Green,
-                statisticsLabel = "HP",
+                statisticsLabel = R.string.label_hp,
                 currentProgress = 0.5f,
-                maxProgress = 1f
+                maxProgress = 1
             )
             Spacer(modifier = Modifier.height(16.dp))
             CustomStatisticsProgress(
                 progressColor = Color.Blue,
-                statisticsLabel = "ATK",
+                statisticsLabel = R.string.label_atk,
                 currentProgress = 0.5f,
-                maxProgress = 1f
+                maxProgress = 1
             )
         }
     }

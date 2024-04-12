@@ -24,6 +24,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -38,9 +39,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.ViewDay
+import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -78,12 +81,12 @@ import com.z1.pokedex.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.designsystem.components.ImageWithShadow
 import com.z1.pokedex.designsystem.components.ListType
 import com.z1.pokedex.designsystem.extensions.normalizedItemPosition
+import com.z1.pokedex.designsystem.theme.CoralRed
+import com.z1.pokedex.designsystem.theme.CustomRippleTheme
 import com.z1.pokedex.designsystem.theme.IPokemonDimensions
 import com.z1.pokedex.designsystem.theme.LocalGridPokemonSpacing
 import com.z1.pokedex.designsystem.theme.LocalPokemonSpacing
-import com.z1.pokedex.designsystem.theme.LocalSpacing
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
-import com.z1.pokedex.designsystem.theme.CoralRed
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.UiState
@@ -96,12 +99,12 @@ fun HomeScreen(
     onEvent: (Event) -> Unit,
 ) {
     var isShowGridList by remember { mutableStateOf(false) }
-    var pokemonDetails: Pokemon? by remember { mutableStateOf(null) }
+    var pokemon: Pokemon? by remember { mutableStateOf(null) }
 
     val gridListState = rememberLazyGridState()
     val listState = rememberLazyListState()
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = Unit) {
         onEvent(Event.LoadNextPage)
     }
 
@@ -110,7 +113,10 @@ fun HomeScreen(
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        CustomLoadingScreen()
+        CustomLoadingScreen(
+            modifier = Modifier.fillMaxSize(),
+            label = R.string.label_loading_pokemon
+        )
     }
 
     AnimatedVisibility(
@@ -119,7 +125,7 @@ fun HomeScreen(
         exit = fadeOut()
     ) {
         AnimatedContent(
-            targetState = pokemonDetails,
+            targetState = pokemon,
             transitionSpec = {
                 if (targetState != null) {
                     slideInHorizontally(
@@ -132,12 +138,13 @@ fun HomeScreen(
                 }
             },
             label = "pokemon-details"
-        ) { pokemonClicked ->
-            if (pokemonClicked != null) {
+        ) { pokemonState ->
+            if (pokemonState != null) {
                 PokemonDetailsScreen(
-                    pokemon = pokemonClicked,
+                    pokemon = pokemonState,
+                    pokemonDetails = uiState.pokemonDetails,
                     onNavigationIconClick = {
-                        pokemonDetails = null
+                        pokemon = null
                     },
                     onEvent = { onEvent(it) }
                 )
@@ -150,16 +157,16 @@ fun HomeScreen(
                     onEvent = { onEvent(it) },
                     isShowGridList = isShowGridList,
                     onLayoutListChange = { isShowGridList = it },
-                    onPokemonClick = { clickedPokemon ->
-                        pokemonDetails = clickedPokemon
+                    onPokemonClick = { pokemonClicked ->
+                        pokemon = pokemonClicked
                     }
                 )
             }
         }
     }
 
-    BackHandler(pokemonDetails != null) {
-        if (pokemonDetails != null) pokemonDetails = null
+    BackHandler(pokemon != null) {
+        if (pokemon != null) pokemon = null
     }
 }
 
@@ -174,7 +181,6 @@ private fun PokemonList(
     onLayoutListChange: (Boolean) -> Unit,
     onPokemonClick: (pokemon: Pokemon) -> Unit
 ) {
-    val spacing = LocalSpacing.current
     val pokemonDimensions =
         if (isShowGridList) LocalGridPokemonSpacing.current
         else LocalPokemonSpacing.current
@@ -239,7 +245,7 @@ private fun PokemonList(
                         .fillMaxWidth()
                         .padding(
                             top = pokemonDimensions.headerSize,
-                            bottom = spacing.medium
+                            bottom = PokedexZ1Theme.dimen.medium
                         ),
                     text = stringResource(id = R.string.label_select_pokemon),
 
@@ -248,7 +254,7 @@ private fun PokemonList(
                 )
             },
             key = { _, pokemon -> pokemon.name },
-            contentPadding = PaddingValues(spacing.medium),
+            contentPadding = PaddingValues(PokedexZ1Theme.dimen.medium),
             itemContent = { _, item ->
                 val imageModifier =
                     if (isShowGridList) Modifier
@@ -298,10 +304,13 @@ private fun PokemonList(
                     )
                     Text(
                         modifier = Modifier
+                            .padding(
+                                top = PokedexZ1Theme.dimen.medium,
+                                bottom = PokedexZ1Theme.dimen.medium)
                             .constrainAs(text) {
-                                top.linkTo(image.bottom, spacing.medium)
+                                top.linkTo(image.bottom)
                                 end.linkTo(parent.end)
-                                bottom.linkTo(parent.bottom, spacing.medium)
+                                bottom.linkTo(parent.bottom)
                                 start.linkTo(parent.start)
                             },
                         text = stringResource(id = R.string.label_loading_more_pokemon),
@@ -314,7 +323,7 @@ private fun PokemonList(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(spacing.medium)
+                        .padding(PokedexZ1Theme.dimen.medium)
                         .height(pokemonDimensions.footerSize),
                     contentAlignment = Alignment.Center
                 ) {
@@ -387,31 +396,35 @@ private fun PokemonItem(
             .padding(vertical = dimen.normal)
     ) {
         val (image, name, card, canva, textNumber) = createRefs()
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(dimen.brushShape))
-                .constrainAs(card) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-                .fillMaxWidth()
-                .height(dimen.boxSize)
-                .drawBehind {
-                    drawRoundRect(brush = brush)
-                }
-                .clickable { onPokemonClick(pokemon) }
+        CompositionLocalProvider(
+            LocalRippleTheme provides CustomRippleTheme(Color.White)
         ) {
-            Image(
+            Box(
                 modifier = Modifier
-                    .size(dimen.imagePlaceHolderSize)
-                    .alpha(0.4f)
-                    .padding(dimen.normal),
-                painter = painterResource(id = R.drawable.pokeball_placeholder),
-                colorFilter = ColorFilter.tint(Color.White),
-                contentDescription = ""
-            )
+                    .clip(RoundedCornerShape(dimen.brushShape))
+                    .constrainAs(card) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    .fillMaxWidth()
+                    .height(dimen.boxSize)
+                    .drawBehind {
+                        drawRoundRect(brush = brush)
+                    }
+                    .clickable { onPokemonClick(pokemon) }
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(dimen.imagePlaceHolderSize)
+                        .alpha(0.4f)
+                        .padding(dimen.normal),
+                    painter = painterResource(id = R.drawable.pokeball_placeholder),
+                    colorFilter = ColorFilter.tint(Color.White),
+                    contentDescription = ""
+                )
+            }
         }
 
         Canvas(modifier = imageModifier

@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
 import androidx.palette.graphics.Palette
 import com.z1.pokedex.core.datasource.repository.PokemonRepository
+import com.z1.pokedex.feature.home.domain.model.PokemonDetails
 import com.z1.pokedex.feature.home.domain.model.PokemonPage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -28,4 +29,7 @@ class PokemonUseCaseImpl(
             newPage.copy(pokemonList = updatedPokemonList)
         }
     }
+
+    override suspend fun fetchPokemonDetails(pokemonName: String) =
+        pokemonRepository.fetchPokemonDetails(pokemonName)
 }
