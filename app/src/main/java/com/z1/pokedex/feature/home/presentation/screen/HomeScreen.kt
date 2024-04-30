@@ -37,8 +37,10 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.ViewDay
+import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -97,6 +99,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     uiState: UiState,
     onEvent: (Event) -> Unit,
+    navigateToLogin: () -> Unit
 ) {
     var isShowGridList by remember { mutableStateOf(false) }
     var pokemon: Pokemon? by remember { mutableStateOf(null) }
@@ -106,6 +109,14 @@ fun HomeScreen(
 
     LaunchedEffect(key1 = Unit) {
         onEvent(Event.LoadNextPage)
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        onEvent(Event.GetSginedUser)
+    }
+
+    LaunchedEffect(key1 = uiState.userData) {
+        if (uiState.userData == null) navigateToLogin()
     }
 
     AnimatedVisibility(
@@ -306,7 +317,8 @@ private fun PokemonList(
                         modifier = Modifier
                             .padding(
                                 top = PokedexZ1Theme.dimen.medium,
-                                bottom = PokedexZ1Theme.dimen.medium)
+                                bottom = PokedexZ1Theme.dimen.medium
+                            )
                             .constrainAs(text) {
                                 top.linkTo(image.bottom)
                                 end.linkTo(parent.end)
@@ -365,6 +377,14 @@ private fun PokemonList(
                     iconImageVector =
                     if (isShowGridList.not()) Icons.Outlined.GridView
                     else Icons.Outlined.ViewDay,
+                    iconTint = MaterialTheme.colorScheme.onBackground
+                )
+
+                CustomIconButton(
+                    onIconButtonClick = {
+                        onEvent(Event.SignOut)
+                    },
+                    iconImageVector = Icons.AutoMirrored.Rounded.Logout,
                     iconTint = MaterialTheme.colorScheme.onBackground
                 )
             }

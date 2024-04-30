@@ -8,7 +8,7 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="br.com.fusiondms.mobilecast" />
+                  <option name="appId" value="com.bolaoz1" />
                 </ConnectionSetting>
               </option>
               <option name="failureTypes">
@@ -27,10 +27,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.z1.pokedex" />
+                  <option name="mobileSdkAppId" value="1:280893198375:android:bb389ed65c54db50407e02" />
+                  <option name="projectId" value="pokedex-z1" />
+                  <option name="projectNumber" value="280893198375" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

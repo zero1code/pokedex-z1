@@ -1,9 +1,12 @@
 import org.apache.tools.ant.util.JavaEnvUtils.VERSION_1_8
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -21,6 +24,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "WEB_CLIENT_ID", getProperties("WEB_CLIENT_ID"))
     }
 
     buildTypes {
@@ -61,13 +66,14 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 
     //Jetpack compose
-    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
+    implementation(platform("androidx.compose:compose-bom:2024.04.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
-    implementation("androidx.compose.material:material-icons-extended:1.6.3")
+    implementation("androidx.compose.material:material-icons-extended:1.6.5")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
     //Room
     val roomVersion = "2.6.1"
@@ -100,6 +106,13 @@ dependencies {
     //Palette
     implementation("androidx.palette:palette-ktx:1.0.0")
 
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.8.1"))
+    implementation("com.google.firebase:firebase-auth")
+
+    //Play Services Auth
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+
     //Test
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -109,4 +122,19 @@ dependencies {
     //Debug
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+
+fun getProperties(propertiesName: String): String {
+    try {
+        val propsFile = rootProject.file("local.properties")
+        if (propsFile.exists()) {
+            val properties = Properties()
+            properties.load(FileInputStream(propsFile))
+            return properties.getProperty(propertiesName)
+        }
+        return ""
+    } catch (e: Exception) {
+        e.printStackTrace()
+        return ""
+    }
 }

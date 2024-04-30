@@ -4,4 +4,6 @@ sealed class Event {
     data object LoadNextPage: Event()
     data class UpdateSelectedPokemon(val pokemonName: String): Event()
     data class GetPokemonDetails(val pokemonName: String): Event()
+    data object GetSginedUser: Event()
+    data object SignOut: Event()
 }
