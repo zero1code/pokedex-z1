@@ -2,6 +2,7 @@ package com.z1.pokedex.feature.home.presentation.screen.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
 import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -12,6 +13,7 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(
     private val pokemonUseCase: PokemonUseCase,
+    private val googleAuthClient: GoogleAuthClient
 ) : ViewModel() {
     private var _nextPage = 0
 
@@ -27,6 +29,8 @@ class HomeViewModel(
             is Event.LoadNextPage -> loadNextPage()
             is Event.UpdateSelectedPokemon -> updateClickedPokemonList(event.pokemonName)
             is Event.GetPokemonDetails -> getPokemonDetails(event.pokemonName)
+            is Event.SignedUser -> getSignedUser()
+            is Event.SignOut -> signOut()
         }
     }
 
@@ -84,6 +88,21 @@ class HomeViewModel(
                     }
                 }
         }
+
+    private fun getSignedUser() = viewModelScope.launch {
+        googleAuthClient.getSignedInUser()?.let { userData ->
+            _uiState.update {
+                it.copy(userData = userData)
+            }
+        }
+    }
+
+    private fun signOut() = viewModelScope.launch {
+        googleAuthClient.signOut()
+        _uiState.update {
+            it.copy(userData = null)
+        }
+    }
 
     private fun resetPokemonDetails() =
         viewModelScope.launch {

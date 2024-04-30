@@ -4,6 +4,8 @@ import android.app.Application
 import com.z1.pokedex.core.datasource.di.datasourceModule
 import com.z1.pokedex.core.network.di.networkModule
 import com.z1.pokedex.feature.home.di.homeScreenModule
+import com.z1.pokedex.feature.login.di.loginModule
+import com.z1.pokedex.navigation.di.navigationModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -21,7 +23,9 @@ class Application: Application() {
                 listOf(
                     datasourceModule,
                     networkModule,
-                    homeScreenModule
+                    homeScreenModule,
+                    loginModule,
+                    navigationModule
                 ).flatten()
             )
         }
