@@ -40,7 +40,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.ViewDay
-import androidx.compose.material.icons.rounded.Logout
 import androidx.compose.material.ripple.LocalRippleTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -112,7 +111,7 @@ fun HomeScreen(
     }
 
     LaunchedEffect(key1 = Unit) {
-        onEvent(Event.GetSginedUser)
+        onEvent(Event.SignedUser)
     }
 
     LaunchedEffect(key1 = uiState.userData) {

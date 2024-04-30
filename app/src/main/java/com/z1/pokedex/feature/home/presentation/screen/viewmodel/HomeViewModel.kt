@@ -29,7 +29,7 @@ class HomeViewModel(
             is Event.LoadNextPage -> loadNextPage()
             is Event.UpdateSelectedPokemon -> updateClickedPokemonList(event.pokemonName)
             is Event.GetPokemonDetails -> getPokemonDetails(event.pokemonName)
-            is Event.GetSginedUser -> getSignedUser()
+            is Event.SignedUser -> getSignedUser()
             is Event.SignOut -> signOut()
         }
     }

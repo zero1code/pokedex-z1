@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     val navGraph = get<NavGraph>()
                     PokedexZ1App(
                         navGraph = navGraph,
-                        isLogged = googleAuthClient.getSignedInUser() != null
+                        isSignedIn = googleAuthClient.getSignedInUser() != null
                     )
                 }
             }
@@ -42,11 +42,11 @@ class MainActivity : ComponentActivity() {
 fun PokedexZ1App(
     modifier: Modifier = Modifier,
     navGraph: NavGraph,
-    isLogged: Boolean
+    isSignedIn: Boolean
 ) {
     NavigationGraph(
         modifier = modifier,
         navGraph = navGraph,
-        isLogged = isLogged
+        isLogged = isSignedIn
     )
 }

@@ -125,16 +125,13 @@ dependencies {
 }
 
 fun getProperties(propertiesName: String): String {
-    try {
+    return runCatching {
         val propsFile = rootProject.file("local.properties")
         if (propsFile.exists()) {
             val properties = Properties()
             properties.load(FileInputStream(propsFile))
-            return properties.getProperty(propertiesName)
+            properties.getProperty(propertiesName)
         }
-        return ""
-    } catch (e: Exception) {
-        e.printStackTrace()
-        return ""
-    }
+        else ""
+    }.getOrDefault("")
 }
