@@ -40,9 +40,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.ViewDay
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.ripple.LocalRippleTheme
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -50,6 +55,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,6 +97,7 @@ import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.UiState
+import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 @Composable
@@ -98,8 +105,11 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     uiState: UiState,
     onEvent: (Event) -> Unit,
-    navigateToLogin: () -> Unit
+    navigateToLogin: () -> Unit,
+    drawerNavigation: (String) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
+
     var isShowGridList by remember { mutableStateOf(false) }
     var pokemon: Pokemon? by remember { mutableStateOf(null) }
 
@@ -129,54 +139,81 @@ fun HomeScreen(
         )
     }
 
-    AnimatedVisibility(
-        visible = uiState.isFirstLoading.not(),
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        AnimatedContent(
-            targetState = pokemon,
-            transitionSpec = {
-                if (targetState != null) {
-                    slideInHorizontally(
-                        tween(300, 0, FastOutLinearInEasing)
-                    ) { it } togetherWith
-                    ExitTransition.KeepUntilTransitionsFinished
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
-                } else {
-                    slideInHorizontally { -it } togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = drawerState.isOpen,
+        drawerContent = {
+            DrawerContent(
+                userData = uiState.userData,
+                onNavigationItemClick = { route ->
+                    drawerNavigation(route)
+                    scope.launch { drawerState.close() }
+                },
+                onLogoutClick = {
+                    onEvent(Event.Logout)
+                    scope.launch { drawerState.close() }
                 }
-            },
-            label = "pokemon-details"
-        ) { pokemonState ->
-            if (pokemonState != null) {
-                PokemonDetailsScreen(
-                    pokemon = pokemonState,
-                    pokemonDetails = uiState.pokemonDetails,
-                    onNavigationIconClick = {
-                        pokemon = null
-                    },
-                    onEvent = { onEvent(it) }
-                )
-            } else {
-                PokemonList(
-                    modifier = modifier,
-                    uiState = uiState,
-                    listState = listState,
-                    gridListState = gridListState,
-                    onEvent = { onEvent(it) },
-                    isShowGridList = isShowGridList,
-                    onLayoutListChange = { isShowGridList = it },
-                    onPokemonClick = { pokemonClicked ->
-                        pokemon = pokemonClicked
+            )
+        }
+    ) {
+        AnimatedVisibility(
+            visible = uiState.isFirstLoading.not(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            AnimatedContent(
+                targetState = pokemon,
+                transitionSpec = {
+                    if (targetState != null) {
+                        slideInHorizontally(
+                            tween(300, 0, FastOutLinearInEasing)
+                        ) { it } togetherWith
+                                ExitTransition.KeepUntilTransitionsFinished
+
+                    } else {
+                        slideInHorizontally { -it } togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
                     }
-                )
+                },
+                label = "pokemon-details"
+            ) { pokemonState ->
+                if (pokemonState != null) {
+                    PokemonDetailsScreen(
+                        pokemon = pokemonState,
+                        pokemonDetails = uiState.pokemonDetails,
+                        onNavigationIconClick = {
+                            pokemon = null
+                        },
+                        onEvent = { onEvent(it) }
+                    )
+                } else {
+                    PokemonList(
+                        modifier = modifier,
+                        uiState = uiState,
+                        listState = listState,
+                        gridListState = gridListState,
+                        onEvent = { onEvent(it) },
+                        isShowGridList = isShowGridList,
+                        onLayoutListChange = { isShowGridList = it },
+                        onPokemonClick = { pokemonClicked ->
+                            pokemon = pokemonClicked
+                        },
+                        onMenuNavigationClick = {
+                            scope.launch { drawerState.open() }
+                        }
+                    )
+                }
             }
         }
     }
 
     BackHandler(pokemon != null) {
         if (pokemon != null) pokemon = null
+    }
+
+    BackHandler(drawerState.isOpen) {
+        if (drawerState.isOpen) scope.launch { drawerState.close() }
     }
 }
 
@@ -189,7 +226,8 @@ private fun PokemonList(
     gridListState: LazyGridState,
     isShowGridList: Boolean,
     onLayoutListChange: (Boolean) -> Unit,
-    onPokemonClick: (pokemon: Pokemon) -> Unit
+    onPokemonClick: (pokemon: Pokemon) -> Unit,
+    onMenuNavigationClick: () -> Unit
 ) {
     val pokemonDimensions =
         if (isShowGridList) LocalGridPokemonSpacing.current
@@ -347,28 +385,32 @@ private fun PokemonList(
             }
         )
         CustomTopAppBar(
+            navigationIcon = {
+                CustomIconButton(
+                    onIconButtonClick = onMenuNavigationClick,
+                    iconImageVector = Icons.Rounded.Menu,
+                    iconTint = MaterialTheme.colorScheme.onBackground
+                )
+            },
             title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        modifier = Modifier.size(32.dp),
-                        painter = painterResource(id = R.drawable.pokeball_placeholder),
-                        colorFilter = ColorFilter.tint(CoralRed),
-                        contentDescription = ""
-                    )
-                    Text(
-                        modifier = Modifier.padding(start = 16.dp),
-                        text = stringResource(id = R.string.app_name),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
+                Text(
+                    modifier = Modifier.padding(start = 16.dp),
+                    text = stringResource(id = R.string.app_name),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
             },
             actions = {
+                CustomIconButton(
+                    onIconButtonClick = {
+
+                    },
+                    iconImageVector = Icons.Rounded.Search,
+                    iconTint = MaterialTheme.colorScheme.onBackground
+                )
+
                 CustomIconButton(
                     onIconButtonClick = {
                         onLayoutListChange(!isShowGridList)
@@ -376,14 +418,6 @@ private fun PokemonList(
                     iconImageVector =
                     if (isShowGridList.not()) Icons.Outlined.GridView
                     else Icons.Outlined.ViewDay,
-                    iconTint = MaterialTheme.colorScheme.onBackground
-                )
-
-                CustomIconButton(
-                    onIconButtonClick = {
-                        onEvent(Event.SignOut)
-                    },
-                    iconImageVector = Icons.AutoMirrored.Rounded.Logout,
                     iconTint = MaterialTheme.colorScheme.onBackground
                 )
             }
@@ -543,7 +577,7 @@ fun PokemonItemVerticalPreview() {
             ),
             dimen = LocalPokemonSpacing.current,
             isShowGridList = false,
-            onPokemonClick = { _ ->},
+            onPokemonClick = { _ -> },
             pokemonClickedList = emptySet()
         )
     }

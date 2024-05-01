@@ -25,12 +25,22 @@ fun NavigationGraph(
             modifier = modifier,
             registerNavGraph = navGraph.login(),
             navController = navController
-
         )
 
         register(
             modifier = modifier,
             registerNavGraph = navGraph.home(),
+            navController = navController
+        )
+
+        register(
+            modifier = modifier,
+            registerNavGraph = navGraph.favorites(),
+            navController = navController
+        )
+
+        register(modifier = modifier,
+            registerNavGraph = navGraph.pro(),
             navController = navController
         )
     }

@@ -13,7 +13,8 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun HomeContainer(
     modifier: Modifier = Modifier,
-    navigateToLogin: () -> Unit
+    navigateToLogin: () -> Unit,
+    drawerNavigateTo: (String) -> Unit
 ) {
     val viewmodel: HomeViewModel = getViewModel()
     val uiState = viewmodel.uiState.collectAsStateWithLifecycle()
@@ -24,6 +25,9 @@ fun HomeContainer(
             .background(color = MaterialTheme.colorScheme.background),
         uiState = uiState.value,
         onEvent = { newEvent -> onEvent(newEvent) },
-        navigateToLogin = navigateToLogin
+        navigateToLogin = navigateToLogin,
+        drawerNavigation = { route ->
+            drawerNavigateTo(route)
+        }
     )
 }

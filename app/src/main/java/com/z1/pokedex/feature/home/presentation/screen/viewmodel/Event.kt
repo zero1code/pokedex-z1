@@ -5,5 +5,5 @@ sealed class Event {
     data class UpdateSelectedPokemon(val pokemonName: String): Event()
     data class GetPokemonDetails(val pokemonName: String): Event()
     data object SignedUser: Event()
-    data object SignOut: Event()
+    data object Logout: Event()
 }
