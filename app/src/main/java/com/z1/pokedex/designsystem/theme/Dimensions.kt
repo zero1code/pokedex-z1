@@ -9,6 +9,7 @@ data class Dimensions(
     val medium: Dp = 16.dp,
     val big: Dp = 24.dp,
     val large: Dp = 32.dp,
+    val large2: Dp = 56.dp,
     val topBar: Dp = 80.dp,
     val loadingIcon: Dp = 100.dp
 )

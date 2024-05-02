@@ -1,4 +1,4 @@
-package com.z1.pokedex.navigation.navgraph.routes.home
+package com.z1.pokedex.navigation.navgraph.routes.favorites
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.LinearEasing
@@ -7,15 +7,12 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.z1.pokedex.feature.home.presentation.HomeContainer
-import com.z1.pokedex.feature.login.presentation.LoginContainer
-import com.z1.pokedex.navigation.navgraph.routes.home.HomeNavGraph
-import com.z1.pokedex.navigation.navgraph.routes.login.LoginNavGraph
-import org.koin.androidx.compose.get
+import com.z1.pokedex.feature.favorites.presentation.FavoritesContainer
 
-class HomeNavGraphImpl(): HomeNavGraph {
-    private val baseRoute = "home"
+class FavoritesNavGraphImpl: FavoritesNavGraph {
+    private val baseRoute = "favorites"
     override fun route() = baseRoute
+
     override fun registerGraph(
         navGraphBuilder: NavGraphBuilder,
         navController: NavHostController,
@@ -36,19 +33,7 @@ class HomeNavGraphImpl(): HomeNavGraph {
                 )
             }
         ) {
-            val loginNavGraph = get<LoginNavGraph>()
-            HomeContainer(
-                navigateToLogin = {
-                    navController.navigate(loginNavGraph.route()) {
-                        popUpTo(navController.graph.id) {
-                            inclusive = true
-                        }
-                    }
-                },
-                drawerNavigateTo = { route ->
-                    navController.navigate(route)
-                }
-            )
+            FavoritesContainer()
         }
     }
 }

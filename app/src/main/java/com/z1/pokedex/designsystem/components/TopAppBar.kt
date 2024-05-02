@@ -21,27 +21,26 @@ fun CustomTopAppBar(
     containerColor: Color = MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
     navigationIcon: (@Composable () -> Unit)? = null,
     title: @Composable () -> Unit,
-    actions: @Composable (RowScope.() -> Unit),
+    actions: @Composable (RowScope.() -> Unit)? = null,
 ) {
-        TopAppBar(
-            modifier = modifier
-                .statusBarsPadding(),
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = containerColor
-            ),
-            navigationIcon = {
-                   navigationIcon?.let {
-                       navigationIcon()
-                   }
-            },
-            title = {
-                title()
-            },
-            actions = {
-                actions()
+    TopAppBar(
+        modifier = modifier
+            .statusBarsPadding(),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = containerColor
+        ),
+        navigationIcon = {
+            navigationIcon?.let {
+                navigationIcon()
             }
-        )
-
+        },
+        title = {
+            title()
+        },
+        actions = {
+            actions?.let { it() }
+        }
+    )
 }
 
 @Preview("default")

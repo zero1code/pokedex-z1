@@ -11,6 +11,11 @@
     <string name="label_welcome">Welcome</string>
 
     <string name="label_signin_with_google">Sign in with Google</string>
+    <string name="label_logout">Logout</string>
+    <string name="label_home">Home</string>
+    <string name="label_favorites">Favorites</string>
+    <string name="label_become_pro">Become a pro member</string>
+    <string name="label_subscription">Subscription</string>
 
     <string name="label_hp">HP</string>
     <string name="label_atk">ATK</string>
