@@ -16,6 +16,11 @@
     <string name="label_favorites">Favorites</string>
     <string name="label_become_pro">Become a pro member</string>
     <string name="label_subscription">Subscription</string>
+    <string name="label_subscribe_now">Subscribe now</string>
+    <string name="label_subscription_benefit_1">Search a pokemon by name</string>
+    <string name="label_subscription_benefit_2">Save a lot of pokemon as favorite</string>
+    <string name="label_subscription_benefit_3">See pokemon image and name in the list</string>
+    <string name="label_subscription_benefit_4">See the basics statics of a selected pokemon</string>
 
     <string name="label_hp">HP</string>
     <string name="label_atk">ATK</string>

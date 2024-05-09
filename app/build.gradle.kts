@@ -17,7 +17,7 @@ android {
         applicationId = "com.z1.pokedex"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
+        versionCode = 9
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -112,6 +112,9 @@ dependencies {
 
     //Play Services Auth
     implementation("com.google.android.gms:play-services-auth:21.0.0")
+
+    //Billing
+    implementation("com.android.billingclient:billing-ktx:6.2.1")
 
     //Test
     testImplementation("junit:junit:4.13.2")

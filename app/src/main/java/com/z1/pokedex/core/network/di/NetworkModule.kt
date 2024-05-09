@@ -1,5 +1,6 @@
 package com.z1.pokedex.core.network.di
 
+import android.app.Activity
 import com.google.android.gms.auth.api.identity.Identity
 import com.z1.pokedex.BuildConfig
 import com.z1.pokedex.core.network.PokedexApi

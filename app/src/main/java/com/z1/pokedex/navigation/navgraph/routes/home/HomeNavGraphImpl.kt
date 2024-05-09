@@ -8,8 +8,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.z1.pokedex.feature.home.presentation.HomeContainer
-import com.z1.pokedex.feature.login.presentation.LoginContainer
-import com.z1.pokedex.navigation.navgraph.routes.home.HomeNavGraph
 import com.z1.pokedex.navigation.navgraph.routes.login.LoginNavGraph
 import org.koin.androidx.compose.get
 

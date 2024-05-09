@@ -10,11 +10,11 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import com.z1.pokedex.BuildConfig
-import com.z1.pokedex.R
 import com.z1.pokedex.core.network.model.google.SignResult
 import com.z1.pokedex.core.network.model.google.UserData
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.CancellationException
+
 
 class GoogleAuthClientImpl(
     private val context: Context,

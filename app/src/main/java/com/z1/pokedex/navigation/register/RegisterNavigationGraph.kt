@@ -40,7 +40,7 @@ fun NavigationGraph(
         )
 
         register(modifier = modifier,
-            registerNavGraph = navGraph.pro(),
+            registerNavGraph = navGraph.subscription(),
             navController = navController
         )
     }

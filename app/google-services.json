@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "280893198375-8ck43753e96frm9mdb65bdbhvmf5tf2e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.z1.pokedex",
+            "certificate_hash": "2f57ecf09d42e8a02c6c4dcc1f976bc572b13880"
+          }
+        },
+        {
           "client_id": "280893198375-h5d5qsb885uf59ftaccdgnmhi0glm3if.apps.googleusercontent.com",
           "client_type": 3
         }

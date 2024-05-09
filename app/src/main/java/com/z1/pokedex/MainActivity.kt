@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
+import com.z1.pokedex.core.network.service.googlebilling.GoogleBillingClient
+import com.z1.pokedex.core.network.service.googlebilling.LocalGoogleBillingClient
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
-import com.z1.pokedex.navigation.register.NavigationGraph
 import com.z1.pokedex.navigation.navgraph.NavGraph
+import com.z1.pokedex.navigation.register.NavigationGraph
 import org.koin.android.ext.android.get
 
 class MainActivity : ComponentActivity() {
@@ -28,10 +31,14 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navGraph = get<NavGraph>()
-                    PokedexZ1App(
-                        navGraph = navGraph,
-                        isSignedIn = googleAuthClient.getSignedInUser() != null
-                    )
+                    CompositionLocalProvider(
+                        LocalGoogleBillingClient provides GoogleBillingClient(this@MainActivity)
+                    ) {
+                        PokedexZ1App(
+                            navGraph = navGraph,
+                            isSignedIn = googleAuthClient.getSignedInUser() != null
+                        )
+                    }
                 }
             }
         }
