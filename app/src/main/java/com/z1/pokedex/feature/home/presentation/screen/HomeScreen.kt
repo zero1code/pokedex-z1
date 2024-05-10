@@ -8,10 +8,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -23,21 +19,18 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.ViewDay
 import androidx.compose.material.icons.rounded.Menu
@@ -62,7 +55,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -74,7 +66,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -83,12 +74,11 @@ import com.z1.pokedex.R
 import com.z1.pokedex.core.common.orZero
 import com.z1.pokedex.designsystem.components.CustomIconButton
 import com.z1.pokedex.designsystem.components.CustomLazyList
-import com.z1.pokedex.designsystem.components.CustomLoadingScreen
+import com.z1.pokedex.designsystem.components.CustomLoading
 import com.z1.pokedex.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.designsystem.components.ImageWithShadow
 import com.z1.pokedex.designsystem.components.ListType
 import com.z1.pokedex.designsystem.extensions.normalizedItemPosition
-import com.z1.pokedex.designsystem.theme.CoralRed
 import com.z1.pokedex.designsystem.theme.CustomRippleTheme
 import com.z1.pokedex.designsystem.theme.IPokemonDimensions
 import com.z1.pokedex.designsystem.theme.LocalGridPokemonSpacing
@@ -116,8 +106,12 @@ fun HomeScreen(
     val gridListState = rememberLazyGridState()
     val listState = rememberLazyListState()
 
+    LaunchedEffect(key1 = uiState.isConnected) {
+        if (uiState.isConnected) onEvent(Event.LoadNextPage)
+    }
+
     LaunchedEffect(key1 = Unit) {
-        onEvent(Event.LoadNextPage)
+        if (uiState.isConnected.not()) onEvent(Event.LoadNextPage)
     }
 
     LaunchedEffect(key1 = Unit) {
@@ -133,9 +127,11 @@ fun HomeScreen(
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        CustomLoadingScreen(
+        CustomLoading(
             modifier = Modifier.fillMaxSize(),
-            label = R.string.label_loading_pokemon
+            iconSize = PokedexZ1Theme.dimen.loadingIcon,
+            animateIcon = true,
+            loadingMessage = R.string.label_loading_pokemon
         )
     }
 
@@ -180,6 +176,7 @@ fun HomeScreen(
             ) { pokemonState ->
                 if (pokemonState != null) {
                     PokemonDetailsScreen(
+                        uiState = uiState,
                         pokemon = pokemonState,
                         pokemonDetails = uiState.pokemonDetails,
                         onNavigationIconClick = {
@@ -233,16 +230,6 @@ private fun PokemonList(
         if (isShowGridList) LocalGridPokemonSpacing.current
         else LocalPokemonSpacing.current
 
-    val infiniteTransition = rememberInfiniteTransition(label = "infiniteTransition")
-    val animationRotation by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = LinearEasing),
-        ),
-        label = "animationRotation"
-    )
-
     val threshold = remember { 5 }
     val isLastItemVisible by if (isShowGridList) {
         remember {
@@ -268,11 +255,9 @@ private fun PokemonList(
         }
     }
 
-    LaunchedEffect(key1 = isLastItemVisible, key2 = uiState.isLoadingPage) {
-        uiState.pokemonPage.nextPage?.let {
-            if (isLastItemVisible && uiState.isLoadingPage.not()) {
-                onEvent(Event.LoadNextPage)
-            }
+    LaunchedEffect(key1 = isLastItemVisible, key2 = uiState.isLastPage) {
+        if (isLastItemVisible && uiState.canLoadNextPage()) {
+            onEvent(Event.LoadNextPage)
         }
     }
 
@@ -281,7 +266,7 @@ private fun PokemonList(
         contentAlignment = Alignment.TopCenter
     ) {
         CustomLazyList(
-            data = uiState.pokemonPage.pokemonList,
+            data = uiState.pokemonPage,
             listState = listState,
             gridListState = gridListState,
             listType =
@@ -327,61 +312,24 @@ private fun PokemonList(
                     }
                 )
             },
-            isLastPage = uiState.pokemonPage.nextPage == null,
+            isLastPage = uiState.isLastPage,
             isLoadingPage = uiState.isLoadingPage,
             loadingContent = {
-                ConstraintLayout(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                ) {
-                    val (image, text) = createRefs()
-
-                    Image(
-                        modifier = Modifier
-                            .constrainAs(image) {
-                                top.linkTo(parent.top)
-                                end.linkTo(parent.end)
-                                bottom.linkTo(parent.bottom)
-                                start.linkTo(parent.start)
-                            }
-                            .size(pokemonDimensions.footerSize)
-                            .rotate(animationRotation),
-                        painter = painterResource(id = R.drawable.pokeball_placeholder),
-                        contentDescription = ""
-                    )
-                    Text(
-                        modifier = Modifier
-                            .padding(
-                                top = PokedexZ1Theme.dimen.medium,
-                                bottom = PokedexZ1Theme.dimen.medium
-                            )
-                            .constrainAs(text) {
-                                top.linkTo(image.bottom)
-                                end.linkTo(parent.end)
-                                bottom.linkTo(parent.bottom)
-                                start.linkTo(parent.start)
-                            },
-                        text = stringResource(id = R.string.label_loading_more_pokemon),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                    )
-                }
+                CustomLoading(
+                    iconSize = pokemonDimensions.footerSize,
+                    animateIcon = true
+                )
             },
             footerContent = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(PokedexZ1Theme.dimen.medium)
-                        .height(pokemonDimensions.footerSize),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.label_saw_all_pokemon),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                    )
-                }
+                CustomLoading(
+                    iconSize = pokemonDimensions.footerSize,
+                    animateIcon = uiState.isConnected.not() && uiState.isLastPage,
+                    animateVelocity = 5_000,
+                    loadingMessage =
+                    if (uiState.isConnected && uiState.isLastPage) R.string.label_saw_all_pokemon
+                    else R.string.label_connection_lost
+                )
+
             }
         )
         CustomTopAppBar(
@@ -572,6 +520,7 @@ fun PokemonItemVerticalPreview() {
     PokedexZ1Theme {
         PokemonItem(
             pokemon = Pokemon(
+                page = 0,
                 "Pikachu",
                 "https://pokeapi.co/api/v2/pokemon/1/"
             ),

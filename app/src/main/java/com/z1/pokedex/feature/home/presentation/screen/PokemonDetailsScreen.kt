@@ -69,7 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
 import com.z1.pokedex.designsystem.components.AnimatedText
-import com.z1.pokedex.designsystem.components.CustomLoadingScreen
+import com.z1.pokedex.designsystem.components.CustomLoading
 import com.z1.pokedex.designsystem.components.CustomStatisticsProgress
 import com.z1.pokedex.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.designsystem.components.ImageWithShadow
@@ -88,6 +88,7 @@ import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_EXP
 import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_HP
 import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_SPEED
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
+import com.z1.pokedex.feature.home.presentation.screen.viewmodel.UiState
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
 
@@ -100,6 +101,7 @@ enum class PokemonScale(val scale: Float, val seconds: Int) {
 @Composable
 fun PokemonDetailsScreen(
     modifier: Modifier = Modifier,
+    uiState: UiState,
     pokemon: Pokemon,
     pokemonDetails: PokemonDetails?,
     onNavigationIconClick: () -> Unit,
@@ -111,8 +113,8 @@ fun PokemonDetailsScreen(
         onEvent(Event.UpdateSelectedPokemon(pokemon.name))
     }
 
-    LaunchedEffect(key1 = Unit) {
-        onEvent(Event.GetPokemonDetails(pokemon.name))
+    LaunchedEffect(key1 = uiState.isConnected) {
+        if (uiState.isConnected) onEvent(Event.GetPokemonDetails(pokemon.name))
     }
 
     val colors = listOf(Color(pokemon.dominantColor()), Color(pokemon.vibrantDarkColor()))
@@ -132,6 +134,7 @@ fun PokemonDetailsScreen(
         Column {
             PokemonCard(pokemon = pokemon)
             PokemonDetailsCard(
+                uiState = uiState,
                 chipColor = colors,
                 pokemonDetails = pokemonDetails
             )
@@ -267,7 +270,7 @@ private fun PokemonCard(
             modifier = Modifier
                 .padding(
                     top = PokedexZ1Theme.dimen.medium,
-                    start =PokedexZ1Theme.dimen.medium
+                    start = PokedexZ1Theme.dimen.medium
                 )
                 .constrainAs(textNumber) {
                     top.linkTo(parent.top)
@@ -321,6 +324,7 @@ private fun PokemonCard(
 @Composable
 private fun PokemonDetailsCard(
     modifier: Modifier = Modifier,
+    uiState: UiState,
     chipColor: List<Color>,
     pokemonDetails: PokemonDetails?
 ) {
@@ -392,11 +396,18 @@ private fun PokemonDetailsCard(
                         HabilityDetails(details)
                     }
                 } else {
-                    CustomLoadingScreen(
+                    CustomLoading(
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = 300.dp),
-                        label = R.string.label_loading_pokemon_details
+                        iconSize = PokedexZ1Theme.dimen.loadingIcon,
+                        animateIcon = true,
+                        animateVelocity =
+                        if (uiState.isConnected) 1_000
+                        else 5_000,
+                        loadingMessage =
+                        if (uiState.isConnected) R.string.label_loading_pokemon_details
+                        else R.string.label_connection_lost
                     )
                 }
 
@@ -534,7 +545,8 @@ private fun HabilityDetails(details: PokemonDetails) {
 private fun PokemonCardPreview() {
     PokedexZ1Theme {
         PokemonDetailsScreen(
-            pokemon = Pokemon("Picachu", "https://pokeapi.co/api/v2/pokemon/1/"),
+            uiState = UiState(),
+            pokemon = Pokemon(0, "Picachu", "https://pokeapi.co/api/v2/pokemon/1/"),
             pokemonDetails = null,
             onNavigationIconClick = {},
             onEvent = {}

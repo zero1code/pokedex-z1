@@ -1,4 +1,3 @@
-import org.apache.tools.ant.util.JavaEnvUtils.VERSION_1_8
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -26,6 +25,10 @@ android {
         }
 
         buildConfigField("String", "WEB_CLIENT_ID", getProperties("WEB_CLIENT_ID"))
+
+        ksp {
+            arg("room.schemaLocation","$projectDir/src/main/java/com/z1/pokedex/core/database/schema")
+        }
     }
 
     buildTypes {
@@ -49,7 +52,7 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.5"
     }
     packaging {
         resources {

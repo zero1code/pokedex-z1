@@ -15,7 +15,7 @@ class PokedexClient(
     suspend fun fetchPokemonPage(page: Int): PokemonPageDto {
         return api.fetchPokemonPage(page * Constants.PAGE_SIZE, Constants.PAGE_SIZE)
                 .takeIf { it.isSuccessful }
-                ?.body()
+                ?.body().takeIf { it?.nextPage != null }
                 ?: throw Exception("Response data is null")
     }
 

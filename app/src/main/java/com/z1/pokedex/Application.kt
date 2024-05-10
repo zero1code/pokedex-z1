@@ -1,6 +1,7 @@
 package com.z1.pokedex
 
 import android.app.Application
+import com.z1.pokedex.core.database.di.databaseModule
 import com.z1.pokedex.core.datasource.di.datasourceModule
 import com.z1.pokedex.core.network.di.networkModule
 import com.z1.pokedex.feature.home.di.homeScreenModule
@@ -27,7 +28,8 @@ class Application: Application() {
                     homeScreenModule,
                     loginModule,
                     navigationModule,
-                    subscriptionModule
+                    subscriptionModule,
+                    databaseModule
                 ).flatten()
             )
         }

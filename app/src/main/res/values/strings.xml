@@ -22,6 +22,8 @@
     <string name="label_subscription_benefit_3">See pokemon image and name in the list</string>
     <string name="label_subscription_benefit_4">See the basics statics of a selected pokemon</string>
 
+    <string name="label_connection_lost">Connection lost. Waiting to get connection again.</string>
+
     <string name="label_hp">HP</string>
     <string name="label_atk">ATK</string>
     <string name="label_def">DEF</string>
