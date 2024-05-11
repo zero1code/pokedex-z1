@@ -7,7 +7,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -55,6 +58,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -75,6 +79,7 @@ import com.z1.pokedex.core.common.orZero
 import com.z1.pokedex.designsystem.components.CustomIconButton
 import com.z1.pokedex.designsystem.components.CustomLazyList
 import com.z1.pokedex.designsystem.components.CustomLoading
+import com.z1.pokedex.designsystem.components.CustomShineImage
 import com.z1.pokedex.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.designsystem.components.ImageWithShadow
 import com.z1.pokedex.designsystem.components.ListType
@@ -373,6 +378,8 @@ private fun PokemonList(
     }
 }
 
+
+
 @Composable
 private fun PokemonItem(
     modifier: Modifier = Modifier,
@@ -383,8 +390,27 @@ private fun PokemonItem(
     isShowGridList: Boolean,
     onPokemonClick: (pokemon: Pokemon) -> Unit
 ) {
-
     val pokemonAlreadyClicked = pokemonClickedList.contains(pokemon.name)
+
+    var startAnimation by remember { mutableStateOf(false) }
+    val scalePokemon by remember { mutableStateOf(Animatable(1.3f)) }
+    LaunchedEffect(key1 = startAnimation, key2 = pokemonAlreadyClicked) {
+        if (startAnimation && pokemonAlreadyClicked) {
+            onPokemonClick(pokemon)
+            return@LaunchedEffect
+        }
+        if (startAnimation) {
+            scalePokemon.animateTo(1.7f, animationSpec = tween(durationMillis = 300))
+            scalePokemon.animateTo(0f, animationSpec = tween(durationMillis = 500))
+            onPokemonClick(pokemon)
+        }
+    }
+
+    val animationRotation by animateFloatAsState(
+        targetValue = if (startAnimation) 360f else 0f,
+        animationSpec = tween(500, easing = LinearEasing) ,
+        label = "animation-rotation"
+    )
 
     val brush = Brush.linearGradient(
         colors = listOf(Color(pokemon.dominantColor()), Color(pokemon.vibrantDarkColor())),
@@ -414,13 +440,14 @@ private fun PokemonItem(
                     .drawBehind {
                         drawRoundRect(brush = brush)
                     }
-                    .clickable { onPokemonClick(pokemon) }
+                    .clickable { startAnimation = true }
             ) {
                 Image(
                     modifier = Modifier
                         .size(dimen.imagePlaceHolderSize)
                         .alpha(0.4f)
-                        .padding(dimen.normal),
+                        .padding(dimen.normal)
+                        .rotate(animationRotation),
                     painter = painterResource(id = R.drawable.pokeball_placeholder),
                     colorFilter = ColorFilter.tint(Color.White),
                     contentDescription = ""
@@ -428,29 +455,16 @@ private fun PokemonItem(
             }
         }
 
-        Canvas(modifier = imageModifier
-            .size(dimen.canvaSize)
-            .constrainAs(canva) {
-                top.linkTo(image.top)
-                bottom.linkTo(image.bottom)
-                start.linkTo(image.start)
-                end.linkTo(image.end)
-            }
-            .graphicsLayer {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val blur = 150f
-                    renderEffect = RenderEffect
-                        .createBlurEffect(
-                            blur, blur, Shader.TileMode.DECAL
-                        )
-                        .asComposeRenderEffect()
-                }
-            }
-        ) {
-            pokemon.palette?.let {
-                drawCircle(Color(0xFFFFFFFF))
-            }
-        }
+        CustomShineImage(
+            modifier = imageModifier
+                .constrainAs(canva) {
+                    top.linkTo(image.top)
+                    bottom.linkTo(image.bottom)
+                    start.linkTo(image.start)
+                    end.linkTo(image.end)
+                },
+            size = dimen.canvaSize,
+        )
 
         pokemon.image?.asImageBitmap()?.let {
             ImageWithShadow(
@@ -460,7 +474,7 @@ private fun PokemonItem(
                         top.linkTo(parent.top)
                         end.linkTo(parent.end, dimen.imageMarginEnd)
                     }
-                    .scale(1.3f),
+                    .scale(scalePokemon.value),
                 imageBitmap = it,
                 contentScale = ContentScale.Fit,
                 colorFilter =

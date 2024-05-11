@@ -3,7 +3,7 @@ package com.z1.pokedex.core.network.di
 import com.google.android.gms.auth.api.identity.Identity
 import com.z1.pokedex.BuildConfig
 import com.z1.pokedex.core.network.PokedexApi
-import com.z1.pokedex.core.network.service.PokedexClient
+import com.z1.pokedex.core.network.service.pokedex.PokedexClient
 import com.z1.pokedex.core.network.service.connectivity.ConnectivityService
 import com.z1.pokedex.core.network.service.connectivity.ConnectivityServiceImpl
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient

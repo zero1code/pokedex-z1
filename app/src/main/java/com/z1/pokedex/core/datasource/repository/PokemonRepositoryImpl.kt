@@ -4,7 +4,7 @@ import com.z1.pokedex.core.database.dao.PokemonDao
 import com.z1.pokedex.core.database.mapper.asEntity
 import com.z1.pokedex.core.database.mapper.asModel
 import com.z1.pokedex.core.network.mapper.asModel
-import com.z1.pokedex.core.network.service.PokedexClient
+import com.z1.pokedex.core.network.service.pokedex.PokedexClient
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import kotlinx.coroutines.flow.flow
 

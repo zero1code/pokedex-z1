@@ -6,12 +6,11 @@ import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseInOut
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -48,10 +47,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
@@ -70,7 +67,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
 import com.z1.pokedex.designsystem.components.AnimatedText
 import com.z1.pokedex.designsystem.components.CustomLoading
-import com.z1.pokedex.designsystem.components.CustomStatisticsProgress
+import com.z1.pokedex.designsystem.components.CustomLinearProgress
+import com.z1.pokedex.designsystem.components.CustomShineImage
 import com.z1.pokedex.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.designsystem.components.ImageWithShadow
 import com.z1.pokedex.designsystem.theme.CelticBlue
@@ -91,12 +89,6 @@ import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.UiState
 import kotlinx.coroutines.delay
 import java.util.concurrent.TimeUnit
-
-enum class PokemonScale(val scale: Float, val seconds: Int) {
-    STAND_BY(0f, 0),
-    START(1.7f, 2000),
-    FINISH(1.3f, 2000)
-}
 
 @Composable
 fun PokemonDetailsScreen(
@@ -190,29 +182,15 @@ private fun PokemonCard(
     modifier: Modifier = Modifier,
     pokemon: Pokemon
 ) {
+    val scalePokemon by remember { mutableStateOf(Animatable(0f)) }
+    LaunchedEffect(key1 = Unit) {
+        scalePokemon.animateTo(1.7f, animationSpec = tween(durationMillis = 2_000))
+        scalePokemon.animateTo(1.3f, animationSpec = tween(durationMillis = 2_000))
+    }
+
     val dimen = LocalPokemonSpacing.current
 
-    var pokemonScaleState: PokemonScale by remember { mutableStateOf(PokemonScale.STAND_BY) }
-
-    LaunchedEffect(key1 = Unit) {
-        pokemonScaleState = PokemonScale.START
-    }
-    val scalePokemon by animateFloatAsState(
-        targetValue = pokemonScaleState.scale,
-        animationSpec = tween(
-            durationMillis = pokemonScaleState.seconds,
-            easing = FastOutSlowInEasing
-        ),
-        finishedListener = { pokemonScaleState = PokemonScale.FINISH },
-        label = "scale-pokemon"
-    )
-
     val colors = listOf(Color(pokemon.vibrantDarkColor()), Color(pokemon.dominantColor()))
-    val brush = Brush.linearGradient(
-        colors = colors,
-        start = Offset(0f, Float.POSITIVE_INFINITY),
-        end = Offset(Float.POSITIVE_INFINITY, 0f)
-    )
 
     val infiniteTransition = rememberInfiniteTransition("scale-infinite")
     val scale by infiniteTransition.animateFloat(
@@ -242,29 +220,18 @@ private fun PokemonCard(
     ) {
         val (image, name, canva, textNumber) = createRefs()
 
-        Canvas(modifier = Modifier
-            .size(200.dp)
-            .constrainAs(canva) {
-                top.linkTo(image.top)
-                bottom.linkTo(image.bottom)
-                start.linkTo(image.start)
-                end.linkTo(image.end)
-            }
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    val blur = 150f
-                    renderEffect = RenderEffect
-                        .createBlurEffect(
-                            blur, blur, Shader.TileMode.DECAL
-                        )
-                        .asComposeRenderEffect()
-                }
-            }
-        ) {
-            drawCircle(brush)
-        }
+        CustomShineImage(
+            modifier = Modifier
+                .constrainAs(canva) {
+                    top.linkTo(image.top)
+                    bottom.linkTo(image.bottom)
+                    start.linkTo(image.start)
+                    end.linkTo(image.end)
+                },
+            colors = colors,
+            size = 200.dp,
+            scale = scale
+        )
 
         Text(
             modifier = Modifier
@@ -290,7 +257,7 @@ private fun PokemonCard(
                         end.linkTo(parent.end)
                         start.linkTo(parent.start)
                     }
-                    .scale(scalePokemon),
+                    .scale(scalePokemon.value),
                 imageBitmap = it,
                 contentScale = ContentScale.Fit,
                 offsetX = 5.dp,
@@ -303,10 +270,6 @@ private fun PokemonCard(
                 .padding(
                     top = PokedexZ1Theme.dimen.large,
                     bottom = PokedexZ1Theme.dimen.medium
-                )
-                .alpha(
-                    if (pokemonScaleState == PokemonScale.FINISH) 1f
-                    else 0f
                 )
                 .constrainAs(name) {
                     top.linkTo(canva.bottom)
@@ -507,31 +470,31 @@ private fun HabilityDetails(details: PokemonDetails) {
     Column(
         verticalArrangement = Arrangement.spacedBy(PokedexZ1Theme.dimen.normal)
     ) {
-        CustomStatisticsProgress(
+        CustomLinearProgress(
             statisticsLabel = R.string.label_hp,
             progressColor = MediumSeaGreen,
             currentProgress = details.hp,
             maxProgress = MAX_HP
 
         )
-        CustomStatisticsProgress(
+        CustomLinearProgress(
             statisticsLabel = R.string.label_atk, progressColor = CoralRed,
             currentProgress = details.attack,
             maxProgress = MAX_ATTACK
         )
-        CustomStatisticsProgress(
+        CustomLinearProgress(
             statisticsLabel = R.string.label_def,
             progressColor = CelticBlue,
             currentProgress = details.defense,
             maxProgress = MAX_DEFENSE
         )
-        CustomStatisticsProgress(
+        CustomLinearProgress(
             statisticsLabel = R.string.label_spd,
             progressColor = OrangePeel,
             currentProgress = details.speed,
             maxProgress = MAX_SPEED
         )
-        CustomStatisticsProgress(
+        CustomLinearProgress(
             statisticsLabel = R.string.label_exp,
             progressColor = Glacier,
             currentProgress = details.exp,
