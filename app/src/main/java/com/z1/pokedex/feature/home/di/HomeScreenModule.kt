@@ -11,7 +11,7 @@ private val provideHomeViewModel = module {
 }
 
 private val providePokemonUseCase = module {
-    single<PokemonUseCase> { PokemonUseCaseImpl(get()) }
+    single<PokemonUseCase> { PokemonUseCaseImpl(get(), get()) }
 }
 
 

@@ -1,8 +1,5 @@
 package com.z1.pokedex.feature.home.presentation.screen
 
-import android.graphics.RenderEffect
-import android.graphics.Shader
-import android.os.Build
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColor
@@ -17,7 +14,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,11 +25,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -47,6 +43,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -54,9 +51,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asComposeRenderEffect
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -100,9 +96,17 @@ fun PokemonDetailsScreen(
     onEvent: (Event) -> Unit
 ) {
 
+    var isFavorite by remember {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(key1 = Unit) {
         delay(500)
         onEvent(Event.UpdateSelectedPokemon(pokemon.name))
+    }
+
+    LaunchedEffect(key1 = uiState.pokemonFavoritesNameList) {
+        isFavorite = uiState.pokemonFavoritesNameList.contains(pokemon.name)
     }
 
     LaunchedEffect(key1 = uiState.isConnected) {
@@ -132,7 +136,12 @@ fun PokemonDetailsScreen(
             )
         }
         Header(
-            onNavigationIconClick = onNavigationIconClick
+            onNavigationIconClick = onNavigationIconClick,
+            onFavoriteClick = { isFavorite ->
+                if (isFavorite) onEvent(Event.RemoveFavorite(pokemon))
+                else onEvent(Event.AddFavorite(pokemon))
+            },
+            isFavorite = isFavorite
         )
     }
 }
@@ -140,7 +149,9 @@ fun PokemonDetailsScreen(
 @Composable
 private fun Header(
     modifier: Modifier = Modifier,
-    onNavigationIconClick: () -> Unit
+    onNavigationIconClick: () -> Unit,
+    onFavoriteClick: (Boolean) -> Unit,
+    isFavorite: Boolean
 ) {
     CustomTopAppBar(
         modifier = modifier,
@@ -166,12 +177,20 @@ private fun Header(
         },
         actions = {
             IconButton(
-                onClick = { }
+                onClick = { onFavoriteClick(isFavorite) }
             ) {
-                Image(
-                    imageVector = Icons.Rounded.FavoriteBorder,
-                    contentDescription = ""
-                )
+                if (isFavorite) {
+                    Image(
+                        imageVector = Icons.Rounded.Favorite,
+                        contentDescription = "",
+                        colorFilter = ColorFilter.tint(CoralRed)
+                    )
+                } else {
+                    Image(
+                        imageVector = Icons.Rounded.FavoriteBorder,
+                        contentDescription = ""
+                    )
+                }
             }
         }
     )

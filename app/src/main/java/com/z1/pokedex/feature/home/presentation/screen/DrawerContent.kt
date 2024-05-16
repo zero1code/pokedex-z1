@@ -28,6 +28,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +56,7 @@ enum class DrawerRoute(val route: String) {
     SUBSCRIPTION("subscription")
 }
 
+@Immutable
 data class DrawerMenuItem(
     val icon: ImageVector,
     @StringRes val title: Int,

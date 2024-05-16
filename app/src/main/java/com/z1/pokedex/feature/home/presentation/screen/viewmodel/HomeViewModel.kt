@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.z1.pokedex.core.network.service.connectivity.ConnectivityService
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
+import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -38,6 +39,9 @@ class HomeViewModel(
             is Event.GetPokemonDetails -> getPokemonDetails(event.pokemonName)
             is Event.SignedUser -> getSignedUser()
             is Event.Logout -> signOut()
+            is Event.GetPokemonFavoritesName -> getPokemonFavoritesName()
+            is Event.AddFavorite -> insertPokemonFavorite(event.pokemon)
+            is Event.RemoveFavorite -> deletePokemonFavorite(event.pokemon)
         }
     }
 
@@ -97,6 +101,28 @@ class HomeViewModel(
                 }
         }
 
+    private fun getPokemonFavoritesName() =
+        viewModelScope.launch {
+            pokemonUseCase.getPokemonFavoritesName(_uiState.value.userData?.userId.orEmpty())
+                .catch { e -> e.printStackTrace() }
+                .collect { favorites ->
+                    _uiState.update {
+                        it.copy(pokemonFavoritesNameList = favorites)
+                    }
+                }
+        }
+
+    private fun insertPokemonFavorite(pokemon: Pokemon) =
+        viewModelScope.launch {
+            pokemonUseCase.insertPokemonFavorite(pokemon, _uiState.value.userData?.userId.orEmpty())
+
+        }
+
+    private fun deletePokemonFavorite(pokemon: Pokemon) =
+        viewModelScope.launch {
+            pokemonUseCase.deletePokemonFavorite(pokemon, _uiState.value.userData?.userId.orEmpty())
+        }
+
     private fun getSignedUser() = viewModelScope.launch {
         googleAuthClient.getSignedInUser()?.let { userData ->
             _uiState.update {
@@ -121,5 +147,10 @@ class HomeViewModel(
 
     private fun loadNextPage() {
         fetchPokemonPage(_nextPage)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
     }
 }

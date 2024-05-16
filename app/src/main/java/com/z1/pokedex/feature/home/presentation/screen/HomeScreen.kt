@@ -3,6 +3,7 @@ package com.z1.pokedex.feature.home.presentation.screen
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -17,7 +18,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -121,6 +121,10 @@ fun HomeScreen(
 
     LaunchedEffect(key1 = Unit) {
         onEvent(Event.SignedUser)
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        onEvent(Event.GetPokemonFavoritesName)
     }
 
     LaunchedEffect(key1 = uiState.userData) {
@@ -231,9 +235,6 @@ private fun PokemonList(
     onPokemonClick: (pokemon: Pokemon) -> Unit,
     onMenuNavigationClick: () -> Unit
 ) {
-    val pokemonDimensions =
-        if (isShowGridList) LocalGridPokemonSpacing.current
-        else LocalPokemonSpacing.current
 
     val threshold = remember { 5 }
     val isLastItemVisible by if (isShowGridList) {
@@ -282,7 +283,7 @@ private fun PokemonList(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            top = pokemonDimensions.headerSize,
+                            top = 100.dp,
                             bottom = PokedexZ1Theme.dimen.medium
                         ),
                     text = stringResource(id = R.string.label_select_pokemon),
@@ -306,8 +307,8 @@ private fun PokemonList(
                                 scaleY = value
                             }
                     }
+                Log.d("TAG", "PokemonItem: ${item.name}")
                 PokemonItem(
-                    dimen = pokemonDimensions,
                     isShowGridList = isShowGridList,
                     imageModifier = imageModifier,
                     pokemon = item,
@@ -321,13 +322,13 @@ private fun PokemonList(
             isLoadingPage = uiState.isLoadingPage,
             loadingContent = {
                 CustomLoading(
-                    iconSize = pokemonDimensions.footerSize,
+                    iconSize = 100.dp,
                     animateIcon = true
                 )
             },
             footerContent = {
                 CustomLoading(
-                    iconSize = pokemonDimensions.footerSize,
+                    iconSize = 100.dp,
                     animateIcon = uiState.isConnected.not() && uiState.isLastPage,
                     animateVelocity = 5_000,
                     loadingMessage =
@@ -386,11 +387,16 @@ private fun PokemonItem(
     imageModifier: Modifier = Modifier,
     pokemon: Pokemon,
     pokemonClickedList: Set<String>,
-    dimen: IPokemonDimensions,
     isShowGridList: Boolean,
     onPokemonClick: (pokemon: Pokemon) -> Unit
 ) {
-    val pokemonAlreadyClicked = pokemonClickedList.contains(pokemon.name)
+    val dimen =
+        if (isShowGridList) LocalGridPokemonSpacing.current
+        else LocalPokemonSpacing.current
+
+    val pokemonAlreadyClicked by remember {
+        mutableStateOf(pokemonClickedList.contains(pokemon.name))
+    }
 
     var startAnimation by remember { mutableStateOf(false) }
     val scalePokemon by remember { mutableStateOf(Animatable(1.3f)) }
@@ -538,7 +544,6 @@ fun PokemonItemVerticalPreview() {
                 "Pikachu",
                 "https://pokeapi.co/api/v2/pokemon/1/"
             ),
-            dimen = LocalPokemonSpacing.current,
             isShowGridList = false,
             onPokemonClick = { _ -> },
             pokemonClickedList = emptySet()

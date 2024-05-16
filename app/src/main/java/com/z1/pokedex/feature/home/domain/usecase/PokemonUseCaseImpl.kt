@@ -3,15 +3,16 @@ package com.z1.pokedex.feature.home.domain.usecase
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
 import androidx.palette.graphics.Palette
+import com.z1.pokedex.core.database.repository.favorites.PokemonFavoriteRepository
 import com.z1.pokedex.core.datasource.repository.PokemonRepository
 import com.z1.pokedex.feature.home.domain.model.Pokemon
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails
-import com.z1.pokedex.feature.home.domain.model.PokemonPage
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class PokemonUseCaseImpl(
-    private val pokemonRepository: PokemonRepository
+    private val pokemonRepository: PokemonRepository,
+    private val pokemonFavoriteRepository: PokemonFavoriteRepository
 ) : PokemonUseCase {
     override suspend fun fetchPokemonPage(page: Int): Flow<List<Pokemon>> {
         return pokemonRepository.fetchPokemonPage(page).map { newPage ->
@@ -32,4 +33,17 @@ class PokemonUseCaseImpl(
 
     override suspend fun fetchPokemonDetails(pokemonName: String) =
         pokemonRepository.fetchPokemonDetails(pokemonName)
+
+    override suspend fun getPokemonFavoritesName(userId: String) =
+        flow {
+            pokemonFavoriteRepository.getPokemonFavoritesName(userId).collect {
+                emit(it)
+            }
+        }
+
+    override suspend fun insertPokemonFavorite(pokemon: Pokemon, userId: String) =
+        pokemonFavoriteRepository.insertPokemonFavorite(pokemon, userId)
+
+    override suspend fun deletePokemonFavorite(pokemon: Pokemon, userId: String) =
+        pokemonFavoriteRepository.deletePokemonFavorite(pokemon, userId)
 }
