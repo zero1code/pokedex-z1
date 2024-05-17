@@ -1,9 +1,11 @@
 package com.z1.pokedex.designsystem.theme
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+@Immutable
 interface IPokemonDimensions {
     val normal: Dp
     val headerSize: Dp
@@ -18,7 +20,8 @@ interface IPokemonDimensions {
     val offsetY: Dp
 }
 
-data class PokemonDimensions(
+@Immutable
+internal data class PokemonDimensions(
     override val normal: Dp = 16.dp,
     override val headerSize: Dp = 100.dp,
     override val footerSize: Dp = 100.dp,
@@ -33,7 +36,8 @@ data class PokemonDimensions(
 
 ): IPokemonDimensions
 
-data class GridPokemonDimensions(
+@Immutable
+internal data class GridPokemonDimensions(
     override val normal: Dp = 8.dp,
     override val headerSize: Dp = 100.dp,
     override val footerSize: Dp = 100.dp,
@@ -47,5 +51,5 @@ data class GridPokemonDimensions(
     override val offsetY: Dp = 2.dp,
 ): IPokemonDimensions
 
-val LocalPokemonSpacing = compositionLocalOf { PokemonDimensions() }
-val LocalGridPokemonSpacing = compositionLocalOf { GridPokemonDimensions() }
+internal val LocalPokemonSpacing = compositionLocalOf { PokemonDimensions() }
+internal val LocalGridPokemonSpacing = compositionLocalOf { GridPokemonDimensions() }

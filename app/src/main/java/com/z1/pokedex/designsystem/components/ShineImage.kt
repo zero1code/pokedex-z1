@@ -6,6 +6,7 @@ import android.os.Build
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -17,7 +18,6 @@ import androidx.compose.ui.unit.Dp
 @Composable
 fun CustomShineImage(
     modifier: Modifier = Modifier,
-    size: Dp,
     scale: Float = -1f,
     colors: List<Color> = listOf(Color(0xFFFFFFFF), Color(0xFFFFFFFF))
 ) {
@@ -28,7 +28,6 @@ fun CustomShineImage(
     )
 
     Canvas(modifier = modifier
-        .size(size)
         .graphicsLayer {
             if (scale != -1f) {
                 scaleX = scale

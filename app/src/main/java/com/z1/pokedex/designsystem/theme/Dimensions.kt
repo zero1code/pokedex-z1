@@ -1,9 +1,11 @@
 package com.z1.pokedex.designsystem.theme
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+@Immutable
 data class Dimensions(
     val normal: Dp = 8.dp,
     val medium: Dp = 16.dp,
@@ -14,4 +16,4 @@ data class Dimensions(
     val loadingIcon: Dp = 100.dp
 )
 
-val LocalSpacing = compositionLocalOf { Dimensions() }
+internal val LocalSpacing = compositionLocalOf { Dimensions() }

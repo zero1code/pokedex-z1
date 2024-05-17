@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -62,8 +63,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
 import com.z1.pokedex.designsystem.components.AnimatedText
-import com.z1.pokedex.designsystem.components.CustomLoading
 import com.z1.pokedex.designsystem.components.CustomLinearProgress
+import com.z1.pokedex.designsystem.components.CustomLoading
 import com.z1.pokedex.designsystem.components.CustomShineImage
 import com.z1.pokedex.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.designsystem.components.ImageWithShadow
@@ -241,6 +242,7 @@ private fun PokemonCard(
 
         CustomShineImage(
             modifier = Modifier
+                .size(200.dp)
                 .constrainAs(canva) {
                     top.linkTo(image.top)
                     bottom.linkTo(image.bottom)
@@ -248,7 +250,6 @@ private fun PokemonCard(
                     end.linkTo(image.end)
                 },
             colors = colors,
-            size = 200.dp,
             scale = scale
         )
 

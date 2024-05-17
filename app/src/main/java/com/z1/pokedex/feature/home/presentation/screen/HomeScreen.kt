@@ -307,7 +307,7 @@ private fun PokemonList(
                                 scaleY = value
                             }
                     }
-                Log.d("TAG", "PokemonItem: ${item.name}")
+
                 PokemonItem(
                     isShowGridList = isShowGridList,
                     imageModifier = imageModifier,
@@ -335,7 +335,6 @@ private fun PokemonList(
                     if (uiState.isConnected && uiState.isLastPage) R.string.label_saw_all_pokemon
                     else R.string.label_connection_lost
                 )
-
             }
         )
         CustomTopAppBar(
@@ -391,8 +390,8 @@ private fun PokemonItem(
     onPokemonClick: (pokemon: Pokemon) -> Unit
 ) {
     val dimen =
-        if (isShowGridList) LocalGridPokemonSpacing.current
-        else LocalPokemonSpacing.current
+        if (isShowGridList) PokedexZ1Theme.gridList
+        else PokedexZ1Theme.verticalList
 
     val pokemonAlreadyClicked by remember {
         mutableStateOf(pokemonClickedList.contains(pokemon.name))
@@ -463,13 +462,13 @@ private fun PokemonItem(
 
         CustomShineImage(
             modifier = imageModifier
+                .size(dimen.canvaSize)
                 .constrainAs(canva) {
                     top.linkTo(image.top)
                     bottom.linkTo(image.bottom)
                     start.linkTo(image.start)
                     end.linkTo(image.end)
                 },
-            size = dimen.canvaSize,
         )
 
         pokemon.image?.asImageBitmap()?.let {
