@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.map
 
 class PokemonUseCaseImpl(
     private val pokemonRepository: PokemonRepository,
-    private val pokemonFavoriteRepository: PokemonFavoriteRepository
 ) : PokemonUseCase {
     override suspend fun fetchPokemonPage(page: Int): Flow<List<Pokemon>> {
         return pokemonRepository.fetchPokemonPage(page).map { newPage ->
@@ -30,20 +29,4 @@ class PokemonUseCaseImpl(
             updatedPokemonList
         }
     }
-
-    override suspend fun fetchPokemonDetails(pokemonName: String) =
-        pokemonRepository.fetchPokemonDetails(pokemonName)
-
-    override suspend fun getPokemonFavoritesName(userId: String) =
-        flow {
-            pokemonFavoriteRepository.getPokemonFavoritesName(userId).collect {
-                emit(it)
-            }
-        }
-
-    override suspend fun insertPokemonFavorite(pokemon: Pokemon, userId: String) =
-        pokemonFavoriteRepository.insertPokemonFavorite(pokemon, userId)
-
-    override suspend fun deletePokemonFavorite(pokemon: Pokemon, userId: String) =
-        pokemonFavoriteRepository.deletePokemonFavorite(pokemon, userId)
 }

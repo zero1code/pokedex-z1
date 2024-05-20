@@ -3,7 +3,6 @@ package com.z1.pokedex.feature.home.presentation.screen
 import android.graphics.RenderEffect
 import android.graphics.Shader
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -16,7 +15,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -85,10 +86,9 @@ import com.z1.pokedex.designsystem.components.ImageWithShadow
 import com.z1.pokedex.designsystem.components.ListType
 import com.z1.pokedex.designsystem.extensions.normalizedItemPosition
 import com.z1.pokedex.designsystem.theme.CustomRippleTheme
-import com.z1.pokedex.designsystem.theme.IPokemonDimensions
-import com.z1.pokedex.designsystem.theme.LocalGridPokemonSpacing
-import com.z1.pokedex.designsystem.theme.LocalPokemonSpacing
 import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.feature.details.PokemonDetailsContainer
+import com.z1.pokedex.feature.details.screen.PokemonDetailsScreen
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.UiState
@@ -123,10 +123,6 @@ fun HomeScreen(
         onEvent(Event.SignedUser)
     }
 
-    LaunchedEffect(key1 = Unit) {
-        onEvent(Event.GetPokemonFavoritesName)
-    }
-
     LaunchedEffect(key1 = uiState.userData) {
         if (uiState.userData == null) navigateToLogin()
     }
@@ -134,7 +130,7 @@ fun HomeScreen(
     AnimatedVisibility(
         visible = uiState.isFirstLoading,
         enter = fadeIn(),
-        exit = fadeOut()
+        exit = slideOutVertically { -it }
     ) {
         CustomLoading(
             modifier = Modifier.fillMaxSize(),
@@ -165,7 +161,7 @@ fun HomeScreen(
     ) {
         AnimatedVisibility(
             visible = uiState.isFirstLoading.not(),
-            enter = fadeIn(),
+            enter = slideInVertically { it },
             exit = fadeOut()
         ) {
             AnimatedContent(
@@ -184,14 +180,11 @@ fun HomeScreen(
                 label = "pokemon-details"
             ) { pokemonState ->
                 if (pokemonState != null) {
-                    PokemonDetailsScreen(
-                        uiState = uiState,
+                    PokemonDetailsContainer(
                         pokemon = pokemonState,
-                        pokemonDetails = uiState.pokemonDetails,
                         onNavigationIconClick = {
                             pokemon = null
-                        },
-                        onEvent = { onEvent(it) }
+                        }
                     )
                 } else {
                     PokemonList(
@@ -204,6 +197,7 @@ fun HomeScreen(
                         onLayoutListChange = { isShowGridList = it },
                         onPokemonClick = { pokemonClicked ->
                             pokemon = pokemonClicked
+                            onEvent(Event.UpdateSelectedPokemon(pokemonClicked.name))
                         },
                         onMenuNavigationClick = {
                             scope.launch { drawerState.open() }
@@ -268,7 +262,7 @@ private fun PokemonList(
     }
 
     Box(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter
     ) {
         CustomLazyList(

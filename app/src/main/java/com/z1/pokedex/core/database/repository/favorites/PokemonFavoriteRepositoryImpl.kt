@@ -1,14 +1,27 @@
 package com.z1.pokedex.core.database.repository.favorites
 
 import com.z1.pokedex.core.database.dao.PokemonDao
-import com.z1.pokedex.core.database.model.PokemonFavoriteEntity
+import com.z1.pokedex.core.database.mapper.asFavoriteEntity
+import com.z1.pokedex.core.database.mapper.asModel
+import com.z1.pokedex.core.network.service.pokedex.PokedexClient
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 class PokemonFavoriteRepositoryImpl(
+    private val pokedexClient: PokedexClient,
     private val pokemonDao: PokemonDao
-): PokemonFavoriteRepository {
+) : PokemonFavoriteRepository {
+    override suspend fun getPokemonFavorites(userId: String) =
+        flow {
+            pokemonDao.getPokemonFavoriteList(userId).collect {
+                emit(it.asModel())
+            }
+        }
+
+    override suspend fun fetchPokemonImage(imageUrl: String) =
+        pokedexClient.fetchPokemonImage(imageUrl)
+
     override suspend fun getPokemonFavoritesName(userId: String): Flow<List<String>> =
         flow {
             pokemonDao.getPokemonFavoriteNameList(userId).collect {
@@ -17,20 +30,8 @@ class PokemonFavoriteRepositoryImpl(
         }
 
     override suspend fun insertPokemonFavorite(pokemon: Pokemon, userId: String) =
-        pokemonDao.insertPokemonFavorite(
-            PokemonFavoriteEntity(
-                name = pokemon.name,
-                url = pokemon.url,
-                userId = userId
-            )
-        )
+        pokemonDao.insertPokemonFavorite(pokemon.asFavoriteEntity(userId))
 
     override suspend fun deletePokemonFavorite(pokemon: Pokemon, userId: String) =
-        pokemonDao.deletePokemonFavorite(
-            PokemonFavoriteEntity(
-                name = pokemon.name,
-                url = pokemon.url,
-                userId = userId
-            )
-        )
+        pokemonDao.deletePokemonFavorite(pokemon.asFavoriteEntity(userId))
 }

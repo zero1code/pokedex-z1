@@ -19,7 +19,8 @@ interface PokemonDao {
 
     @Query("SELECT * FROM tb_pokemon WHERE page <= :page")
     suspend fun getAllPokemonList(page: Int): List<PokemonEntity>
-
+    @Query("SELECT * FROM tb_favorite WHERE user_id == :userId")
+    fun getPokemonFavoriteList(userId: String): Flow<List<PokemonFavoriteEntity>>
     @Query("SELECT name FROM tb_favorite WHERE user_id <= :userId")
     fun getPokemonFavoriteNameList(userId: String): Flow<List<String>>
 

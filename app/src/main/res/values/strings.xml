@@ -23,6 +23,7 @@
     <string name="label_subscription_benefit_4">See the basics statics of a selected pokemon</string>
 
     <string name="label_connection_lost">Connection lost. Waiting to get connection again.</string>
+    <string name="label_no_favorite_found">No pokemon found. Add some pokemon as favorite and back here again.</string>
 
     <string name="label_hp">HP</string>
     <string name="label_atk">ATK</string>

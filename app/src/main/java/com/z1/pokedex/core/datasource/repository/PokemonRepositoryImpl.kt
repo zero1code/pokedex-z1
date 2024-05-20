@@ -26,11 +26,6 @@ class PokemonRepositoryImpl(
     override suspend fun fetchPokemonImage(imageUrl: String) =
         pokedexClient.fetchPokemonImage(imageUrl)
 
-    override suspend fun fetchPokemonDetails(pokemonName: String) =
-        flow {
-            emit(pokedexClient.fetchPokemonDetails(pokemonName).asModel())
-        }
-
     private suspend fun getPokemonListFromDatabase(page: Int) =
         pokemonDao.getPokemonList(page).asModel()
 

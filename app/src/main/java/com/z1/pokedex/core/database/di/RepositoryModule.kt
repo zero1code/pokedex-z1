@@ -5,7 +5,7 @@ import com.z1.pokedex.core.database.repository.favorites.PokemonFavoriteReposito
 import org.koin.dsl.module
 
 private val providePokemonFavoriteRepository = module {
-    single<PokemonFavoriteRepository>{ PokemonFavoriteRepositoryImpl(get()) }
+    single<PokemonFavoriteRepository>{ PokemonFavoriteRepositoryImpl(get(), get()) }
 }
 
 val databaseRepositoryModule = listOf(

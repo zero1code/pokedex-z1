@@ -7,6 +7,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -46,6 +47,7 @@ fun CustomLoading(
 
     ConstraintLayout(
         modifier = modifier
+            .background(MaterialTheme.colorScheme.background)
             .fillMaxWidth()
             .wrapContentHeight(),
     ) {

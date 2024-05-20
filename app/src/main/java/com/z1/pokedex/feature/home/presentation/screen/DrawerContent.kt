@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
@@ -81,7 +82,7 @@ fun DrawerContent(
     ModalDrawerSheet(
         modifier = modifier
             .requiredWidth(300.dp)
-            .systemBarsPadding(),
+            .navigationBarsPadding(),
         drawerShape = RoundedCornerShape(
             topStart = 0.dp,
             bottomStart = 0.dp,

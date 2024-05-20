@@ -5,6 +5,9 @@ import com.z1.pokedex.core.database.di.databaseModule
 import com.z1.pokedex.core.database.di.databaseRepositoryModule
 import com.z1.pokedex.core.datasource.di.datasourceModule
 import com.z1.pokedex.core.network.di.networkModule
+import com.z1.pokedex.core.network.di.networkRepositoryModule
+import com.z1.pokedex.feature.details.di.detailsScreenModule
+import com.z1.pokedex.feature.favorites.presentation.di.favoritesModule
 import com.z1.pokedex.feature.home.di.homeScreenModule
 import com.z1.pokedex.feature.login.di.loginModule
 import com.z1.pokedex.feature.subscription.di.subscriptionModule
@@ -31,7 +34,10 @@ class Application: Application() {
                     navigationModule,
                     subscriptionModule,
                     databaseModule,
-                    databaseRepositoryModule
+                    databaseRepositoryModule,
+                    favoritesModule,
+                    detailsScreenModule,
+                    networkRepositoryModule
                 ).flatten()
             )
         }

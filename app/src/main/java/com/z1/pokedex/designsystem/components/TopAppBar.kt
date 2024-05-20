@@ -25,7 +25,7 @@ fun CustomTopAppBar(
 ) {
     TopAppBar(
         modifier = modifier
-            .statusBarsPadding(),
+            ,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = containerColor
         ),

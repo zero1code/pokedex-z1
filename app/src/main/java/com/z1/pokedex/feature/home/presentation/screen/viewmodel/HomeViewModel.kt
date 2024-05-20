@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.z1.pokedex.core.network.service.connectivity.ConnectivityService
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
-import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -35,13 +35,9 @@ class HomeViewModel(
     fun onEvent(event: Event) {
         when (event) {
             is Event.LoadNextPage -> loadNextPage()
-            is Event.UpdateSelectedPokemon -> updateClickedPokemonList(event.pokemonName)
-            is Event.GetPokemonDetails -> getPokemonDetails(event.pokemonName)
+            is Event.UpdateSelectedPokemon -> updateSelectedPokemonList(event.pokemonName)
             is Event.SignedUser -> getSignedUser()
             is Event.Logout -> signOut()
-            is Event.GetPokemonFavoritesName -> getPokemonFavoritesName()
-            is Event.AddFavorite -> insertPokemonFavorite(event.pokemon)
-            is Event.RemoveFavorite -> deletePokemonFavorite(event.pokemon)
         }
     }
 
@@ -78,49 +74,12 @@ class HomeViewModel(
         }
     }
 
-    private fun updateClickedPokemonList(pokemonName: String) =
+    private fun updateSelectedPokemonList(pokemonName: String) =
         viewModelScope.launch {
+            delay(500)
             _uiState.update {
                 it.copy(pokemonClickedList = it.pokemonClickedList + pokemonName)
             }
-        }
-
-    private fun getPokemonDetails(pokemonName: String) =
-        viewModelScope.launch {
-            if (_uiState.value.pokemonDetails?.name == pokemonName) return@launch
-            else resetPokemonDetails()
-
-            pokemonUseCase.fetchPokemonDetails(pokemonName)
-                .catch {
-                    it.printStackTrace()
-                }
-                .collect { pokemonDetails ->
-                    _uiState.update {
-                        it.copy(pokemonDetails = pokemonDetails)
-                    }
-                }
-        }
-
-    private fun getPokemonFavoritesName() =
-        viewModelScope.launch {
-            pokemonUseCase.getPokemonFavoritesName(_uiState.value.userData?.userId.orEmpty())
-                .catch { e -> e.printStackTrace() }
-                .collect { favorites ->
-                    _uiState.update {
-                        it.copy(pokemonFavoritesNameList = favorites)
-                    }
-                }
-        }
-
-    private fun insertPokemonFavorite(pokemon: Pokemon) =
-        viewModelScope.launch {
-            pokemonUseCase.insertPokemonFavorite(pokemon, _uiState.value.userData?.userId.orEmpty())
-
-        }
-
-    private fun deletePokemonFavorite(pokemon: Pokemon) =
-        viewModelScope.launch {
-            pokemonUseCase.deletePokemonFavorite(pokemon, _uiState.value.userData?.userId.orEmpty())
         }
 
     private fun getSignedUser() = viewModelScope.launch {
@@ -138,19 +97,7 @@ class HomeViewModel(
         }
     }
 
-    private fun resetPokemonDetails() =
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(pokemonDetails = null)
-            }
-        }
-
     private fun loadNextPage() {
         fetchPokemonPage(_nextPage)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-
     }
 }

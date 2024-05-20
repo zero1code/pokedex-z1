@@ -8,5 +8,4 @@ import kotlinx.coroutines.flow.Flow
 interface PokemonRepository {
     suspend fun fetchPokemonPage(page: Int): Flow<List<Pokemon>>
     suspend fun fetchPokemonImage(imageUrl: String): Drawable?
-    suspend fun fetchPokemonDetails(pokemonName: String): Flow<PokemonDetails>
 }
