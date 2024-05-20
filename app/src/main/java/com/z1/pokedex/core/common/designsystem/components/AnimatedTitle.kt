@@ -1,4 +1,4 @@
-package com.z1.pokedex.designsystem.components
+package com.z1.pokedex.core.common.designsystem.components
 
 import android.text.TextPaint
 import androidx.compose.foundation.Canvas

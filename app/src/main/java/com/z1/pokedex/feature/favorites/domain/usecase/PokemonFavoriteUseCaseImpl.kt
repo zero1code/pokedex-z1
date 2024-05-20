@@ -1,4 +1,4 @@
-package com.z1.pokedex.feature.favorites.presentation.domain.usecase
+package com.z1.pokedex.feature.favorites.domain.usecase
 
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap

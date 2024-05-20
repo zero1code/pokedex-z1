@@ -1,10 +1,8 @@
 package com.z1.pokedex.feature.home.presentation.screen.viewmodel
 
-import com.z1.pokedex.feature.home.domain.model.Pokemon
-
-sealed class Event {
-    data object LoadNextPage: Event()
-    data object SignedUser: Event()
-    data object Logout: Event()
-    data class UpdateSelectedPokemon(val pokemonName: String) : Event()
+sealed class HomeScreenEvent {
+    data object LoadNextPage: HomeScreenEvent()
+    data object SignedUser: HomeScreenEvent()
+    data object Logout: HomeScreenEvent()
+    data class UpdateSelectedPokemon(val pokemonName: String) : HomeScreenEvent()
 }

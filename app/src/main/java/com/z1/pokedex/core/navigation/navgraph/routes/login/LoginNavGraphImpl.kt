@@ -1,4 +1,4 @@
-package com.z1.pokedex.navigation.navgraph.routes.login
+package com.z1.pokedex.core.navigation.navgraph.routes.login
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.LinearEasing
@@ -7,8 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.z1.pokedex.core.navigation.navgraph.routes.home.HomeNavGraph
 import com.z1.pokedex.feature.login.presentation.LoginContainer
-import com.z1.pokedex.navigation.navgraph.routes.home.HomeNavGraph
 import org.koin.androidx.compose.get
 
 class LoginNavGraphImpl() : LoginNavGraph {

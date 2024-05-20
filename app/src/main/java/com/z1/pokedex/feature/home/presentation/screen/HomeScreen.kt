@@ -77,29 +77,27 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
 import com.z1.pokedex.core.common.orZero
-import com.z1.pokedex.designsystem.components.CustomIconButton
-import com.z1.pokedex.designsystem.components.CustomLazyList
-import com.z1.pokedex.designsystem.components.CustomLoading
-import com.z1.pokedex.designsystem.components.CustomShineImage
-import com.z1.pokedex.designsystem.components.CustomTopAppBar
-import com.z1.pokedex.designsystem.components.ImageWithShadow
-import com.z1.pokedex.designsystem.components.ListType
-import com.z1.pokedex.designsystem.extensions.normalizedItemPosition
-import com.z1.pokedex.designsystem.theme.CustomRippleTheme
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
-import com.z1.pokedex.feature.details.PokemonDetailsContainer
-import com.z1.pokedex.feature.details.screen.PokemonDetailsScreen
+import com.z1.pokedex.core.common.designsystem.components.CustomIconButton
+import com.z1.pokedex.core.common.designsystem.components.CustomLazyList
+import com.z1.pokedex.core.common.designsystem.components.CustomLoading
+import com.z1.pokedex.core.common.designsystem.components.CustomShineImage
+import com.z1.pokedex.core.common.designsystem.components.CustomTopAppBar
+import com.z1.pokedex.core.common.designsystem.components.ImageWithShadow
+import com.z1.pokedex.core.common.designsystem.components.ListType
+import com.z1.pokedex.core.common.designsystem.extensions.normalizedItemPosition
+import com.z1.pokedex.core.common.designsystem.theme.CustomRippleTheme
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.feature.details.presentation.PokemonDetailsContainer
 import com.z1.pokedex.feature.home.domain.model.Pokemon
-import com.z1.pokedex.feature.home.presentation.screen.viewmodel.Event
-import com.z1.pokedex.feature.home.presentation.screen.viewmodel.UiState
+import com.z1.pokedex.feature.home.presentation.screen.viewmodel.HomeScreenEvent
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    uiState: UiState,
-    onEvent: (Event) -> Unit,
+    homeScreenUiState: HomeScreenUiState,
+    onEvent: (HomeScreenEvent) -> Unit,
     navigateToLogin: () -> Unit,
     drawerNavigation: (String) -> Unit
 ) {
@@ -111,24 +109,24 @@ fun HomeScreen(
     val gridListState = rememberLazyGridState()
     val listState = rememberLazyListState()
 
-    LaunchedEffect(key1 = uiState.isConnected) {
-        if (uiState.isConnected) onEvent(Event.LoadNextPage)
+    LaunchedEffect(key1 = homeScreenUiState.isConnected) {
+        if (homeScreenUiState.isConnected) onEvent(HomeScreenEvent.LoadNextPage)
     }
 
     LaunchedEffect(key1 = Unit) {
-        if (uiState.isConnected.not()) onEvent(Event.LoadNextPage)
+        if (homeScreenUiState.isConnected.not()) onEvent(HomeScreenEvent.LoadNextPage)
     }
 
     LaunchedEffect(key1 = Unit) {
-        onEvent(Event.SignedUser)
+        onEvent(HomeScreenEvent.SignedUser)
     }
 
-    LaunchedEffect(key1 = uiState.userData) {
-        if (uiState.userData == null) navigateToLogin()
+    LaunchedEffect(key1 = homeScreenUiState.userData) {
+        if (homeScreenUiState.userData == null) navigateToLogin()
     }
 
     AnimatedVisibility(
-        visible = uiState.isFirstLoading,
+        visible = homeScreenUiState.isFirstLoading,
         enter = fadeIn(),
         exit = slideOutVertically { -it }
     ) {
@@ -147,20 +145,20 @@ fun HomeScreen(
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             DrawerContent(
-                userData = uiState.userData,
+                userData = homeScreenUiState.userData,
                 onNavigationItemClick = { route ->
                     drawerNavigation(route)
                     scope.launch { drawerState.close() }
                 },
                 onLogoutClick = {
-                    onEvent(Event.Logout)
+                    onEvent(HomeScreenEvent.Logout)
                     scope.launch { drawerState.close() }
                 }
             )
         }
     ) {
         AnimatedVisibility(
-            visible = uiState.isFirstLoading.not(),
+            visible = homeScreenUiState.isFirstLoading.not(),
             enter = slideInVertically { it },
             exit = fadeOut()
         ) {
@@ -189,7 +187,7 @@ fun HomeScreen(
                 } else {
                     PokemonList(
                         modifier = modifier,
-                        uiState = uiState,
+                        homeScreenUiState = homeScreenUiState,
                         listState = listState,
                         gridListState = gridListState,
                         onEvent = { onEvent(it) },
@@ -197,7 +195,7 @@ fun HomeScreen(
                         onLayoutListChange = { isShowGridList = it },
                         onPokemonClick = { pokemonClicked ->
                             pokemon = pokemonClicked
-                            onEvent(Event.UpdateSelectedPokemon(pokemonClicked.name))
+                            onEvent(HomeScreenEvent.UpdateSelectedPokemon(pokemonClicked.name))
                         },
                         onMenuNavigationClick = {
                             scope.launch { drawerState.open() }
@@ -220,8 +218,8 @@ fun HomeScreen(
 @Composable
 private fun PokemonList(
     modifier: Modifier = Modifier,
-    uiState: UiState,
-    onEvent: (Event) -> Unit,
+    homeScreenUiState: HomeScreenUiState,
+    onEvent: (HomeScreenEvent) -> Unit,
     listState: LazyListState,
     gridListState: LazyGridState,
     isShowGridList: Boolean,
@@ -255,9 +253,9 @@ private fun PokemonList(
         }
     }
 
-    LaunchedEffect(key1 = isLastItemVisible, key2 = uiState.isLastPage) {
-        if (isLastItemVisible && uiState.canLoadNextPage()) {
-            onEvent(Event.LoadNextPage)
+    LaunchedEffect(key1 = isLastItemVisible, key2 = homeScreenUiState.isLastPage) {
+        if (isLastItemVisible && homeScreenUiState.canLoadNextPage()) {
+            onEvent(HomeScreenEvent.LoadNextPage)
         }
     }
 
@@ -266,7 +264,7 @@ private fun PokemonList(
         contentAlignment = Alignment.TopCenter
     ) {
         CustomLazyList(
-            data = uiState.pokemonPage,
+            data = homeScreenUiState.pokemonPage,
             listState = listState,
             gridListState = gridListState,
             listType =
@@ -306,14 +304,14 @@ private fun PokemonList(
                     isShowGridList = isShowGridList,
                     imageModifier = imageModifier,
                     pokemon = item,
-                    pokemonClickedList = uiState.pokemonClickedList,
+                    pokemonClickedList = homeScreenUiState.pokemonClickedList,
                     onPokemonClick = { clickedPokemon ->
                         onPokemonClick(clickedPokemon)
                     }
                 )
             },
-            isLastPage = uiState.isLastPage,
-            isLoadingPage = uiState.isLoadingPage,
+            isLastPage = homeScreenUiState.isLastPage,
+            isLoadingPage = homeScreenUiState.isLoadingPage,
             loadingContent = {
                 CustomLoading(
                     iconSize = 100.dp,
@@ -323,10 +321,10 @@ private fun PokemonList(
             footerContent = {
                 CustomLoading(
                     iconSize = 100.dp,
-                    animateIcon = uiState.isConnected.not() && uiState.isLastPage,
+                    animateIcon = homeScreenUiState.isConnected.not() && homeScreenUiState.isLastPage,
                     animateVelocity = 5_000,
                     loadingMessage =
-                    if (uiState.isConnected && uiState.isLastPage) R.string.label_saw_all_pokemon
+                    if (homeScreenUiState.isConnected && homeScreenUiState.isLastPage) R.string.label_saw_all_pokemon
                     else R.string.label_connection_lost
                 )
             }

@@ -1,4 +1,4 @@
-package com.z1.pokedex.designsystem.extensions
+package com.z1.pokedex.core.common.designsystem.extensions
 
 import androidx.compose.foundation.lazy.LazyListLayoutInfo
 

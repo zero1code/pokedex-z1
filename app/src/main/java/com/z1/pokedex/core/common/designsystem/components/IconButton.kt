@@ -1,4 +1,4 @@
-package com.z1.pokedex.designsystem.components
+package com.z1.pokedex.core.common.designsystem.components
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton

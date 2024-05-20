@@ -47,9 +47,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
 import com.z1.pokedex.R
 import com.z1.pokedex.core.network.model.google.UserData
-import com.z1.pokedex.designsystem.theme.CoralRed
-import com.z1.pokedex.designsystem.theme.Glacier
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.designsystem.theme.CoralRed
+import com.z1.pokedex.core.common.designsystem.theme.Glacier
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
 
 enum class DrawerRoute(val route: String) {
     HOME("home"),

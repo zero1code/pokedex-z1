@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 
-package com.z1.pokedex.designsystem.components
+package com.z1.pokedex.core.common.designsystem.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.RowScope
@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
 
 @Composable
 fun CustomTopAppBar(

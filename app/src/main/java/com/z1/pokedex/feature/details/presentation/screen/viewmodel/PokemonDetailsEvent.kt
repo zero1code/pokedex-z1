@@ -1,11 +1,11 @@
-package com.z1.pokedex.feature.details.screen.viewmodel
+package com.z1.pokedex.feature.details.presentation.screen.viewmodel
 
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 
-sealed class Event {
-    data class GetPokemonDetails(val pokemonName: String) : Event()
-    data class GetPokemonFavoritesNameList(val userId: String) : Event()
-    data class AddFavorite(val pokemon: Pokemon) : Event()
-    data class RemoveFavorite(val pokemon: Pokemon) : Event()
-    data object SignedInUser : Event()
+sealed class PokemonDetailsEvent {
+    data class GetPokemonPokemonDetails(val pokemonName: String) : PokemonDetailsEvent()
+    data class GetPokemonFavoritesNameList(val userId: String) : PokemonDetailsEvent()
+    data class AddFavorite(val pokemon: Pokemon) : PokemonDetailsEvent()
+    data class RemoveFavorite(val pokemon: Pokemon) : PokemonDetailsEvent()
+    data object SignedInUser : PokemonDetailsEvent()
 }

@@ -37,17 +37,16 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.z1.pokedex.R
 import com.z1.pokedex.core.network.service.googlebilling.LocalGoogleBillingClient
-import com.z1.pokedex.designsystem.components.CustomTopAppBar
-import com.z1.pokedex.designsystem.theme.MediumSeaGreen
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
-import com.z1.pokedex.feature.subscription.presentation.screen.viewmodel.Event
-import com.z1.pokedex.feature.subscription.presentation.screen.viewmodel.UiState
+import com.z1.pokedex.core.common.designsystem.components.CustomTopAppBar
+import com.z1.pokedex.core.common.designsystem.theme.MediumSeaGreen
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.feature.subscription.presentation.screen.viewmodel.SubscriptionScreenEvent
 
 @Composable
 fun SubscriptionScreen(
     modifier: Modifier = Modifier,
-    uiState: UiState,
-    onEvent: (Event) -> Unit,
+    subscriptionScreenUiState: SubscriptionScreenUiState,
+    onEvent: (SubscriptionScreenEvent) -> Unit,
     onNavigationIconClick: () -> Unit
 ) {
 
@@ -55,7 +54,7 @@ fun SubscriptionScreen(
     val currentSubscription by subscription.subscriptionState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit) {
-        onEvent(Event.SignedUser)
+        onEvent(SubscriptionScreenEvent.SignedUser)
     }
 
     Column(
@@ -63,11 +62,11 @@ fun SubscriptionScreen(
     ) {
         Header(onNavigationIconClick = onNavigationIconClick)
         SubscriptionBenefits(
-            isShowSubscriptionButton = uiState.userData != null,
+            isShowSubscriptionButton = subscriptionScreenUiState.userData != null,
             onSubscriptionClick = {
                 subscription.checkSubscriptionStatus(
                     "premium",
-                    uiState.userData?.userId ?: ""
+                    subscriptionScreenUiState.userData?.userId ?: ""
                 )
             }
         )
@@ -258,7 +257,7 @@ fun SubscriptionPrice(modifier: Modifier = Modifier) {
 private fun ProScreenPreview() {
     PokedexZ1Theme {
         SubscriptionScreen(
-            uiState = UiState(),
+            subscriptionScreenUiState = SubscriptionScreenUiState(),
             onEvent = {},
             onNavigationIconClick = {}
         )

@@ -1,15 +1,15 @@
-package com.z1.pokedex.navigation.di
+package com.z1.pokedex.core.navigation.di
 
-import com.z1.pokedex.navigation.navgraph.NavGraph
-import com.z1.pokedex.navigation.navgraph.NavGraphImpl
-import com.z1.pokedex.navigation.navgraph.routes.favorites.FavoritesNavGraph
-import com.z1.pokedex.navigation.navgraph.routes.favorites.FavoritesNavGraphImpl
-import com.z1.pokedex.navigation.navgraph.routes.home.HomeNavGraph
-import com.z1.pokedex.navigation.navgraph.routes.home.HomeNavGraphImpl
-import com.z1.pokedex.navigation.navgraph.routes.login.LoginNavGraph
-import com.z1.pokedex.navigation.navgraph.routes.login.LoginNavGraphImpl
-import com.z1.pokedex.navigation.navgraph.routes.subscription.SubscriptionNavGraph
-import com.z1.pokedex.navigation.navgraph.routes.subscription.SubscriptionNavGraphImpl
+import com.z1.pokedex.core.navigation.navgraph.NavGraph
+import com.z1.pokedex.core.navigation.navgraph.NavGraphImpl
+import com.z1.pokedex.core.navigation.navgraph.routes.favorites.FavoritesNavGraph
+import com.z1.pokedex.core.navigation.navgraph.routes.favorites.FavoritesNavGraphImpl
+import com.z1.pokedex.core.navigation.navgraph.routes.home.HomeNavGraph
+import com.z1.pokedex.core.navigation.navgraph.routes.home.HomeNavGraphImpl
+import com.z1.pokedex.core.navigation.navgraph.routes.login.LoginNavGraph
+import com.z1.pokedex.core.navigation.navgraph.routes.login.LoginNavGraphImpl
+import com.z1.pokedex.core.navigation.navgraph.routes.subscription.SubscriptionNavGraph
+import com.z1.pokedex.core.navigation.navgraph.routes.subscription.SubscriptionNavGraphImpl
 import org.koin.dsl.module
 
 private val provideNavGraph = module {

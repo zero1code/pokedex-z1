@@ -27,9 +27,9 @@ import androidx.core.view.WindowCompat
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
 import com.z1.pokedex.core.network.service.googlebilling.GoogleBillingClient
 import com.z1.pokedex.core.network.service.googlebilling.LocalGoogleBillingClient
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
-import com.z1.pokedex.navigation.navgraph.NavGraph
-import com.z1.pokedex.navigation.register.NavigationGraph
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.navigation.navgraph.NavGraph
+import com.z1.pokedex.core.navigation.register.NavigationGraph
 import org.koin.android.ext.android.get
 
 class MainActivity : ComponentActivity() {

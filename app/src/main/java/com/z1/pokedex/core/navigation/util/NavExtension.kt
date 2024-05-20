@@ -1,9 +1,9 @@
-package com.z1.pokedex.navigation.util
+package com.z1.pokedex.core.navigation.util
 
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.z1.pokedex.navigation.register.RegisterNavGraph
+import com.z1.pokedex.core.navigation.register.RegisterNavGraph
 
 fun NavGraphBuilder.register(
     modifier: Modifier = Modifier,

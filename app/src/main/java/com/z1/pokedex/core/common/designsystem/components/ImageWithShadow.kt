@@ -1,4 +1,4 @@
-package com.z1.pokedex.designsystem.components
+package com.z1.pokedex.core.common.designsystem.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -11,7 +11,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
 
 @Composable
 fun ImageWithShadow(

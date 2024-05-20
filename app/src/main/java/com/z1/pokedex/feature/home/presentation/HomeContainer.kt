@@ -22,7 +22,7 @@ fun HomeContainer(
     HomeScreen(
         modifier = modifier
             .background(color = MaterialTheme.colorScheme.background),
-        uiState = uiState.value,
+        homeScreenUiState = uiState.value,
         onEvent = { newEvent -> onEvent(newEvent) },
         navigateToLogin = navigateToLogin,
         drawerNavigation = { route ->

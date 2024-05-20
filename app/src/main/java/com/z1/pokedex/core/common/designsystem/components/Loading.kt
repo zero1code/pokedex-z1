@@ -1,4 +1,4 @@
-package com.z1.pokedex.designsystem.components
+package com.z1.pokedex.core.common.designsystem.components
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.LinearEasing
@@ -24,8 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
-import com.z1.pokedex.designsystem.extensions.thenIf
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.designsystem.extensions.thenIf
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
 
 @Composable
 fun CustomLoading(

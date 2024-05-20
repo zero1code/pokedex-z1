@@ -1,4 +1,4 @@
-package com.z1.pokedex.core.network
+package com.z1.pokedex.core.network.service.pokedex
 
 import com.z1.pokedex.core.network.model.PokemonDetailsDTO
 import com.z1.pokedex.core.network.model.PokemonPageDto

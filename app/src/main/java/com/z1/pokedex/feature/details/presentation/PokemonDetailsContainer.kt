@@ -1,12 +1,12 @@
-package com.z1.pokedex.feature.details
+package com.z1.pokedex.feature.details.presentation
 
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.z1.pokedex.feature.details.screen.PokemonDetailsScreen
-import com.z1.pokedex.feature.details.screen.viewmodel.PokemonDetailsViewModel
+import com.z1.pokedex.feature.details.presentation.screen.PokemonDetailsScreen
+import com.z1.pokedex.feature.details.presentation.screen.viewmodel.PokemonDetailsViewModel
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import org.koin.androidx.compose.getViewModel
 
@@ -24,7 +24,7 @@ fun PokemonDetailsContainer(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background),
         pokemon = pokemon,
-        uiState = uiState.value,
+        pokemonDetailsUiState = uiState.value,
         onEvent = { newEvent -> onEvent(newEvent) },
         onNavigationIconClick = onNavigationIconClick,
     )

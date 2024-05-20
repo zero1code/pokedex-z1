@@ -1,7 +1,7 @@
-package com.z1.pokedex.feature.favorites.presentation.di
+package com.z1.pokedex.feature.favorites.di
 
-import com.z1.pokedex.feature.favorites.presentation.domain.usecase.PokemonFavoriteUseCase
-import com.z1.pokedex.feature.favorites.presentation.domain.usecase.PokemonFavoriteUseCaseImpl
+import com.z1.pokedex.feature.favorites.domain.usecase.PokemonFavoriteUseCase
+import com.z1.pokedex.feature.favorites.domain.usecase.PokemonFavoriteUseCaseImpl
 import com.z1.pokedex.feature.favorites.presentation.screen.viewmodel.FavoritesViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module

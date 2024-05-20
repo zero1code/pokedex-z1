@@ -1,4 +1,4 @@
-package com.z1.pokedex.feature.login.presentation.screen.viewmodel
+package com.z1.pokedex.core.network.service.googleauth
 
 data class SignInState(
     val isSignInSuccessful: Boolean = false,

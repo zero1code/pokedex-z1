@@ -1,6 +1,6 @@
-package com.z1.pokedex.navigation.navgraph.routes.home
+package com.z1.pokedex.core.navigation.navgraph.routes.home
 
-import com.z1.pokedex.navigation.register.RegisterNavGraph
+import com.z1.pokedex.core.navigation.register.RegisterNavGraph
 
 interface HomeNavGraph: RegisterNavGraph {
     fun route(): String

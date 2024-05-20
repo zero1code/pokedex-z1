@@ -33,10 +33,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
-import com.z1.pokedex.designsystem.theme.CoralRed
-import com.z1.pokedex.designsystem.theme.CustomRippleTheme
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
-import com.z1.pokedex.feature.login.presentation.screen.viewmodel.SignInState
+import com.z1.pokedex.core.common.designsystem.theme.CoralRed
+import com.z1.pokedex.core.common.designsystem.theme.CustomRippleTheme
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.network.service.googleauth.SignInState
 
 @Composable
 fun LoginScreen(

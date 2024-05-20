@@ -1,4 +1,4 @@
-package com.z1.pokedex.feature.details.screen
+package com.z1.pokedex.feature.details.presentation.screen
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
@@ -44,7 +44,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -62,21 +61,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
-import com.z1.pokedex.designsystem.components.AnimatedText
-import com.z1.pokedex.designsystem.components.CustomLinearProgress
-import com.z1.pokedex.designsystem.components.CustomLoading
-import com.z1.pokedex.designsystem.components.CustomShineImage
-import com.z1.pokedex.designsystem.components.CustomTopAppBar
-import com.z1.pokedex.designsystem.components.ImageWithShadow
-import com.z1.pokedex.designsystem.theme.CelticBlue
-import com.z1.pokedex.designsystem.theme.CoralRed
-import com.z1.pokedex.designsystem.theme.Glacier
-import com.z1.pokedex.designsystem.theme.LocalPokemonSpacing
-import com.z1.pokedex.designsystem.theme.MediumSeaGreen
-import com.z1.pokedex.designsystem.theme.OrangePeel
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
-import com.z1.pokedex.feature.details.screen.viewmodel.Event
-import com.z1.pokedex.feature.details.screen.viewmodel.UiState
+import com.z1.pokedex.core.common.designsystem.components.AnimatedText
+import com.z1.pokedex.core.common.designsystem.components.CustomLinearProgress
+import com.z1.pokedex.core.common.designsystem.components.CustomLoading
+import com.z1.pokedex.core.common.designsystem.components.CustomShineImage
+import com.z1.pokedex.core.common.designsystem.components.CustomTopAppBar
+import com.z1.pokedex.core.common.designsystem.components.ImageWithShadow
+import com.z1.pokedex.core.common.designsystem.theme.CelticBlue
+import com.z1.pokedex.core.common.designsystem.theme.CoralRed
+import com.z1.pokedex.core.common.designsystem.theme.Glacier
+import com.z1.pokedex.core.common.designsystem.theme.LocalPokemonSpacing
+import com.z1.pokedex.core.common.designsystem.theme.MediumSeaGreen
+import com.z1.pokedex.core.common.designsystem.theme.OrangePeel
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.feature.details.presentation.screen.viewmodel.PokemonDetailsEvent
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.domain.model.PokemonDetails
 import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_ATTACK
@@ -89,23 +87,23 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun PokemonDetailsScreen(
     modifier: Modifier = Modifier,
-    uiState: UiState,
+    pokemonDetailsUiState: PokemonDetailsUiState,
     pokemon: Pokemon,
-    onEvent: (Event) -> Unit,
+    onEvent: (PokemonDetailsEvent) -> Unit,
     onNavigationIconClick: () -> Unit,
 ) {
     LaunchedEffect(key1 = Unit) {
-        onEvent(Event.SignedInUser)
+        onEvent(PokemonDetailsEvent.SignedInUser)
     }
 
-    LaunchedEffect(key1 = uiState.userData) {
-        uiState.userData?.let {
-            onEvent(Event.GetPokemonFavoritesNameList(it.userId))
+    LaunchedEffect(key1 = pokemonDetailsUiState.userData) {
+        pokemonDetailsUiState.userData?.let {
+            onEvent(PokemonDetailsEvent.GetPokemonFavoritesNameList(it.userId))
         }
     }
 
-    LaunchedEffect(key1 = uiState.isConnected) {
-        onEvent(Event.GetPokemonDetails(pokemon.name))
+    LaunchedEffect(key1 = pokemonDetailsUiState.isConnected) {
+        onEvent(PokemonDetailsEvent.GetPokemonPokemonDetails(pokemon.name))
     }
 
     val colors = listOf(Color(pokemon.dominantColor()), Color(pokemon.vibrantDarkColor()))
@@ -125,18 +123,18 @@ fun PokemonDetailsScreen(
         Column {
             PokemonCard(pokemon = pokemon)
             PokemonDetailsCard(
-                isConnected = uiState.isConnected,
+                isConnected = pokemonDetailsUiState.isConnected,
                 chipColor = colors,
-                pokemonDetails = uiState.pokemonDetails
+                pokemonDetails = pokemonDetailsUiState.pokemonDetails
             )
         }
         Header(
             onNavigationIconClick = onNavigationIconClick,
             onFavoriteClick = { isFavorite ->
-                if (isFavorite) onEvent(Event.RemoveFavorite(pokemon))
-                else onEvent(Event.AddFavorite(pokemon))
+                if (isFavorite) onEvent(PokemonDetailsEvent.RemoveFavorite(pokemon))
+                else onEvent(PokemonDetailsEvent.AddFavorite(pokemon))
             },
-            isFavorite = uiState.isFavorite(pokemon.name)
+            isFavorite = pokemonDetailsUiState.isFavorite(pokemon.name)
         )
     }
 }
@@ -521,7 +519,7 @@ private fun PokemonCardPreview() {
     PokedexZ1Theme {
         PokemonDetailsScreen(
             pokemon = Pokemon(0, "Picachu", "https://pokeapi.co/api/v2/pokemon/1/"),
-            uiState = UiState(),
+            pokemonDetailsUiState = PokemonDetailsUiState(),
             onNavigationIconClick = {},
             onEvent = {}
         )

@@ -1,11 +1,11 @@
-package com.z1.pokedex.navigation.register
+package com.z1.pokedex.core.navigation.register
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.z1.pokedex.navigation.navgraph.NavGraph
-import com.z1.pokedex.navigation.util.register
+import com.z1.pokedex.core.navigation.navgraph.NavGraph
+import com.z1.pokedex.core.navigation.util.register
 
 @Composable
 fun NavigationGraph(

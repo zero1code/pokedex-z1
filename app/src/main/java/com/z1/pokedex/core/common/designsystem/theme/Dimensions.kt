@@ -1,4 +1,4 @@
-package com.z1.pokedex.designsystem.theme
+package com.z1.pokedex.core.common.designsystem.theme
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf

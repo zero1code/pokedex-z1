@@ -1,9 +1,6 @@
-package com.z1.pokedex.navigation.navgraph.routes.favorites
+package com.z1.pokedex.core.navigation.navgraph.routes.favorites
 
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.EaseInOut
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.ui.Modifier

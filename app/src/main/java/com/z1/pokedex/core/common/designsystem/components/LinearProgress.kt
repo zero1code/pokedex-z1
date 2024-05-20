@@ -1,4 +1,4 @@
-package com.z1.pokedex.designsystem.components
+package com.z1.pokedex.core.common.designsystem.components
 
 import androidx.annotation.StringRes
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -28,7 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.z1.pokedex.R
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
 
 @Composable
 fun CustomLinearProgress(

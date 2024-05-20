@@ -1,4 +1,4 @@
-package com.z1.pokedex.designsystem.components
+package com.z1.pokedex.core.common.designsystem.components
 
 import android.graphics.RenderEffect
 import android.graphics.Shader
@@ -44,9 +44,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
-import com.z1.pokedex.designsystem.extensions.normalizedItemPosition
-import com.z1.pokedex.designsystem.theme.CustomRippleTheme
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.designsystem.extensions.normalizedItemPosition
+import com.z1.pokedex.core.common.designsystem.theme.CustomRippleTheme
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import java.util.Locale
 import kotlin.math.absoluteValue

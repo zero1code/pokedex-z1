@@ -1,4 +1,4 @@
-package com.z1.pokedex.navigation.register
+package com.z1.pokedex.core.navigation.register
 
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder

@@ -21,7 +21,7 @@ fun SubscriptionContainer(
     SubscriptionScreen(
         modifier = modifier
             .background(color = MaterialTheme.colorScheme.background),
-        uiState = uiState.value,
+        subscriptionScreenUiState = uiState.value,
         onEvent = { newEvent -> onEvent(newEvent) },
         onNavigationIconClick = onNavigationIconClick
     )

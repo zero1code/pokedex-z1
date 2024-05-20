@@ -1,6 +1,6 @@
 package com.z1.pokedex.feature.details.di
 
-import com.z1.pokedex.feature.details.screen.viewmodel.PokemonDetailsViewModel
+import com.z1.pokedex.feature.details.presentation.screen.viewmodel.PokemonDetailsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

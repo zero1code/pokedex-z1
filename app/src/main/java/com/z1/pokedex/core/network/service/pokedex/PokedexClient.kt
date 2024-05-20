@@ -3,7 +3,6 @@ package com.z1.pokedex.core.network.service.pokedex
 import android.content.Context
 import coil.Coil
 import coil.request.ImageRequest
-import com.z1.pokedex.core.network.PokedexApi
 import com.z1.pokedex.core.network.model.PokemonDetailsDTO
 import com.z1.pokedex.core.network.model.PokemonPageDto
 import com.z1.pokedex.core.network.util.Constants

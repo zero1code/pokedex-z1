@@ -1,4 +1,4 @@
-package com.z1.pokedex.navigation.navgraph.routes.subscription
+package com.z1.pokedex.core.navigation.navgraph.routes.subscription
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.LinearEasing

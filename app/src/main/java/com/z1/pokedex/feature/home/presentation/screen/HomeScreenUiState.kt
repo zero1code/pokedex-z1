@@ -1,12 +1,11 @@
-package com.z1.pokedex.feature.home.presentation.screen.viewmodel
+package com.z1.pokedex.feature.home.presentation.screen
 
 import androidx.compose.runtime.Immutable
 import com.z1.pokedex.core.network.model.google.UserData
 import com.z1.pokedex.feature.home.domain.model.Pokemon
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails
 
 @Immutable
-data class UiState(
+data class HomeScreenUiState(
     val pokemonPage: List<Pokemon> = emptyList(),
     val isLastPage: Boolean = false,
     val isLoadingPage: Boolean = false,
