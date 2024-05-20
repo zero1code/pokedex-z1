@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.z1.pokedex.core.network.service.connectivity.ConnectivityService
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
-import com.z1.pokedex.feature.favorites.presentation.domain.usecase.PokemonFavoriteUseCase
+import com.z1.pokedex.feature.favorites.domain.usecase.PokemonFavoriteUseCase
+import com.z1.pokedex.feature.favorites.presentation.screen.FavoritesScreenUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,27 +21,27 @@ class FavoritesViewModel(
     connectivityService: ConnectivityService
 ): ViewModel() {
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState = combine(_uiState, connectivityService.isConnected) { uiState, isConnected ->
+    private val _FavoritesScreen_uiState = MutableStateFlow(FavoritesScreenUiState())
+    val uiState = combine(_FavoritesScreen_uiState, connectivityService.isConnected) { uiState, isConnected ->
         uiState.copy(
             isConnected = isConnected,
         )
     }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
-        _uiState.value
+        _FavoritesScreen_uiState.value
     )
 
-    fun onEvent(event: Event) {
-        when(event) {
-            is Event.GetFavorites -> getFavorites(event.userId)
-            is Event.SignedInUser -> getSignedInUser()
+    fun onEvent(favoritesScreenEvent: FavoritesScreenEvent) {
+        when(favoritesScreenEvent) {
+            is FavoritesScreenEvent.GetFavorites -> getFavorites(favoritesScreenEvent.userId)
+            is FavoritesScreenEvent.SignedInUser -> getSignedInUser()
         }
     }
 
     private fun getSignedInUser() = viewModelScope.launch {
         googleAuthClient.getSignedInUser()?.let { userData ->
-            _uiState.update {
+            _FavoritesScreen_uiState.update {
                 it.copy(userData = userData)
             }
         }
@@ -52,7 +53,7 @@ class FavoritesViewModel(
             pokemonFavoriteUseCase.getPokemonFavorites(userId)
                 .catch { e -> e.printStackTrace() }
                 .collect { favorites ->
-                    _uiState.update {
+                    _FavoritesScreen_uiState.update {
                         it.copy(
                             isLoading = false,
                             favorites = favorites

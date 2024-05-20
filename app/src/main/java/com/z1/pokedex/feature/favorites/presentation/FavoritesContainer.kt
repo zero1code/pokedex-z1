@@ -21,7 +21,7 @@ fun FavoritesContainer(
     FavoritesScreen(
         modifier = modifier
             .background(MaterialTheme.colorScheme.background),
-        uiState = uiState.value,
+        favoritesScreenUiState = uiState.value,
         onEvent = { newEvent -> onEvent(newEvent) },
         onNavigationIconClick = onNavigationIconClick
     )

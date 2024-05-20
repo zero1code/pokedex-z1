@@ -7,11 +7,11 @@ import com.z1.pokedex.core.datasource.di.datasourceModule
 import com.z1.pokedex.core.network.di.networkModule
 import com.z1.pokedex.core.network.di.networkRepositoryModule
 import com.z1.pokedex.feature.details.di.detailsScreenModule
-import com.z1.pokedex.feature.favorites.presentation.di.favoritesModule
+import com.z1.pokedex.feature.favorites.di.favoritesModule
 import com.z1.pokedex.feature.home.di.homeScreenModule
 import com.z1.pokedex.feature.login.di.loginModule
 import com.z1.pokedex.feature.subscription.di.subscriptionModule
-import com.z1.pokedex.navigation.di.navigationModule
+import com.z1.pokedex.core.navigation.di.navigationModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 

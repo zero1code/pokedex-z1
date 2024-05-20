@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.z1.pokedex.core.network.service.connectivity.ConnectivityService
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
 import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCase
+import com.z1.pokedex.feature.home.presentation.screen.HomeScreenUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,28 +23,28 @@ class HomeViewModel(
 ) : ViewModel() {
     private var _nextPage = 0
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState = combine(_uiState, connectivityService.isConnected) { uiState, isConnected ->
+    private val _HomeScreen_uiState = MutableStateFlow(HomeScreenUiState())
+    val uiState = combine(_HomeScreen_uiState, connectivityService.isConnected) { uiState, isConnected ->
         uiState.copy(
             isConnected = isConnected,
         )
     }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
-        initialValue = _uiState.value
+        initialValue = _HomeScreen_uiState.value
     )
-    fun onEvent(event: Event) {
-        when (event) {
-            is Event.LoadNextPage -> loadNextPage()
-            is Event.UpdateSelectedPokemon -> updateSelectedPokemonList(event.pokemonName)
-            is Event.SignedUser -> getSignedUser()
-            is Event.Logout -> signOut()
+    fun onEvent(homeScreenEvent: HomeScreenEvent) {
+        when (homeScreenEvent) {
+            is HomeScreenEvent.LoadNextPage -> loadNextPage()
+            is HomeScreenEvent.UpdateSelectedPokemon -> updateSelectedPokemonList(homeScreenEvent.pokemonName)
+            is HomeScreenEvent.SignedUser -> getSignedUser()
+            is HomeScreenEvent.Logout -> signOut()
         }
     }
 
     private fun fetchPokemonPage(page: Int = 0) {
         viewModelScope.launch {
-            _uiState.update {
+            _HomeScreen_uiState.update {
                 it.copy(
                     isLoadingPage = true,
                     isLastPage = false
@@ -52,7 +53,7 @@ class HomeViewModel(
             pokemonUseCase.fetchPokemonPage(page)
                 .catch { e ->
                     e.printStackTrace()
-                    _uiState.update {
+                    _HomeScreen_uiState.update {
                         it.copy(
                             isLoadingPage = false,
                             isFirstLoading = false,
@@ -61,7 +62,7 @@ class HomeViewModel(
                     }
                 }
                 .collect { newPage ->
-                    _uiState.update {
+                    _HomeScreen_uiState.update {
                         it.copy(
                             pokemonPage = it.pokemonPage + newPage,
                             isLastPage = newPage.isEmpty(),
@@ -77,14 +78,14 @@ class HomeViewModel(
     private fun updateSelectedPokemonList(pokemonName: String) =
         viewModelScope.launch {
             delay(500)
-            _uiState.update {
+            _HomeScreen_uiState.update {
                 it.copy(pokemonClickedList = it.pokemonClickedList + pokemonName)
             }
         }
 
     private fun getSignedUser() = viewModelScope.launch {
         googleAuthClient.getSignedInUser()?.let { userData ->
-            _uiState.update {
+            _HomeScreen_uiState.update {
                 it.copy(userData = userData)
             }
         }
@@ -92,7 +93,7 @@ class HomeViewModel(
 
     private fun signOut() = viewModelScope.launch {
         googleAuthClient.signOut()
-        _uiState.update {
+        _HomeScreen_uiState.update {
             it.copy(userData = null)
         }
     }
