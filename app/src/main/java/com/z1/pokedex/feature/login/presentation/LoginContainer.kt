@@ -10,11 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.gms.auth.api.identity.Identity
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
-import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClientImpl
 import com.z1.pokedex.feature.login.presentation.screen.LoginScreen
 import com.z1.pokedex.feature.login.presentation.screen.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch

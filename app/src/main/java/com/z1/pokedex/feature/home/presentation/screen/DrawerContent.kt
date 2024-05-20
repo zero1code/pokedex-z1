@@ -2,7 +2,6 @@ package com.z1.pokedex.feature.home.presentation.screen
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
@@ -21,8 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Payment
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.rounded.WorkspacePremium
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -30,6 +29,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -55,9 +54,10 @@ import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
 enum class DrawerRoute(val route: String) {
     HOME("home"),
     FAVORITES("favorites"),
-    PRO("pro")
+    SUBSCRIPTION("subscription")
 }
 
+@Immutable
 data class DrawerMenuItem(
     val icon: ImageVector,
     @StringRes val title: Int,
@@ -75,14 +75,14 @@ fun DrawerContent(
         listOf(
             DrawerMenuItem(Icons.Rounded.Home, R.string.label_home, DrawerRoute.HOME.route),
             DrawerMenuItem(Icons.Rounded.FavoriteBorder, R.string.label_favorites, DrawerRoute.FAVORITES.route),
-            DrawerMenuItem(Icons.Rounded.Payment, R.string.label_become_pro, DrawerRoute.PRO.route)
+            DrawerMenuItem(Icons.Rounded.WorkspacePremium, R.string.label_become_pro, DrawerRoute.SUBSCRIPTION.route)
         )
     }
 
     ModalDrawerSheet(
         modifier = modifier
             .requiredWidth(300.dp)
-            .systemBarsPadding(),
+            .navigationBarsPadding(),
         drawerShape = RoundedCornerShape(
             topStart = 0.dp,
             bottomStart = 0.dp,

@@ -2,33 +2,40 @@ package com.z1.pokedex.feature.home.presentation.screen.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.z1.pokedex.core.network.service.connectivity.ConnectivityService
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
 import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.net.UnknownHostException
 
 class HomeViewModel(
     private val pokemonUseCase: PokemonUseCase,
-    private val googleAuthClient: GoogleAuthClient
+    private val googleAuthClient: GoogleAuthClient,
+    connectivityService: ConnectivityService
 ) : ViewModel() {
     private var _nextPage = 0
 
     private val _uiState = MutableStateFlow(UiState())
-    val uiState = _uiState.stateIn(
+    val uiState = combine(_uiState, connectivityService.isConnected) { uiState, isConnected ->
+        uiState.copy(
+            isConnected = isConnected,
+        )
+    }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
         initialValue = _uiState.value
     )
-
     fun onEvent(event: Event) {
         when (event) {
             is Event.LoadNextPage -> loadNextPage()
-            is Event.UpdateSelectedPokemon -> updateClickedPokemonList(event.pokemonName)
-            is Event.GetPokemonDetails -> getPokemonDetails(event.pokemonName)
+            is Event.UpdateSelectedPokemon -> updateSelectedPokemonList(event.pokemonName)
             is Event.SignedUser -> getSignedUser()
             is Event.Logout -> signOut()
         }
@@ -36,57 +43,43 @@ class HomeViewModel(
 
     private fun fetchPokemonPage(page: Int = 0) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoadingPage = true) }
+            _uiState.update {
+                it.copy(
+                    isLoadingPage = true,
+                    isLastPage = false
+                )
+            }
             pokemonUseCase.fetchPokemonPage(page)
                 .catch { e ->
                     e.printStackTrace()
                     _uiState.update {
                         it.copy(
                             isLoadingPage = false,
-                            isFirstLoading = false
+                            isFirstLoading = false,
+                            isLastPage = e is UnknownHostException && it.isConnected.not()
                         )
                     }
                 }
                 .collect { newPage ->
                     _uiState.update {
                         it.copy(
-                            pokemonPage = it.pokemonPage.copy(
-                                count = newPage.count,
-                                previousPage = newPage.previousPage,
-                                nextPage = newPage.nextPage,
-                                pokemonList = it.pokemonPage.pokemonList + newPage.pokemonList
-                            ),
+                            pokemonPage = it.pokemonPage + newPage,
+                            isLastPage = newPage.isEmpty(),
                             isLoadingPage = false,
                             isFirstLoading = false
                         )
-
                     }
                     _nextPage++
                 }
         }
     }
 
-    private fun updateClickedPokemonList(pokemonName: String) =
+    private fun updateSelectedPokemonList(pokemonName: String) =
         viewModelScope.launch {
+            delay(500)
             _uiState.update {
                 it.copy(pokemonClickedList = it.pokemonClickedList + pokemonName)
             }
-        }
-
-    private fun getPokemonDetails(pokemonName: String) =
-        viewModelScope.launch {
-            if (_uiState.value.pokemonDetails?.name == pokemonName) return@launch
-            else resetPokemonDetails()
-
-            pokemonUseCase.fetchPokemonDetails(pokemonName)
-                .catch {
-                    it.printStackTrace()
-                }
-                .collect { pokemonDetails ->
-                    _uiState.update {
-                        it.copy(pokemonDetails = pokemonDetails)
-                    }
-                }
         }
 
     private fun getSignedUser() = viewModelScope.launch {
@@ -103,13 +96,6 @@ class HomeViewModel(
             it.copy(userData = null)
         }
     }
-
-    private fun resetPokemonDetails() =
-        viewModelScope.launch {
-            _uiState.update {
-                it.copy(pokemonDetails = null)
-            }
-        }
 
     private fun loadNextPage() {
         fetchPokemonPage(_nextPage)

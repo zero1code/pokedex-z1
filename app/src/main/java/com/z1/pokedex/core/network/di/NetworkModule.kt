@@ -3,7 +3,9 @@ package com.z1.pokedex.core.network.di
 import com.google.android.gms.auth.api.identity.Identity
 import com.z1.pokedex.BuildConfig
 import com.z1.pokedex.core.network.PokedexApi
-import com.z1.pokedex.core.network.service.PokedexClient
+import com.z1.pokedex.core.network.service.pokedex.PokedexClient
+import com.z1.pokedex.core.network.service.connectivity.ConnectivityService
+import com.z1.pokedex.core.network.service.connectivity.ConnectivityServiceImpl
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClientImpl
 import com.z1.pokedex.core.network.util.Constants
@@ -50,8 +52,13 @@ private val provideGoogleAuthClient = module {
     factory<GoogleAuthClient>{ GoogleAuthClientImpl(androidContext(), Identity.getSignInClient(androidContext())) }
 }
 
+private val provideConnectionRepository = module {
+    single<ConnectivityService>{ ConnectivityServiceImpl(androidContext()) }
+}
+
 val networkModule = listOf(
     provideApi,
     providePokedexClient,
-    provideGoogleAuthClient
+    provideGoogleAuthClient,
+    provideConnectionRepository
 )

@@ -8,8 +8,8 @@ import com.z1.pokedex.navigation.navgraph.routes.home.HomeNavGraph
 import com.z1.pokedex.navigation.navgraph.routes.home.HomeNavGraphImpl
 import com.z1.pokedex.navigation.navgraph.routes.login.LoginNavGraph
 import com.z1.pokedex.navigation.navgraph.routes.login.LoginNavGraphImpl
-import com.z1.pokedex.navigation.navgraph.routes.pro.ProNavGraph
-import com.z1.pokedex.navigation.navgraph.routes.pro.ProNavGraphImpl
+import com.z1.pokedex.navigation.navgraph.routes.subscription.SubscriptionNavGraph
+import com.z1.pokedex.navigation.navgraph.routes.subscription.SubscriptionNavGraphImpl
 import org.koin.dsl.module
 
 private val provideNavGraph = module {
@@ -28,8 +28,8 @@ private val provideFavoritesNavGraph = module {
     factory<FavoritesNavGraph>{ FavoritesNavGraphImpl() }
 }
 
-private val provideProNavGraph = module {
-    factory<ProNavGraph>{ ProNavGraphImpl() }
+private val provideSubscriptionNavGraph = module {
+    factory<SubscriptionNavGraph>{ SubscriptionNavGraphImpl() }
 }
 
 val navigationModule = listOf(
@@ -37,5 +37,5 @@ val navigationModule = listOf(
     provideLoginNavGraph,
     provideHomeNavGraph,
     provideFavoritesNavGraph,
-    provideProNavGraph
+    provideSubscriptionNavGraph
 )

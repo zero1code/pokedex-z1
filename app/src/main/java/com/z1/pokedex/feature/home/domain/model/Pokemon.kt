@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.palette.graphics.Palette
 
 data class Pokemon(
+    var page: Int = 0,
     val name: String,
     val url: String,
     val image: Bitmap? = null,

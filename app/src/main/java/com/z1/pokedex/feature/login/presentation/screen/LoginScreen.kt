@@ -52,7 +52,7 @@ fun LoginScreen(
         animationSpec = infiniteRepeatable(
             animation = tween(30_000, easing = LinearEasing),
         ),
-        label = "animation=rotation"
+        label = "animation-rotation"
     )
 
     val color = remember { Animatable(CoralRed) }

@@ -7,9 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class LoginViewModel(
-    private val loginNavGraph: HomeNavGraph
-): ViewModel() {
+class LoginViewModel: ViewModel() {
 
     private var _state = MutableStateFlow(SignInState())
     val state get() = _state.asStateFlow()

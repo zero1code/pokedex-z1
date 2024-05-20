@@ -1,4 +1,3 @@
-import org.apache.tools.ant.util.JavaEnvUtils.VERSION_1_8
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -17,7 +16,7 @@ android {
         applicationId = "com.z1.pokedex"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
+        versionCode = 10
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -26,6 +25,10 @@ android {
         }
 
         buildConfigField("String", "WEB_CLIENT_ID", getProperties("WEB_CLIENT_ID"))
+
+        ksp {
+            arg("room.schemaLocation","$projectDir/src/main/java/com/z1/pokedex/core/database/schema")
+        }
     }
 
     buildTypes {
@@ -49,7 +52,7 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.5"
     }
     packaging {
         resources {
@@ -68,12 +71,14 @@ dependencies {
     //Jetpack compose
     implementation(platform("androidx.compose:compose-bom:2024.04.00"))
     implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation("androidx.compose.material:material-icons-extended:1.6.5")
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+
+    implementation("androidx.compose.ui:ui-graphics:1.7.0-alpha08")
+    implementation("androidx.navigation:navigation-compose:2.8.0-alpha08")
+    implementation("androidx.compose.animation:animation:1.7.0-alpha08")
 
     //Room
     val roomVersion = "2.6.1"
@@ -112,6 +117,9 @@ dependencies {
 
     //Play Services Auth
     implementation("com.google.android.gms:play-services-auth:21.0.0")
+
+    //Billing
+    implementation("com.android.billingclient:billing-ktx:6.2.1")
 
     //Test
     testImplementation("junit:junit:4.13.2")
