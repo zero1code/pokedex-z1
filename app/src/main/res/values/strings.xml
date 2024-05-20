@@ -8,6 +8,22 @@
     <string name="label_weight">Weight</string>
     <string name="label_height">Height</string>
     <string name="label_loading_pokemon_details">Loading Details</string>
+    <string name="label_welcome">Welcome</string>
+
+    <string name="label_signin_with_google">Sign in with Google</string>
+    <string name="label_logout">Logout</string>
+    <string name="label_home">Home</string>
+    <string name="label_favorites">Favorites</string>
+    <string name="label_become_pro">Become a pro member</string>
+    <string name="label_subscription">Subscription</string>
+    <string name="label_subscribe_now">Subscribe now</string>
+    <string name="label_subscription_benefit_1">Search a pokemon by name</string>
+    <string name="label_subscription_benefit_2">Save a lot of pokemon as favorite</string>
+    <string name="label_subscription_benefit_3">See pokemon image and name in the list</string>
+    <string name="label_subscription_benefit_4">See the basics statics of a selected pokemon</string>
+
+    <string name="label_connection_lost">Connection lost. Waiting to get connection again.</string>
+    <string name="label_no_favorite_found">No pokemon found. Add some pokemon as favorite and back here again.</string>
 
     <string name="label_hp">HP</string>
     <string name="label_atk">ATK</string>
