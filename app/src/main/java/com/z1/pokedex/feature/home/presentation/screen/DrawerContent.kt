@@ -50,6 +50,7 @@ import com.z1.pokedex.core.network.model.google.UserData
 import com.z1.pokedex.core.common.designsystem.theme.CoralRed
 import com.z1.pokedex.core.common.designsystem.theme.Glacier
 import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
 
 enum class DrawerRoute(val route: String) {
     HOME("home"),
@@ -67,7 +68,7 @@ data class DrawerMenuItem(
 @Composable
 fun DrawerContent(
     modifier: Modifier = Modifier,
-    userData: UserData?,
+    userData: UserDataState?,
     onNavigationItemClick: (String) -> Unit,
     onLogoutClick: () -> Unit
 ) {
@@ -115,7 +116,7 @@ fun DrawerContent(
 @Composable
 private fun DrawerHeader(
     modifier: Modifier = Modifier,
-    userData: UserData?
+    userData: UserDataState?
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -137,7 +138,7 @@ private fun DrawerHeader(
             contentDescription = null,
             alpha = 0.2f
         )
-        userData?.let {
+        userData?.data?.let {
             AsyncImage(
                 modifier = Modifier
                     .padding(start = PokedexZ1Theme.dimen.medium)
@@ -234,10 +235,10 @@ private fun DrawerFooter(
 private fun DrawerContentPreview() {
     PokedexZ1Theme {
         DrawerContent(
-            userData = UserData(
-                "",
+            userData = UserDataState(
+                UserData("1", "Airton Oliveira", ""),
                 "Airton Oliveira",
-                ""
+                true
             ),
             onNavigationItemClick = {},
             onLogoutClick = {}

@@ -11,6 +11,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataEvent
+import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataViewModel
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
 import com.z1.pokedex.feature.login.presentation.screen.LoginScreen
 import com.z1.pokedex.feature.login.presentation.screen.viewmodel.LoginViewModel
@@ -25,19 +27,20 @@ fun LoginContainer(
 ) {
     val googleAuthUiClient = get<GoogleAuthClient>()
 
+    val userDataViewModel: UserDataViewModel = getViewModel()
+    val userDataState = userDataViewModel.state.collectAsStateWithLifecycle()
+
     val scope = rememberCoroutineScope()
     val viewModel: LoginViewModel = getViewModel()
-    val state by viewModel.state.collectAsStateWithLifecycle()
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 scope.launch {
-                    val signInResult = googleAuthUiClient.signInWithIntent(
+                    googleAuthUiClient.signInWithIntent(
                         intent = result.data ?: return@launch
                     )
-                    viewModel.onSignInResult(signInResult)
                 }
             }
         }
@@ -57,7 +60,7 @@ fun LoginContainer(
     LoginScreen(
         modifier = modifier
             .background(color = MaterialTheme.colorScheme.background),
-        state = state,
+        userDataState = userDataState.value,
         onSignInClick = { signInRequest() },
         navigateToHomeScreen = navigateToHomeScreen
     )

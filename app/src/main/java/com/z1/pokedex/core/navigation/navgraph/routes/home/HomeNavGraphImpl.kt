@@ -7,9 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataViewModel
 import com.z1.pokedex.core.navigation.navgraph.routes.login.LoginNavGraph
 import com.z1.pokedex.feature.home.presentation.HomeContainer
 import org.koin.androidx.compose.get
+import org.koin.androidx.compose.getViewModel
 
 class HomeNavGraphImpl(): HomeNavGraph {
     private val baseRoute = "home"

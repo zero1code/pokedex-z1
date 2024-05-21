@@ -1,8 +1,8 @@
 package com.z1.pokedex.core.network.model.google
 
 data class SignResult(
-    val data: UserData?,
-    val errorMessage: String?
+    val data: UserData? = null,
+    val message: String? = null
 )
 
 data class UserData(

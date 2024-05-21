@@ -7,7 +7,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 private val provideFavoritesViewModel = module {
-    viewModel { FavoritesViewModel(get(), get(), get()) }
+    viewModel { FavoritesViewModel(get(), get()) }
 }
 
 private val providePokemonFavoriteUseCase = module {

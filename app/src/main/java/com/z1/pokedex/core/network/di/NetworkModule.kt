@@ -1,5 +1,6 @@
 package com.z1.pokedex.core.network.di
 
+import androidx.activity.ComponentActivity
 import com.google.android.gms.auth.api.identity.Identity
 import com.z1.pokedex.BuildConfig
 import com.z1.pokedex.core.network.service.pokedex.PokedexApi
@@ -8,6 +9,7 @@ import com.z1.pokedex.core.network.service.connectivity.ConnectivityService
 import com.z1.pokedex.core.network.service.connectivity.ConnectivityServiceImpl
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
 import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClientImpl
+import com.z1.pokedex.core.network.service.googlebilling.GoogleBillingClient
 import com.z1.pokedex.core.network.util.Constants
 import com.z1.pokedex.core.network.util.NullOrEmptyConverterFactory
 import okhttp3.ConnectionPool
@@ -49,7 +51,11 @@ private val providePokedexClient = module {
 }
 
 private val provideGoogleAuthClient = module {
-    factory<GoogleAuthClient>{ GoogleAuthClientImpl(androidContext(), Identity.getSignInClient(androidContext())) }
+    single<GoogleAuthClient>{ GoogleAuthClientImpl(androidContext(), Identity.getSignInClient(androidContext())) }
+}
+
+private val provideGoogleBillingClient = module {
+    factory { (activity: ComponentActivity) -> GoogleBillingClient(activity) }
 }
 
 private val provideConnectionRepository = module {
@@ -60,5 +66,6 @@ val networkModule = listOf(
     provideApi,
     providePokedexClient,
     provideGoogleAuthClient,
-    provideConnectionRepository
+    provideConnectionRepository,
+    provideGoogleBillingClient
 )

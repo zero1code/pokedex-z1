@@ -7,13 +7,12 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 private val provideHomeViewModel = module {
-    viewModel { HomeViewModel(get(), get(), get()) }
+    viewModel { HomeViewModel(get(), get()) }
 }
 
 private val providePokemonUseCase = module {
     single<PokemonUseCase> { PokemonUseCaseImpl(get()) }
 }
-
 
 val homeScreenModule = listOf(
     provideHomeViewModel,

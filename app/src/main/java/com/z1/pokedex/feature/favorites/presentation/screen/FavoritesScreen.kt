@@ -60,71 +60,67 @@ fun FavoritesScreen(
     var pokemon: Pokemon? by remember { mutableStateOf(null) }
     var detailsIsOpen by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = Unit) {
-        onEvent(FavoritesScreenEvent.SignedInUser)
-    }
-
     LaunchedEffect(key1 = favoritesScreenUiState.userData) {
         favoritesScreenUiState.userData?.let {
             onEvent(FavoritesScreenEvent.GetFavorites(it.userId))
         }
     }
-        AnimatedContent(
-            targetState = pokemon,
-            transitionSpec = {
-                if (targetState != null) {
-                    slideInHorizontally(
-                        tween(easing =  FastOutLinearInEasing)
-                    ) { it } togetherWith
-                            ExitTransition.KeepUntilTransitionsFinished
-                } else {
-                    slideInHorizontally { -it } togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
+    AnimatedContent(
+        targetState = pokemon,
+        transitionSpec = {
+            if (targetState != null) {
+                slideInHorizontally(
+                    tween(easing = FastOutLinearInEasing)
+                ) { it } togetherWith
+                        ExitTransition.KeepUntilTransitionsFinished
+            } else {
+                slideInHorizontally { -it } togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
+            }
+        },
+        label = "favorites"
+    ) { pokemonState ->
+        if (pokemonState != null) {
+            detailsIsOpen = true
+            PokemonDetailsContainer(
+                pokemon = pokemonState,
+                onNavigationIconClick = {
+                    pokemon = null
                 }
-            },
-            label = "favorites"
-        ) { pokemonState ->
-            if (pokemonState != null) {
-                detailsIsOpen = true
-                PokemonDetailsContainer(
-                    pokemon = pokemonState,
-                    onNavigationIconClick = {
-                        pokemon = null
+            )
+        } else {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                FavoritesList(
+                    favorites = favoritesScreenUiState.favorites,
+                    onPokemonClick = { pokemonClicked ->
+                        pokemon = pokemonClicked
                     }
                 )
-            } else {
-                Box(
-                    modifier = modifier.fillMaxSize(),
-                    contentAlignment = Alignment.TopCenter
-                ) {
-                    FavoritesList(
-                        favorites = favoritesScreenUiState.favorites,
-                        onPokemonClick = { pokemonClicked ->
-                            pokemon = pokemonClicked
-                        }
-                    )
-                    Header(
-                        onNavigationIconClick = {
-                            onNavigationIconClick()
-                            detailsIsOpen = false
-                        }
-                    )
-                }
+                Header(
+                    onNavigationIconClick = {
+                        onNavigationIconClick()
+                        detailsIsOpen = false
+                    }
+                )
+            }
 
-                AnimatedVisibility(
-                    visible = favoritesScreenUiState.isLoading.not() && favoritesScreenUiState.favorites.isEmpty() && pokemon == null,
-                    enter = EnterTransition.None,
-                    exit = ExitTransition.None
-                ) {
-                    CustomLoading(
-                        modifier = Modifier.fillMaxSize(),
-                        iconSize = 100.dp,
-                        animateIcon = true,
-                        animateVelocity = 5_000,
-                        loadingMessage = R.string.label_no_favorite_found
-                    )
-                }
+            AnimatedVisibility(
+                visible = favoritesScreenUiState.isLoading.not() && favoritesScreenUiState.favorites.isEmpty() && pokemon == null,
+                enter = EnterTransition.None,
+                exit = ExitTransition.None
+            ) {
+                CustomLoading(
+                    modifier = Modifier.fillMaxSize(),
+                    iconSize = 100.dp,
+                    animateIcon = true,
+                    animateVelocity = 5_000,
+                    loadingMessage = R.string.label_no_favorite_found
+                )
             }
         }
+    }
 
     AnimatedVisibility(
         visible = favoritesScreenUiState.isLoading,

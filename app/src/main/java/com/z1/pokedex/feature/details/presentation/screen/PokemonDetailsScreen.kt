@@ -92,9 +92,6 @@ fun PokemonDetailsScreen(
     onEvent: (PokemonDetailsEvent) -> Unit,
     onNavigationIconClick: () -> Unit,
 ) {
-    LaunchedEffect(key1 = Unit) {
-        onEvent(PokemonDetailsEvent.SignedInUser)
-    }
 
     LaunchedEffect(key1 = pokemonDetailsUiState.userData) {
         pokemonDetailsUiState.userData?.let {

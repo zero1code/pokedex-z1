@@ -5,7 +5,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 private val provideDetailsViewModel = module {
-    viewModel { PokemonDetailsViewModel(get(), get(), get(), get()) }
+    viewModel { PokemonDetailsViewModel(get(), get(), get()) }
 }
 
 val detailsScreenModule = listOf(

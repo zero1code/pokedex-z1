@@ -36,12 +36,13 @@ import com.z1.pokedex.R
 import com.z1.pokedex.core.common.designsystem.theme.CoralRed
 import com.z1.pokedex.core.common.designsystem.theme.CustomRippleTheme
 import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
 import com.z1.pokedex.core.network.service.googleauth.SignInState
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    state: SignInState,
+    userDataState: UserDataState,
     onSignInClick: () -> Unit,
     navigateToHomeScreen: () -> Unit
 ) {
@@ -79,8 +80,8 @@ fun LoginScreen(
     }
 
     val context = LocalContext.current
-    LaunchedEffect(key1 = state.signInError) {
-        state.signInError?.let {
+    LaunchedEffect(key1 = userDataState.message) {
+        userDataState.message?.let {
             Toast.makeText(
                 context,
                 it,
@@ -89,8 +90,8 @@ fun LoginScreen(
         }
     }
 
-    LaunchedEffect(key1 = state.isSignInSuccessful) {
-        if (state.isSignInSuccessful) navigateToHomeScreen()
+    LaunchedEffect(key1 = userDataState.data) {
+        if (userDataState.data != null) navigateToHomeScreen()
     }
 
     ConstraintLayout(
@@ -189,7 +190,7 @@ fun LoginScreen(
 private fun LoginScreenPreview() {
     PokedexZ1Theme {
         LoginScreen(
-            state = SignInState(),
+            userDataState = UserDataState(),
             onSignInClick = {},
             navigateToHomeScreen = {}
         )

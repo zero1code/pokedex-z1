@@ -87,6 +87,7 @@ import com.z1.pokedex.core.common.designsystem.components.ListType
 import com.z1.pokedex.core.common.designsystem.extensions.normalizedItemPosition
 import com.z1.pokedex.core.common.designsystem.theme.CustomRippleTheme
 import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
 import com.z1.pokedex.feature.details.presentation.PokemonDetailsContainer
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.HomeScreenEvent
@@ -96,9 +97,10 @@ import kotlin.math.absoluteValue
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    homeScreenUiState: HomeScreenUiState,
+    userData: UserDataState,
+    uiState: HomeScreenUiState,
     onEvent: (HomeScreenEvent) -> Unit,
-    navigateToLogin: () -> Unit,
+    onLogoutClick: () -> Unit,
     drawerNavigation: (String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -109,24 +111,16 @@ fun HomeScreen(
     val gridListState = rememberLazyGridState()
     val listState = rememberLazyListState()
 
-    LaunchedEffect(key1 = homeScreenUiState.isConnected) {
-        if (homeScreenUiState.isConnected) onEvent(HomeScreenEvent.LoadNextPage)
+    LaunchedEffect(key1 = uiState.isConnected) {
+        if (uiState.isConnected) onEvent(HomeScreenEvent.LoadNextPage)
     }
 
     LaunchedEffect(key1 = Unit) {
-        if (homeScreenUiState.isConnected.not()) onEvent(HomeScreenEvent.LoadNextPage)
-    }
-
-    LaunchedEffect(key1 = Unit) {
-        onEvent(HomeScreenEvent.SignedUser)
-    }
-
-    LaunchedEffect(key1 = homeScreenUiState.userData) {
-        if (homeScreenUiState.userData == null) navigateToLogin()
+        if (uiState.isConnected.not()) onEvent(HomeScreenEvent.LoadNextPage)
     }
 
     AnimatedVisibility(
-        visible = homeScreenUiState.isFirstLoading,
+        visible = uiState.isFirstLoading,
         enter = fadeIn(),
         exit = slideOutVertically { -it }
     ) {
@@ -145,20 +139,20 @@ fun HomeScreen(
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             DrawerContent(
-                userData = homeScreenUiState.userData,
+                userData = userData,
                 onNavigationItemClick = { route ->
                     drawerNavigation(route)
                     scope.launch { drawerState.close() }
                 },
                 onLogoutClick = {
-                    onEvent(HomeScreenEvent.Logout)
+                    onLogoutClick()
                     scope.launch { drawerState.close() }
                 }
             )
         }
     ) {
         AnimatedVisibility(
-            visible = homeScreenUiState.isFirstLoading.not(),
+            visible = uiState.isFirstLoading.not(),
             enter = slideInVertically { it },
             exit = fadeOut()
         ) {
@@ -187,7 +181,7 @@ fun HomeScreen(
                 } else {
                     PokemonList(
                         modifier = modifier,
-                        homeScreenUiState = homeScreenUiState,
+                        homeScreenUiState = uiState,
                         listState = listState,
                         gridListState = gridListState,
                         onEvent = { onEvent(it) },

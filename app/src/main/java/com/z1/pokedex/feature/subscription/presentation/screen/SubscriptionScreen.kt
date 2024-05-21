@@ -24,8 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,9 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.z1.pokedex.R
-import com.z1.pokedex.core.network.service.googlebilling.LocalGoogleBillingClient
 import com.z1.pokedex.core.common.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.core.common.designsystem.theme.MediumSeaGreen
 import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
@@ -50,13 +46,6 @@ fun SubscriptionScreen(
     onNavigationIconClick: () -> Unit
 ) {
 
-    val subscription = LocalGoogleBillingClient.current
-    val currentSubscription by subscription.subscriptionState.collectAsStateWithLifecycle()
-
-    LaunchedEffect(key1 = Unit) {
-        onEvent(SubscriptionScreenEvent.SignedUser)
-    }
-
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -64,10 +53,10 @@ fun SubscriptionScreen(
         SubscriptionBenefits(
             isShowSubscriptionButton = subscriptionScreenUiState.userData != null,
             onSubscriptionClick = {
-                subscription.checkSubscriptionStatus(
-                    "premium",
-                    subscriptionScreenUiState.userData?.userId ?: ""
-                )
+//                subscription.checkSubscriptionStatus(
+//                    "premium",
+//                    subscriptionScreenUiState.userData?.userId ?: ""
+//                )
             }
         )
     }

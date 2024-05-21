@@ -9,19 +9,4 @@ import kotlinx.coroutines.flow.update
 
 class LoginViewModel: ViewModel() {
 
-    private var _state = MutableStateFlow(SignInState())
-    val state get() = _state.asStateFlow()
-
-    fun onSignInResult(result: SignResult) {
-        _state.update {
-            it.copy(
-                isSignInSuccessful = result.data != null,
-                signInError = result.errorMessage
-            )
-        }
-    }
-
-    fun resetState() {
-        _state.update { SignInState() }
-    }
 }
