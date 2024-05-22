@@ -1,6 +1,5 @@
 package com.z1.pokedex.core.database.mapper
 
-import com.z1.pokedex.core.database.model.PokemonEntity
 import com.z1.pokedex.core.database.model.PokemonFavoriteEntity
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 

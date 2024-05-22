@@ -37,7 +37,6 @@ import com.z1.pokedex.core.common.designsystem.theme.CoralRed
 import com.z1.pokedex.core.common.designsystem.theme.CustomRippleTheme
 import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
 import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
-import com.z1.pokedex.core.network.service.googleauth.SignInState
 
 @Composable
 fun LoginScreen(

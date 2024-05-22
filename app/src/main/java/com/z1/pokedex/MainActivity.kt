@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,16 +31,17 @@ import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
 import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataViewModel
 import com.z1.pokedex.core.navigation.navgraph.NavGraph
 import com.z1.pokedex.core.navigation.register.NavigationGraph
-import com.z1.pokedex.core.network.service.googlebilling.GoogleBillingClient
-import com.z1.pokedex.core.network.service.googlebilling.LocalGoogleBillingClient
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class MainActivity : ComponentActivity() {
-    private val userDataViewModel: UserDataViewModel by viewModel()
+    private val userDataViewModel: UserDataViewModel by viewModel(parameters = {
+        parametersOf(this)
+    })
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -66,37 +66,35 @@ class MainActivity : ComponentActivity() {
                     color = Color(0xFFF7D02C)
                 ) {
                     val navGraph = get<NavGraph>()
-                    CompositionLocalProvider(
-                        LocalGoogleBillingClient provides GoogleBillingClient(this@MainActivity)
+                    AnimatedVisibility(
+                        visible = userDataState.isLoading(),
+                        enter = fadeIn(),
+                        exit = scaleOut()
                     ) {
-                        AnimatedVisibility(
-                            visible = userDataState.isLoading(),
-                            enter = fadeIn(),
-                            exit = scaleOut()
+                        Image(
+                            painter = painterResource(id = R.drawable.picachu_face),
+                            contentDescription = null,
+                            alignment = Alignment.Center,
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                    AnimatedVisibility(
+                        visible = userDataState.isLoading().not(),
+                        enter = fadeIn(),
+                        exit = ExitTransition.None
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.TopCenter
                         ) {
-                            Image(painter = painterResource(id = R.drawable.picachu_face),
+                            Image(
+                                painter = painterResource(id = R.drawable.picachu_face),
                                 contentDescription = null,
-                                alignment = Alignment.Center,
                                 contentScale = ContentScale.Fit
                             )
-                        }
-                        AnimatedVisibility(
-                            visible = userDataState.isLoading().not(),
-                            enter = fadeIn(),
-                            exit = ExitTransition.None
-                        ) {
-                            Box(
-                                contentAlignment = Alignment.TopCenter
-                            ) {
-                                Image(painter = painterResource(id = R.drawable.picachu_face),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Fit
-                                )
-                                PokedexZ1App(
-                                    navGraph = navGraph,
-                                    isSignedIn = userDataState.data != null && isFirstOpen
-                                )
-                            }
+                            PokedexZ1App(
+                                navGraph = navGraph,
+                                isSignedIn = userDataState.data != null && isFirstOpen
+                            )
                         }
                     }
                 }

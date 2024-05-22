@@ -2,7 +2,8 @@ package com.z1.pokedex.feature.home.presentation.screen.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.z1.pokedex.core.network.service.connectivity.ConnectivityService
+import com.z1.pokedex.core.common.shared.services.connectivity.ConnectivityService
+import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCase
 import com.z1.pokedex.feature.home.presentation.screen.HomeScreenUiState
 import kotlinx.coroutines.delay
@@ -31,10 +32,10 @@ class HomeViewModel(
         SharingStarted.Eagerly,
         initialValue = _uiState.value
     )
-    fun onEvent(homeScreenEvent: HomeScreenEvent) {
-        when (homeScreenEvent) {
+    fun onEvent(event: HomeScreenEvent) {
+        when (event) {
             is HomeScreenEvent.LoadNextPage -> loadNextPage()
-            is HomeScreenEvent.UpdateSelectedPokemon -> updateSelectedPokemonList(homeScreenEvent.pokemonName)
+            is HomeScreenEvent.PokemonClicked -> lastPokemonClicked(event.pokemon)
         }
     }
 
@@ -76,6 +77,18 @@ class HomeViewModel(
             delay(500)
             _uiState.update {
                 it.copy(pokemonClickedList = it.pokemonClickedList + pokemonName)
+            }
+        }
+
+    private fun lastPokemonClicked(pokemon: Pokemon?) =
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    lastPokemonClicked = pokemon
+                )
+            }
+            pokemon?.let {
+                updateSelectedPokemonList(pokemon.name)
             }
         }
 

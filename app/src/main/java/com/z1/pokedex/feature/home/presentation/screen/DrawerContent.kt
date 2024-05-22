@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -46,10 +45,12 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
 import com.z1.pokedex.R
-import com.z1.pokedex.core.network.model.google.UserData
 import com.z1.pokedex.core.common.designsystem.theme.CoralRed
 import com.z1.pokedex.core.common.designsystem.theme.Glacier
+import com.z1.pokedex.core.common.designsystem.theme.MediumSeaGreen
 import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.model.google.SubscriptionState
+import com.z1.pokedex.core.common.model.google.UserData
 import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
 
 enum class DrawerRoute(val route: String) {
@@ -68,15 +69,25 @@ data class DrawerMenuItem(
 @Composable
 fun DrawerContent(
     modifier: Modifier = Modifier,
-    userData: UserDataState?,
+    userData: UserDataState,
     onNavigationItemClick: (String) -> Unit,
     onLogoutClick: () -> Unit
 ) {
     val navigationItems = remember {
         listOf(
             DrawerMenuItem(Icons.Rounded.Home, R.string.label_home, DrawerRoute.HOME.route),
-            DrawerMenuItem(Icons.Rounded.FavoriteBorder, R.string.label_favorites, DrawerRoute.FAVORITES.route),
-            DrawerMenuItem(Icons.Rounded.WorkspacePremium, R.string.label_become_pro, DrawerRoute.SUBSCRIPTION.route)
+            DrawerMenuItem(
+                Icons.Rounded.FavoriteBorder,
+                R.string.label_favorites,
+                if (userData.isPremium()) DrawerRoute.FAVORITES.route
+                else DrawerRoute.SUBSCRIPTION.route
+            ),
+            DrawerMenuItem(
+                Icons.Rounded.WorkspacePremium,
+                if (userData.isPremium()) R.string.label_you_are_pro
+                else R.string.label_become_pro,
+                DrawerRoute.SUBSCRIPTION.route
+            )
         )
     }
 
@@ -100,6 +111,7 @@ fun DrawerContent(
                 DrawerHeader(userData = userData)
                 Spacer(modifier = Modifier.height(PokedexZ1Theme.dimen.medium))
                 DrawerNavigationItems(
+                    isPremium = userData.isPremium(),
                     navigationItems = navigationItems,
                     onNavigationItemClick = { route ->
                         onNavigationItemClick(route)
@@ -174,6 +186,7 @@ private fun DrawerHeader(
 @Composable
 private fun DrawerNavigationItems(
     modifier: Modifier = Modifier,
+    isPremium: Boolean,
     navigationItems: List<DrawerMenuItem>,
     onNavigationItemClick: (String) -> Unit
 ) {
@@ -185,7 +198,15 @@ private fun DrawerNavigationItems(
             modifier = modifier
                 .padding(end = PokedexZ1Theme.dimen.medium),
             label = { Text(text = stringResource(id = item.title)) },
-            icon = { Icon(imageVector = item.icon, contentDescription = null) },
+            icon = {
+                Icon(
+                    imageVector = item.icon,
+                    contentDescription = null,
+                    tint =
+                    if (item.route == "subscription" && isPremium) MediumSeaGreen
+                    else MaterialTheme.colorScheme.onBackground
+                )
+            },
             selected = selectedItem == item,
             onClick = {
                 selectedItem = item
@@ -238,6 +259,7 @@ private fun DrawerContentPreview() {
             userData = UserDataState(
                 UserData("1", "Airton Oliveira", ""),
                 "Airton Oliveira",
+                SubscriptionState(),
                 true
             ),
             onNavigationItemClick = {},

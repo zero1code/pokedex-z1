@@ -1,7 +1,6 @@
 package com.z1.pokedex.core.database.repository.favorites
 
 import android.graphics.drawable.Drawable
-import com.z1.pokedex.core.database.model.PokemonEntity
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import kotlinx.coroutines.flow.Flow
 

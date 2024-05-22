@@ -4,7 +4,6 @@ package com.z1.pokedex.core.common.designsystem.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar

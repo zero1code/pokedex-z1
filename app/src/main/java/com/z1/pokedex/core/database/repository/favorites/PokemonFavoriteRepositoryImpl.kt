@@ -3,7 +3,7 @@ package com.z1.pokedex.core.database.repository.favorites
 import com.z1.pokedex.core.database.dao.PokemonDao
 import com.z1.pokedex.core.database.mapper.asFavoriteEntity
 import com.z1.pokedex.core.database.mapper.asModel
-import com.z1.pokedex.core.network.service.pokedex.PokedexClient
+import com.z1.pokedex.core.network.services.pokedex.PokedexClient
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

@@ -2,7 +2,7 @@ package com.z1.pokedex.feature.favorites.presentation.screen.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.z1.pokedex.core.network.service.connectivity.ConnectivityService
+import com.z1.pokedex.core.common.shared.services.connectivity.ConnectivityService
 import com.z1.pokedex.feature.favorites.domain.usecase.PokemonFavoriteUseCase
 import com.z1.pokedex.feature.favorites.presentation.screen.FavoritesScreenUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,9 +29,9 @@ class FavoritesViewModel(
         _uiState.value
     )
 
-    fun onEvent(favoritesScreenEvent: FavoritesScreenEvent) {
-        when(favoritesScreenEvent) {
-            is FavoritesScreenEvent.GetFavorites -> getFavorites(favoritesScreenEvent.userId)
+    fun onEvent(event: FavoritesScreenEvent) {
+        when(event) {
+            is FavoritesScreenEvent.GetFavorites -> getFavorites(event.userId)
         }
     }
 

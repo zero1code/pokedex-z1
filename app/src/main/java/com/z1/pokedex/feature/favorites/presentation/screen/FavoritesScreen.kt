@@ -46,6 +46,7 @@ import com.z1.pokedex.core.common.designsystem.components.CustomLoading
 import com.z1.pokedex.core.common.designsystem.components.CustomTopAppBar
 import com.z1.pokedex.core.common.designsystem.components.PokemonItem
 import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
 import com.z1.pokedex.feature.details.presentation.PokemonDetailsContainer
 import com.z1.pokedex.feature.favorites.presentation.screen.viewmodel.FavoritesScreenEvent
 import com.z1.pokedex.feature.home.domain.model.Pokemon
@@ -53,15 +54,16 @@ import com.z1.pokedex.feature.home.domain.model.Pokemon
 @Composable
 fun FavoritesScreen(
     modifier: Modifier = Modifier,
-    favoritesScreenUiState: FavoritesScreenUiState,
+    userData: UserDataState,
+    uiState: FavoritesScreenUiState,
     onEvent: (FavoritesScreenEvent) -> Unit,
     onNavigationIconClick: () -> Unit
 ) {
     var pokemon: Pokemon? by remember { mutableStateOf(null) }
     var detailsIsOpen by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = favoritesScreenUiState.userData) {
-        favoritesScreenUiState.userData?.let {
+    LaunchedEffect(key1 = userData.data) {
+        userData.data?.let {
             onEvent(FavoritesScreenEvent.GetFavorites(it.userId))
         }
     }
@@ -85,7 +87,8 @@ fun FavoritesScreen(
                 pokemon = pokemonState,
                 onNavigationIconClick = {
                     pokemon = null
-                }
+                },
+                navigateToSubscriptionScreen = {}
             )
         } else {
             Box(
@@ -93,7 +96,7 @@ fun FavoritesScreen(
                 contentAlignment = Alignment.TopCenter
             ) {
                 FavoritesList(
-                    favorites = favoritesScreenUiState.favorites,
+                    favorites = uiState.favorites,
                     onPokemonClick = { pokemonClicked ->
                         pokemon = pokemonClicked
                     }
@@ -107,7 +110,7 @@ fun FavoritesScreen(
             }
 
             AnimatedVisibility(
-                visible = favoritesScreenUiState.isLoading.not() && favoritesScreenUiState.favorites.isEmpty() && pokemon == null,
+                visible = uiState.isLoading.not() && uiState.favorites.isEmpty() && pokemon == null,
                 enter = EnterTransition.None,
                 exit = ExitTransition.None
             ) {
@@ -123,7 +126,7 @@ fun FavoritesScreen(
     }
 
     AnimatedVisibility(
-        visible = favoritesScreenUiState.isLoading,
+        visible = uiState.isLoading,
         enter = fadeIn(),
         exit = slideOutVertically(
             animationSpec = tween(easing = LinearEasing)

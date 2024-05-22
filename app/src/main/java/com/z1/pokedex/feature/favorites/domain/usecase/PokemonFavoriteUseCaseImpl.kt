@@ -12,8 +12,8 @@ class PokemonFavoriteUseCaseImpl(
     private val pokemonFavoriteRepository: PokemonFavoriteRepository
 ): PokemonFavoriteUseCase {
     override suspend fun getPokemonFavorites(userId: String): Flow<List<Pokemon>> {
-        return pokemonFavoriteRepository.getPokemonFavorites(userId).map { newPage ->
-            val updatedPokemonList = newPage.map { pokemon ->
+        return pokemonFavoriteRepository.getPokemonFavorites(userId).map { pokemonList ->
+            val updatedPokemonList = pokemonList.map { pokemon ->
                 val updatedPokemon = pokemonFavoriteRepository.fetchPokemonImage(pokemon.getImageUrl())?.let {
                     val bitmap = it.toBitmap().copy(Bitmap.Config.ARGB_8888, false)
                     val palette = Palette.from(bitmap).generate()

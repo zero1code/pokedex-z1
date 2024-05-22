@@ -3,8 +3,8 @@ package com.z1.pokedex.feature.details.presentation.screen.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.z1.pokedex.core.database.repository.favorites.PokemonFavoriteRepository
-import com.z1.pokedex.core.network.service.connectivity.ConnectivityService
-import com.z1.pokedex.core.network.service.pokedex.repository.PokemonDetailsRepository
+import com.z1.pokedex.core.common.shared.services.connectivity.ConnectivityService
+import com.z1.pokedex.core.network.services.pokedex.repository.PokemonDetailsRepository
 import com.z1.pokedex.feature.details.presentation.screen.PokemonDetailsUiState
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,12 +32,12 @@ class PokemonDetailsViewModel(
         initialValue = _uiState.value
     )
 
-    fun onEvent(pokemonDetailsEvent: PokemonDetailsEvent) {
-        when (pokemonDetailsEvent) {
-            is PokemonDetailsEvent.GetPokemonFavoritesNameList -> getPokemonFavoritesNameList(pokemonDetailsEvent.userId)
-            is PokemonDetailsEvent.GetPokemonPokemonDetails -> getPokemonDetails(pokemonDetailsEvent.pokemonName)
-            is PokemonDetailsEvent.AddFavorite -> insertPokemonFavorite(pokemonDetailsEvent.pokemon)
-            is PokemonDetailsEvent.RemoveFavorite -> deletePokemonFavorite(pokemonDetailsEvent.pokemon)
+    fun onEvent(event: PokemonDetailsEvent) {
+        when (event) {
+            is PokemonDetailsEvent.GetPokemonFavoritesNameList -> getPokemonFavoritesNameList(event.userId)
+            is PokemonDetailsEvent.GetPokemonPokemonDetails -> getPokemonDetails(event.pokemonName)
+            is PokemonDetailsEvent.AddFavorite -> insertPokemonFavorite(event.pokemon, event.userId)
+            is PokemonDetailsEvent.RemoveFavorite -> deletePokemonFavorite(event.pokemon, event.userId)
         }
     }
 
@@ -70,19 +70,19 @@ class PokemonDetailsViewModel(
 
         }
 
-    private fun insertPokemonFavorite(pokemon: Pokemon) =
+    private fun insertPokemonFavorite(pokemon: Pokemon, userId: String) =
         viewModelScope.launch {
             pokemonFavoriteRepository.insertPokemonFavorite(
                 pokemon,
-                _uiState.value.userData?.userId.orEmpty()
+                userId
             )
         }
 
-    private fun deletePokemonFavorite(pokemon: Pokemon) =
+    private fun deletePokemonFavorite(pokemon: Pokemon, userId: String) =
         viewModelScope.launch {
             pokemonFavoriteRepository.deletePokemonFavorite(
                 pokemon,
-                _uiState.value.userData?.userId.orEmpty()
+                userId
             )
         }
 

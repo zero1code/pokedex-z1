@@ -3,11 +3,9 @@ package com.z1.pokedex.feature.home.domain.usecase
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
 import androidx.palette.graphics.Palette
-import com.z1.pokedex.core.database.repository.favorites.PokemonFavoriteRepository
 import com.z1.pokedex.core.datasource.repository.PokemonRepository
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 class PokemonUseCaseImpl(
