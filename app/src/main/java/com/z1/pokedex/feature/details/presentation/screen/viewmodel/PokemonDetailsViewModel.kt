@@ -2,11 +2,12 @@ package com.z1.pokedex.feature.details.presentation.screen.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.z1.pokedex.core.database.repository.favorites.PokemonFavoriteRepository
 import com.z1.pokedex.core.common.shared.services.connectivity.ConnectivityService
-import com.z1.pokedex.core.network.services.pokedex.repository.PokemonDetailsRepository
+import com.z1.pokedex.feature.details.domain.repository.PokemonDetailsRepository
 import com.z1.pokedex.feature.details.presentation.screen.PokemonDetailsUiState
+import com.z1.pokedex.feature.favorites.domain.repository.PokemonFavoriteRepository
 import com.z1.pokedex.feature.home.domain.model.Pokemon
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -37,13 +38,16 @@ class PokemonDetailsViewModel(
             is PokemonDetailsEvent.GetPokemonFavoritesNameList -> getPokemonFavoritesNameList(event.userId)
             is PokemonDetailsEvent.GetPokemonPokemonDetails -> getPokemonDetails(event.pokemonName)
             is PokemonDetailsEvent.AddFavorite -> insertPokemonFavorite(event.pokemon, event.userId)
-            is PokemonDetailsEvent.RemoveFavorite -> deletePokemonFavorite(event.pokemon, event.userId)
+            is PokemonDetailsEvent.RemoveFavorite -> deletePokemonFavorite(
+                event.pokemon,
+                event.userId
+            )
         }
     }
 
     private fun getPokemonFavoritesNameList(userId: String) =
         viewModelScope.launch {
-            pokemonFavoriteRepository.getPokemonFavoritesName(userId)
+            pokemonDetailsRepository.getPokemonFavoritesName(userId)
                 .catch { e -> e.printStackTrace() }
                 .collect { favoritesName ->
                     _uiState.update {
@@ -58,16 +62,15 @@ class PokemonDetailsViewModel(
         viewModelScope.launch {
             if (_uiState.value.pokemonDetails?.name == pokemonName) return@launch
             else resetPokemonDetails()
-            pokemonDetailsRepository.fetchPokemonDetails(pokemonName)
-                .catch {
-                    it.printStackTrace()
+            runCatching {
+                async { pokemonDetailsRepository.fetchPokemonDetails(pokemonName) }.await()
+            }.onSuccess { pokemonDetails ->
+                _uiState.update {
+                    it.copy(pokemonDetails = pokemonDetails)
                 }
-                .collect { pokemonDetails ->
-                    _uiState.update {
-                        it.copy(pokemonDetails = pokemonDetails)
-                    }
-                }
-
+            }.onFailure { e ->
+                e.printStackTrace()
+            }
         }
 
     private fun insertPokemonFavorite(pokemon: Pokemon, userId: String) =

@@ -82,12 +82,12 @@ import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
 import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
 import com.z1.pokedex.feature.details.presentation.screen.viewmodel.PokemonDetailsEvent
 import com.z1.pokedex.feature.home.domain.model.Pokemon
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_ATTACK
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_DEFENSE
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_EXP
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_HP
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_SPEED
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails.Companion.MAX_ATTACK
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails.Companion.MAX_DEFENSE
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails.Companion.MAX_EXP
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails.Companion.MAX_HP
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails.Companion.MAX_SPEED
 import java.util.concurrent.TimeUnit
 
 @Composable

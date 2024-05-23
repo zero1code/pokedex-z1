@@ -90,6 +90,7 @@ import com.z1.pokedex.core.common.orZero
 import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
 import com.z1.pokedex.feature.details.presentation.PokemonDetailsContainer
 import com.z1.pokedex.feature.home.domain.model.Pokemon
+import com.z1.pokedex.feature.home.presentation.screen.component.CustomModalDrawerSheet
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.HomeScreenEvent
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
@@ -138,7 +139,7 @@ fun HomeScreen(
         drawerState = drawerState,
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
-            DrawerContent(
+            CustomModalDrawerSheet(
                 userData = userData,
                 onNavigationItemClick = { route ->
                     drawerNavigation(route)
