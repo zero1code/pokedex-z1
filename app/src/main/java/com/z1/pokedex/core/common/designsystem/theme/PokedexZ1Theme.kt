@@ -2,7 +2,6 @@ package com.z1.pokedex.core.common.designsystem.theme
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.compositionLocalOf
 
 object PokedexZ1Theme {
     val dimen: Dimensions

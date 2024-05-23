@@ -1,8 +1,6 @@
 package com.z1.pokedex.core.network.model
 
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
-import kotlin.random.Random
 
 
 data class PokemonDetailsDTO(

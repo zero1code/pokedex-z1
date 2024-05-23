@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
@@ -32,8 +33,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.WorkspacePremium
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
@@ -74,36 +79,36 @@ import com.z1.pokedex.core.common.designsystem.theme.LocalPokemonSpacing
 import com.z1.pokedex.core.common.designsystem.theme.MediumSeaGreen
 import com.z1.pokedex.core.common.designsystem.theme.OrangePeel
 import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
 import com.z1.pokedex.feature.details.presentation.screen.viewmodel.PokemonDetailsEvent
 import com.z1.pokedex.feature.home.domain.model.Pokemon
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_ATTACK
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_DEFENSE
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_EXP
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_HP
-import com.z1.pokedex.feature.home.domain.model.PokemonDetails.Companion.MAX_SPEED
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails.Companion.MAX_ATTACK
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails.Companion.MAX_DEFENSE
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails.Companion.MAX_EXP
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails.Companion.MAX_HP
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails.Companion.MAX_SPEED
 import java.util.concurrent.TimeUnit
 
 @Composable
 fun PokemonDetailsScreen(
     modifier: Modifier = Modifier,
-    pokemonDetailsUiState: PokemonDetailsUiState,
+    userData: UserDataState,
+    uiState: PokemonDetailsUiState,
     pokemon: Pokemon,
     onEvent: (PokemonDetailsEvent) -> Unit,
     onNavigationIconClick: () -> Unit,
+    goToSubscriptionScreen: () -> Unit,
 ) {
-    LaunchedEffect(key1 = Unit) {
-        onEvent(PokemonDetailsEvent.SignedInUser)
-    }
 
-    LaunchedEffect(key1 = pokemonDetailsUiState.userData) {
-        pokemonDetailsUiState.userData?.let {
+    LaunchedEffect(key1 = userData.data) {
+        userData.data?.let {
             onEvent(PokemonDetailsEvent.GetPokemonFavoritesNameList(it.userId))
         }
     }
 
-    LaunchedEffect(key1 = pokemonDetailsUiState.isConnected) {
-        onEvent(PokemonDetailsEvent.GetPokemonPokemonDetails(pokemon.name))
+    LaunchedEffect(key1 = uiState.isConnected) {
+        if (userData.isPremium()) onEvent(PokemonDetailsEvent.GetPokemonPokemonDetails(pokemon.name))
     }
 
     val colors = listOf(Color(pokemon.dominantColor()), Color(pokemon.vibrantDarkColor()))
@@ -123,18 +128,33 @@ fun PokemonDetailsScreen(
         Column {
             PokemonCard(pokemon = pokemon)
             PokemonDetailsCard(
-                isConnected = pokemonDetailsUiState.isConnected,
+                isConnected = uiState.isConnected,
+                isPremium = userData.isPremium(),
                 chipColor = colors,
-                pokemonDetails = pokemonDetailsUiState.pokemonDetails
+                pokemonDetails = uiState.pokemonDetails,
+                onSubscriptionClick = goToSubscriptionScreen
             )
         }
         Header(
             onNavigationIconClick = onNavigationIconClick,
             onFavoriteClick = { isFavorite ->
-                if (isFavorite) onEvent(PokemonDetailsEvent.RemoveFavorite(pokemon))
-                else onEvent(PokemonDetailsEvent.AddFavorite(pokemon))
+                if (userData.isPremium()) {
+                    if (isFavorite) onEvent(
+                        PokemonDetailsEvent.RemoveFavorite(
+                            userData.data?.userId.orEmpty(),
+                            pokemon
+                        )
+                    )
+                    else onEvent(
+                        PokemonDetailsEvent.AddFavorite(
+                            userData.data?.userId.orEmpty(),
+                            pokemon
+                        )
+                    )
+                }
+                else goToSubscriptionScreen()
             },
-            isFavorite = pokemonDetailsUiState.isFavorite(pokemon.name)
+            isFavorite = uiState.isFavorite(pokemon.name)
         )
     }
 }
@@ -300,8 +320,10 @@ private fun PokemonCard(
 private fun PokemonDetailsCard(
     modifier: Modifier = Modifier,
     isConnected: Boolean,
+    isPremium: Boolean,
     chipColor: List<Color>,
-    pokemonDetails: PokemonDetails?
+    pokemonDetails: PokemonDetails?,
+    onSubscriptionClick: () -> Unit
 ) {
     ConstraintLayout(
         modifier = modifier
@@ -350,7 +372,7 @@ private fun PokemonDetailsCard(
                 label = "pokemon-details"
             ) { details ->
 
-                if (details != null) {
+                if (isPremium.not()) {
                     Column(
                         modifier = Modifier
                             .padding(
@@ -360,29 +382,73 @@ private fun PokemonDetailsCard(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        PokemonType(
-                            chipColor = chipColor,
-                            types = details.types
+                        CustomLoading(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp),
+                            iconSize = PokedexZ1Theme.dimen.loadingIcon,
+                            animateIcon = true,
+                            animateVelocity = 5_000,
+                            loadingMessage = R.string.label_premium_statistics
                         )
-                        PhysicsDetails(
-                            weight = details.getWeightString(),
-                            height = details.getHeightString()
-                        )
-                        HabilityDetails(details)
+
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MediumSeaGreen
+                            ),
+                            onClick = onSubscriptionClick
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.WorkspacePremium,
+                                contentDescription = null
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .padding(start = PokedexZ1Theme.dimen.medium),
+                                text = stringResource(
+                                    id = R.string.label_subscribe_now
+                                )
+                            )
+                        }
                     }
                 } else {
-                    CustomLoading(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 300.dp),
-                        iconSize = PokedexZ1Theme.dimen.loadingIcon,
-                        animateIcon = true,
-                        animateVelocity =
-                        if (isConnected) 1_000 else 5_000,
-                        loadingMessage =
-                        if (isConnected) R.string.label_loading_pokemon_details
-                        else R.string.label_connection_lost
-                    )
+
+                    if (details != null) {
+                        Column(
+                            modifier = Modifier
+                                .padding(
+                                    horizontal = PokedexZ1Theme.dimen.medium
+                                )
+                                .heightIn(min = 300.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            PokemonType(
+                                chipColor = chipColor,
+                                types = details.types
+                            )
+                            PhysicsDetails(
+                                weight = details.getWeightString(),
+                                height = details.getHeightString()
+                            )
+                            HabilityDetails(details)
+                        }
+                    } else {
+                        CustomLoading(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 300.dp),
+                            iconSize = PokedexZ1Theme.dimen.loadingIcon,
+                            animateIcon = true,
+                            animateVelocity =
+                            if (isConnected) 1_000 else 5_000,
+                            loadingMessage =
+                            if (isConnected) R.string.label_loading_pokemon_details
+                            else R.string.label_connection_lost
+                        )
+                    }
                 }
             }
         }
@@ -519,8 +585,10 @@ private fun PokemonCardPreview() {
     PokedexZ1Theme {
         PokemonDetailsScreen(
             pokemon = Pokemon(0, "Picachu", "https://pokeapi.co/api/v2/pokemon/1/"),
-            pokemonDetailsUiState = PokemonDetailsUiState(),
+            userData = UserDataState(),
+            uiState = PokemonDetailsUiState(),
             onNavigationIconClick = {},
+            goToSubscriptionScreen = {},
             onEvent = {}
         )
     }

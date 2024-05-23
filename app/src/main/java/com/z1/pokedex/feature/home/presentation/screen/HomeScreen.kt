@@ -76,7 +76,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
-import com.z1.pokedex.core.common.orZero
 import com.z1.pokedex.core.common.designsystem.components.CustomIconButton
 import com.z1.pokedex.core.common.designsystem.components.CustomLazyList
 import com.z1.pokedex.core.common.designsystem.components.CustomLoading
@@ -87,8 +86,11 @@ import com.z1.pokedex.core.common.designsystem.components.ListType
 import com.z1.pokedex.core.common.designsystem.extensions.normalizedItemPosition
 import com.z1.pokedex.core.common.designsystem.theme.CustomRippleTheme
 import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.orZero
+import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
 import com.z1.pokedex.feature.details.presentation.PokemonDetailsContainer
 import com.z1.pokedex.feature.home.domain.model.Pokemon
+import com.z1.pokedex.feature.home.presentation.screen.component.CustomModalDrawerSheet
 import com.z1.pokedex.feature.home.presentation.screen.viewmodel.HomeScreenEvent
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
@@ -96,37 +98,30 @@ import kotlin.math.absoluteValue
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    homeScreenUiState: HomeScreenUiState,
+    userData: UserDataState,
+    uiState: HomeScreenUiState,
     onEvent: (HomeScreenEvent) -> Unit,
-    navigateToLogin: () -> Unit,
+    onLogoutClick: () -> Unit,
+    navigateToSubscriptionScreen: () -> Unit,
     drawerNavigation: (String) -> Unit
 ) {
     val scope = rememberCoroutineScope()
 
     var isShowGridList by remember { mutableStateOf(false) }
-    var pokemon: Pokemon? by remember { mutableStateOf(null) }
 
     val gridListState = rememberLazyGridState()
     val listState = rememberLazyListState()
 
-    LaunchedEffect(key1 = homeScreenUiState.isConnected) {
-        if (homeScreenUiState.isConnected) onEvent(HomeScreenEvent.LoadNextPage)
+    LaunchedEffect(key1 = uiState.isConnected) {
+        if (uiState.isConnected) onEvent(HomeScreenEvent.LoadNextPage)
     }
 
     LaunchedEffect(key1 = Unit) {
-        if (homeScreenUiState.isConnected.not()) onEvent(HomeScreenEvent.LoadNextPage)
-    }
-
-    LaunchedEffect(key1 = Unit) {
-        onEvent(HomeScreenEvent.SignedUser)
-    }
-
-    LaunchedEffect(key1 = homeScreenUiState.userData) {
-        if (homeScreenUiState.userData == null) navigateToLogin()
+        if (uiState.isConnected.not()) onEvent(HomeScreenEvent.LoadNextPage)
     }
 
     AnimatedVisibility(
-        visible = homeScreenUiState.isFirstLoading,
+        visible = uiState.isFirstLoading,
         enter = fadeIn(),
         exit = slideOutVertically { -it }
     ) {
@@ -144,26 +139,26 @@ fun HomeScreen(
         drawerState = drawerState,
         gesturesEnabled = drawerState.isOpen,
         drawerContent = {
-            DrawerContent(
-                userData = homeScreenUiState.userData,
+            CustomModalDrawerSheet(
+                userData = userData,
                 onNavigationItemClick = { route ->
                     drawerNavigation(route)
                     scope.launch { drawerState.close() }
                 },
                 onLogoutClick = {
-                    onEvent(HomeScreenEvent.Logout)
+                    onLogoutClick()
                     scope.launch { drawerState.close() }
                 }
             )
         }
     ) {
         AnimatedVisibility(
-            visible = homeScreenUiState.isFirstLoading.not(),
+            visible = uiState.isFirstLoading.not(),
             enter = slideInVertically { it },
             exit = fadeOut()
         ) {
             AnimatedContent(
-                targetState = pokemon,
+                targetState = uiState.lastPokemonClicked,
                 transitionSpec = {
                     if (targetState != null) {
                         slideInHorizontally(
@@ -181,21 +176,22 @@ fun HomeScreen(
                     PokemonDetailsContainer(
                         pokemon = pokemonState,
                         onNavigationIconClick = {
-                            pokemon = null
-                        }
+                            onEvent(HomeScreenEvent.PokemonClicked(null))
+                        },
+                        navigateToSubscriptionScreen = navigateToSubscriptionScreen
                     )
                 } else {
                     PokemonList(
                         modifier = modifier,
-                        homeScreenUiState = homeScreenUiState,
+                        isPremium = userData.isPremium(),
+                        uiState = uiState,
                         listState = listState,
                         gridListState = gridListState,
                         onEvent = { onEvent(it) },
                         isShowGridList = isShowGridList,
                         onLayoutListChange = { isShowGridList = it },
                         onPokemonClick = { pokemonClicked ->
-                            pokemon = pokemonClicked
-                            onEvent(HomeScreenEvent.UpdateSelectedPokemon(pokemonClicked.name))
+                            onEvent(HomeScreenEvent.PokemonClicked(pokemonClicked))
                         },
                         onMenuNavigationClick = {
                             scope.launch { drawerState.open() }
@@ -206,8 +202,8 @@ fun HomeScreen(
         }
     }
 
-    BackHandler(pokemon != null) {
-        if (pokemon != null) pokemon = null
+    BackHandler(uiState.lastPokemonClicked != null) {
+        if (uiState.lastPokemonClicked != null)onEvent( HomeScreenEvent.PokemonClicked(null))
     }
 
     BackHandler(drawerState.isOpen) {
@@ -218,7 +214,8 @@ fun HomeScreen(
 @Composable
 private fun PokemonList(
     modifier: Modifier = Modifier,
-    homeScreenUiState: HomeScreenUiState,
+    isPremium: Boolean,
+    uiState: HomeScreenUiState,
     onEvent: (HomeScreenEvent) -> Unit,
     listState: LazyListState,
     gridListState: LazyGridState,
@@ -253,8 +250,8 @@ private fun PokemonList(
         }
     }
 
-    LaunchedEffect(key1 = isLastItemVisible, key2 = homeScreenUiState.isLastPage) {
-        if (isLastItemVisible && homeScreenUiState.canLoadNextPage()) {
+    LaunchedEffect(key1 = isLastItemVisible, key2 = uiState.isLastPage) {
+        if (isLastItemVisible && uiState.canLoadNextPage()) {
             onEvent(HomeScreenEvent.LoadNextPage)
         }
     }
@@ -264,7 +261,7 @@ private fun PokemonList(
         contentAlignment = Alignment.TopCenter
     ) {
         CustomLazyList(
-            data = homeScreenUiState.pokemonPage,
+            data = uiState.pokemonPage,
             listState = listState,
             gridListState = gridListState,
             listType =
@@ -303,15 +300,16 @@ private fun PokemonList(
                 PokemonItem(
                     isShowGridList = isShowGridList,
                     imageModifier = imageModifier,
+                    isPremium = isPremium,
                     pokemon = item,
-                    pokemonClickedList = homeScreenUiState.pokemonClickedList,
+                    pokemonClickedList = uiState.pokemonClickedList,
                     onPokemonClick = { clickedPokemon ->
                         onPokemonClick(clickedPokemon)
                     }
                 )
             },
-            isLastPage = homeScreenUiState.isLastPage,
-            isLoadingPage = homeScreenUiState.isLoadingPage,
+            isLastPage = uiState.isLastPage,
+            isLoadingPage = uiState.isLoadingPage,
             loadingContent = {
                 CustomLoading(
                     iconSize = 100.dp,
@@ -321,10 +319,10 @@ private fun PokemonList(
             footerContent = {
                 CustomLoading(
                     iconSize = 100.dp,
-                    animateIcon = homeScreenUiState.isConnected.not() && homeScreenUiState.isLastPage,
+                    animateIcon = uiState.isConnected.not() && uiState.isLastPage,
                     animateVelocity = 5_000,
                     loadingMessage =
-                    if (homeScreenUiState.isConnected && homeScreenUiState.isLastPage) R.string.label_saw_all_pokemon
+                    if (uiState.isConnected && uiState.isLastPage) R.string.label_saw_all_pokemon
                     else R.string.label_connection_lost
                 )
             }
@@ -376,6 +374,7 @@ private fun PokemonList(
 private fun PokemonItem(
     modifier: Modifier = Modifier,
     imageModifier: Modifier = Modifier,
+    isPremium: Boolean,
     pokemon: Pokemon,
     pokemonClickedList: Set<String>,
     isShowGridList: Boolean,
@@ -385,14 +384,15 @@ private fun PokemonItem(
         if (isShowGridList) PokedexZ1Theme.gridList
         else PokedexZ1Theme.verticalList
 
-    val pokemonAlreadyClicked by remember {
-        mutableStateOf(pokemonClickedList.contains(pokemon.name))
+    val showPokemonName by remember {
+        if (isPremium) mutableStateOf(true)
+        else mutableStateOf(pokemonClickedList.contains(pokemon.name))
     }
 
     var startAnimation by remember { mutableStateOf(false) }
     val scalePokemon by remember { mutableStateOf(Animatable(1.3f)) }
-    LaunchedEffect(key1 = startAnimation, key2 = pokemonAlreadyClicked) {
-        if (startAnimation && pokemonAlreadyClicked) {
+    LaunchedEffect(key1 = startAnimation, key2 = showPokemonName) {
+        if (startAnimation && showPokemonName) {
             onPokemonClick(pokemon)
             return@LaunchedEffect
         }
@@ -475,7 +475,7 @@ private fun PokemonItem(
                 imageBitmap = it,
                 contentScale = ContentScale.Fit,
                 colorFilter =
-                if (pokemonAlreadyClicked) null
+                if (showPokemonName || isPremium) null
                 else ColorFilter.tint(Color(0, 0, 0, 255)),
                 offsetX = dimen.offsetX,
                 offsetY = dimen.offsetY
@@ -490,7 +490,7 @@ private fun PokemonItem(
                     bottom.linkTo(card.bottom, dimen.normal)
                 }
                 .graphicsLayer {
-                    if (pokemonAlreadyClicked.not()) {
+                    if (showPokemonName.not()) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                             val blur = 20f
                             renderEffect = RenderEffect
@@ -530,6 +530,7 @@ private fun PokemonItem(
 fun PokemonItemVerticalPreview() {
     PokedexZ1Theme {
         PokemonItem(
+            isPremium = true,
             pokemon = Pokemon(
                 page = 0,
                 "Pikachu",
