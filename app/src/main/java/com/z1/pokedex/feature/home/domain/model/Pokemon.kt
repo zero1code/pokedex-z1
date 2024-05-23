@@ -1,8 +1,10 @@
 package com.z1.pokedex.feature.home.domain.model
 
 import android.graphics.Bitmap
+import androidx.compose.runtime.Stable
 import androidx.palette.graphics.Palette
 
+@Stable
 data class Pokemon(
     var page: Int = 0,
     val name: String,

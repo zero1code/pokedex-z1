@@ -2,9 +2,10 @@ package com.z1.pokedex.feature.home.presentation.screen.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.z1.pokedex.core.network.service.connectivity.ConnectivityService
-import com.z1.pokedex.core.network.service.googleauth.GoogleAuthClient
+import com.z1.pokedex.core.common.shared.services.connectivity.ConnectivityService
+import com.z1.pokedex.feature.home.domain.model.Pokemon
 import com.z1.pokedex.feature.home.domain.usecase.PokemonUseCase
+import com.z1.pokedex.feature.home.presentation.screen.HomeScreenUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,12 +18,11 @@ import java.net.UnknownHostException
 
 class HomeViewModel(
     private val pokemonUseCase: PokemonUseCase,
-    private val googleAuthClient: GoogleAuthClient,
     connectivityService: ConnectivityService
 ) : ViewModel() {
     private var _nextPage = 0
 
-    private val _uiState = MutableStateFlow(UiState())
+    private val _uiState = MutableStateFlow(HomeScreenUiState())
     val uiState = combine(_uiState, connectivityService.isConnected) { uiState, isConnected ->
         uiState.copy(
             isConnected = isConnected,
@@ -32,12 +32,10 @@ class HomeViewModel(
         SharingStarted.Eagerly,
         initialValue = _uiState.value
     )
-    fun onEvent(event: Event) {
+    fun onEvent(event: HomeScreenEvent) {
         when (event) {
-            is Event.LoadNextPage -> loadNextPage()
-            is Event.UpdateSelectedPokemon -> updateSelectedPokemonList(event.pokemonName)
-            is Event.SignedUser -> getSignedUser()
-            is Event.Logout -> signOut()
+            is HomeScreenEvent.LoadNextPage -> loadNextPage()
+            is HomeScreenEvent.PokemonClicked -> lastPokemonClicked(event.pokemon)
         }
     }
 
@@ -82,20 +80,17 @@ class HomeViewModel(
             }
         }
 
-    private fun getSignedUser() = viewModelScope.launch {
-        googleAuthClient.getSignedInUser()?.let { userData ->
+    private fun lastPokemonClicked(pokemon: Pokemon?) =
+        viewModelScope.launch {
             _uiState.update {
-                it.copy(userData = userData)
+                it.copy(
+                    lastPokemonClicked = pokemon
+                )
+            }
+            pokemon?.let {
+                updateSelectedPokemonList(pokemon.name)
             }
         }
-    }
-
-    private fun signOut() = viewModelScope.launch {
-        googleAuthClient.signOut()
-        _uiState.update {
-            it.copy(userData = null)
-        }
-    }
 
     private fun loadNextPage() {
         fetchPokemonPage(_nextPage)

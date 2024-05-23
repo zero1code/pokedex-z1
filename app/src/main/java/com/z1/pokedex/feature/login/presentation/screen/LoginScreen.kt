@@ -33,15 +33,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.z1.pokedex.R
-import com.z1.pokedex.designsystem.theme.CoralRed
-import com.z1.pokedex.designsystem.theme.CustomRippleTheme
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
-import com.z1.pokedex.feature.login.presentation.screen.viewmodel.SignInState
+import com.z1.pokedex.core.common.designsystem.theme.CoralRed
+import com.z1.pokedex.core.common.designsystem.theme.CustomRippleTheme
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    state: SignInState,
+    userDataState: UserDataState,
     onSignInClick: () -> Unit,
     navigateToHomeScreen: () -> Unit
 ) {
@@ -79,8 +79,8 @@ fun LoginScreen(
     }
 
     val context = LocalContext.current
-    LaunchedEffect(key1 = state.signInError) {
-        state.signInError?.let {
+    LaunchedEffect(key1 = userDataState.message) {
+        userDataState.message?.let {
             Toast.makeText(
                 context,
                 it,
@@ -89,8 +89,8 @@ fun LoginScreen(
         }
     }
 
-    LaunchedEffect(key1 = state.isSignInSuccessful) {
-        if (state.isSignInSuccessful) navigateToHomeScreen()
+    LaunchedEffect(key1 = userDataState.data) {
+        if (userDataState.data != null) navigateToHomeScreen()
     }
 
     ConstraintLayout(
@@ -189,7 +189,7 @@ fun LoginScreen(
 private fun LoginScreenPreview() {
     PokedexZ1Theme {
         LoginScreen(
-            state = SignInState(),
+            userDataState = UserDataState(),
             onSignInClick = {},
             navigateToHomeScreen = {}
         )

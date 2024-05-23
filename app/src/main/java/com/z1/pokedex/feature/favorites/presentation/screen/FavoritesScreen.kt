@@ -11,7 +11,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
@@ -43,90 +42,88 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.z1.pokedex.R
-import com.z1.pokedex.designsystem.components.CustomLoading
-import com.z1.pokedex.designsystem.components.CustomTopAppBar
-import com.z1.pokedex.designsystem.components.PokemonItem
-import com.z1.pokedex.designsystem.theme.PokedexZ1Theme
-import com.z1.pokedex.feature.details.PokemonDetailsContainer
-import com.z1.pokedex.feature.favorites.presentation.screen.viewmodel.Event
-import com.z1.pokedex.feature.favorites.presentation.screen.viewmodel.UiState
+import com.z1.pokedex.core.common.designsystem.components.CustomLoading
+import com.z1.pokedex.core.common.designsystem.components.CustomTopAppBar
+import com.z1.pokedex.core.common.designsystem.components.PokemonItem
+import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
+import com.z1.pokedex.core.common.shared.viewmodel.userdata.UserDataState
+import com.z1.pokedex.feature.details.presentation.PokemonDetailsContainer
+import com.z1.pokedex.feature.favorites.presentation.screen.viewmodel.FavoritesScreenEvent
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 
 @Composable
 fun FavoritesScreen(
     modifier: Modifier = Modifier,
-    uiState: UiState,
-    onEvent: (Event) -> Unit,
+    userData: UserDataState,
+    uiState: FavoritesScreenUiState,
+    onEvent: (FavoritesScreenEvent) -> Unit,
     onNavigationIconClick: () -> Unit
 ) {
     var pokemon: Pokemon? by remember { mutableStateOf(null) }
     var detailsIsOpen by remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = Unit) {
-        onEvent(Event.SignedInUser)
-    }
-
-    LaunchedEffect(key1 = uiState.userData) {
-        uiState.userData?.let {
-            onEvent(Event.GetFavorites(it.userId))
+    LaunchedEffect(key1 = userData.data) {
+        userData.data?.let {
+            onEvent(FavoritesScreenEvent.GetFavorites(it.userId))
         }
     }
-        AnimatedContent(
-            targetState = pokemon,
-            transitionSpec = {
-                if (targetState != null) {
-                    slideInHorizontally(
-                        tween(easing =  FastOutLinearInEasing)
-                    ) { it } togetherWith
-                            ExitTransition.KeepUntilTransitionsFinished
-                } else {
-                    slideInHorizontally { -it } togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
-                }
-            },
-            label = "favorites"
-        ) { pokemonState ->
-            if (pokemonState != null) {
-                detailsIsOpen = true
-                PokemonDetailsContainer(
-                    pokemon = pokemonState,
-                    onNavigationIconClick = {
-                        pokemon = null
+    AnimatedContent(
+        targetState = pokemon,
+        transitionSpec = {
+            if (targetState != null) {
+                slideInHorizontally(
+                    tween(easing = FastOutLinearInEasing)
+                ) { it } togetherWith
+                        ExitTransition.KeepUntilTransitionsFinished
+            } else {
+                slideInHorizontally { -it } togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
+            }
+        },
+        label = "favorites"
+    ) { pokemonState ->
+        if (pokemonState != null) {
+            detailsIsOpen = true
+            PokemonDetailsContainer(
+                pokemon = pokemonState,
+                onNavigationIconClick = {
+                    pokemon = null
+                },
+                navigateToSubscriptionScreen = {}
+            )
+        } else {
+            Box(
+                modifier = modifier.fillMaxSize(),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                FavoritesList(
+                    favorites = uiState.favorites,
+                    onPokemonClick = { pokemonClicked ->
+                        pokemon = pokemonClicked
                     }
                 )
-            } else {
-                Box(
-                    modifier = modifier.fillMaxSize(),
-                    contentAlignment = Alignment.TopCenter
-                ) {
-                    FavoritesList(
-                        favorites = uiState.favorites,
-                        onPokemonClick = { pokemonClicked ->
-                            pokemon = pokemonClicked
-                        }
-                    )
-                    Header(
-                        onNavigationIconClick = {
-                            onNavigationIconClick()
-                            detailsIsOpen = false
-                        }
-                    )
-                }
+                Header(
+                    onNavigationIconClick = {
+                        onNavigationIconClick()
+                        detailsIsOpen = false
+                    }
+                )
+            }
 
-                AnimatedVisibility(
-                    visible = uiState.isLoading.not() && uiState.favorites.isEmpty() && pokemon == null,
-                    enter = EnterTransition.None,
-                    exit = ExitTransition.None
-                ) {
-                    CustomLoading(
-                        modifier = Modifier.fillMaxSize(),
-                        iconSize = 100.dp,
-                        animateIcon = true,
-                        animateVelocity = 5_000,
-                        loadingMessage = R.string.label_no_favorite_found
-                    )
-                }
+            AnimatedVisibility(
+                visible = uiState.isLoading.not() && uiState.favorites.isEmpty() && pokemon == null,
+                enter = EnterTransition.None,
+                exit = ExitTransition.None
+            ) {
+                CustomLoading(
+                    modifier = Modifier.fillMaxSize(),
+                    iconSize = 100.dp,
+                    animateIcon = true,
+                    animateVelocity = 5_000,
+                    loadingMessage = R.string.label_no_favorite_found
+                )
             }
         }
+    }
 
     AnimatedVisibility(
         visible = uiState.isLoading,
