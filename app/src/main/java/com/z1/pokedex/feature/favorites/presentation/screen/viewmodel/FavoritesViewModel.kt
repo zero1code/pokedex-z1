@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class FavoritesViewModel(
     private val pokemonFavoriteUseCase: PokemonFavoriteUseCase,
     connectivityService: ConnectivityService
-): ViewModel() {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FavoritesScreenUiState())
     val uiState = combine(_uiState, connectivityService.isConnected) { uiState, isConnected ->
@@ -30,7 +30,7 @@ class FavoritesViewModel(
     )
 
     fun onEvent(event: FavoritesScreenEvent) {
-        when(event) {
+        when (event) {
             is FavoritesScreenEvent.GetFavorites -> getFavorites(event.userId)
         }
     }

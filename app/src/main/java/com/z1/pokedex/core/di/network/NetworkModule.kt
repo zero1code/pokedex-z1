@@ -47,18 +47,16 @@ private val provideApi = module {
 }
 
 private val providePokedexClient = module {
-    single<PokedexClient>{ PokedexClientImpl(androidContext(), get()) }
+    single<PokedexClient> { PokedexClientImpl(androidContext(), get()) }
 }
 
 private val provideGoogleAuthClient = module {
-    single<GoogleAuthClient>{ GoogleAuthClientImpl(Identity.getSignInClient(androidContext())) }
+    single<GoogleAuthClient> { GoogleAuthClientImpl(Identity.getSignInClient(androidContext())) }
 }
 
 private val provideGoogleBillingClient = module {
-    single<GoogleBillingClient>{ (activity: ComponentActivity) -> GoogleBillingClientImpl(activity) }
+    single<GoogleBillingClient> { (activity: ComponentActivity) -> GoogleBillingClientImpl(activity) }
 }
-
-
 
 val networkModule = listOf(
     provideApi,

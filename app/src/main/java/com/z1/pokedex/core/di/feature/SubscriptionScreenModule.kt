@@ -17,11 +17,11 @@ private val provideSubscriptionViewModel = module {
 }
 
 private val provideSubscriptionRemoteDataSource = module {
-    single<SubscriptionRemoteDataSource>{ SubscriptionRemoteDataSourceImpl(get()) }
+    single<SubscriptionRemoteDataSource> { SubscriptionRemoteDataSourceImpl(get()) }
 }
 
 private val provideSubscriptionRepository = module {
-    single<SubscriptionRepository>{ SubscriptionRepositoryImpl(get()) }
+    single<SubscriptionRepository> { SubscriptionRepositoryImpl(get()) }
 }
 
 val subscriptionModule = listOf(

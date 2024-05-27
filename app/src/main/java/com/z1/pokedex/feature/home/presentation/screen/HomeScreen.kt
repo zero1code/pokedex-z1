@@ -163,9 +163,7 @@ fun HomeScreen(
                     if (targetState != null) {
                         slideInHorizontally(
                             tween(300, 0, FastOutLinearInEasing)
-                        ) { it } togetherWith
-                                ExitTransition.KeepUntilTransitionsFinished
-
+                        ) { it } togetherWith ExitTransition.KeepUntilTransitionsFinished
                     } else {
                         slideInHorizontally { -it } togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
                     }
@@ -203,7 +201,7 @@ fun HomeScreen(
     }
 
     BackHandler(uiState.lastPokemonClicked != null) {
-        if (uiState.lastPokemonClicked != null)onEvent( HomeScreenEvent.PokemonClicked(null))
+        if (uiState.lastPokemonClicked != null) onEvent(HomeScreenEvent.PokemonClicked(null))
     }
 
     BackHandler(drawerState.isOpen) {
@@ -291,7 +289,7 @@ private fun PokemonList(
                             .graphicsLayer {
                                 val value =
                                     1 - (listState.layoutInfo.normalizedItemPosition(item.name).absoluteValue * 0.25F)
-                                //alpha = value
+                                // alpha = value
                                 scaleX = value
                                 scaleY = value
                             }
@@ -347,9 +345,7 @@ private fun PokemonList(
             },
             actions = {
                 CustomIconButton(
-                    onIconButtonClick = {
-
-                    },
+                    onIconButtonClick = {},
                     iconImageVector = Icons.Rounded.Search,
                     iconTint = MaterialTheme.colorScheme.onBackground
                 )
@@ -367,9 +363,6 @@ private fun PokemonList(
         )
     }
 }
-
-
-
 @Composable
 private fun PokemonItem(
     modifier: Modifier = Modifier,
@@ -405,7 +398,7 @@ private fun PokemonItem(
 
     val animationRotation by animateFloatAsState(
         targetValue = if (startAnimation) 360f else 0f,
-        animationSpec = tween(500, easing = LinearEasing) ,
+        animationSpec = tween(500, easing = LinearEasing),
         label = "animation-rotation"
     )
 

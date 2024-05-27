@@ -151,8 +151,7 @@ fun PokemonDetailsScreen(
                             pokemon
                         )
                     )
-                }
-                else goToSubscriptionScreen()
+                } else goToSubscriptionScreen()
             },
             isFavorite = uiState.isFavorite(pokemon.name)
         )

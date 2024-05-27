@@ -1,7 +1,6 @@
 package com.z1.pokedex
 
 import org.junit.Test
-
 import org.junit.Assert.*
 
 /**

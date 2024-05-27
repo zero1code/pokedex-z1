@@ -21,15 +21,15 @@ private val providePokemonUseCase = module {
 }
 
 private val providePokemonLocalDataSource = module {
-    single<PokemonLocalDataSource>{ PokemonLocalDataSourceImpl(get()) }
+    single<PokemonLocalDataSource> { PokemonLocalDataSourceImpl(get()) }
 }
 
 private val providePokemonRemoteDataSource = module {
-    single<PokemonRemoteDataSource>{ PokemonRemoteDataSourceImpl(get()) }
+    single<PokemonRemoteDataSource> { PokemonRemoteDataSourceImpl(get()) }
 }
 
 private val providePokemonRepository = module {
-    single<PokemonRepository>{ PokemonRepositoryImpl(get(), get(), get()) }
+    single<PokemonRepository> { PokemonRepositoryImpl(get(), get(), get()) }
 }
 
 val homeScreenModule = listOf(

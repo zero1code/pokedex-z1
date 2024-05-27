@@ -34,7 +34,7 @@ internal data class PokemonDimensions(
     override val offsetX: Dp = 5.dp,
     override val offsetY: Dp = 5.dp,
 
-): IPokemonDimensions
+) : IPokemonDimensions
 
 @Immutable
 internal data class GridPokemonDimensions(
@@ -49,7 +49,7 @@ internal data class GridPokemonDimensions(
     override val imageMarginEnd: Dp = 16.dp,
     override val offsetX: Dp = 2.dp,
     override val offsetY: Dp = 2.dp,
-): IPokemonDimensions
+) : IPokemonDimensions
 
 internal val LocalPokemonSpacing = compositionLocalOf { PokemonDimensions() }
 internal val LocalGridPokemonSpacing = compositionLocalOf { GridPokemonDimensions() }

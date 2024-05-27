@@ -1,5 +1,8 @@
 root = true
 
+[*]
+insert_final_newline = false
+
 [*.{kt,kts}]
 ktlint_standard_filename = disabled
 ktlint_standard_no-wildcard-imports = disabled

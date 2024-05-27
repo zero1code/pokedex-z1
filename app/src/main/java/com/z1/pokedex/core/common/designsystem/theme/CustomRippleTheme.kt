@@ -8,7 +8,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
 
 @Immutable
-class CustomRippleTheme(private val color: Color): RippleTheme {
+class CustomRippleTheme(private val color: Color) : RippleTheme {
     @Composable
     @ReadOnlyComposable
     override fun defaultColor() = color

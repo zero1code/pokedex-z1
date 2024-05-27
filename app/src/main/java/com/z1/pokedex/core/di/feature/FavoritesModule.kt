@@ -15,15 +15,15 @@ private val provideFavoritesViewModel = module {
 }
 
 private val providePokemonFavoriteUseCase = module {
-    single<PokemonFavoriteUseCase>{ PokemonFavoriteUseCaseImpl(get(), get()) }
+    single<PokemonFavoriteUseCase> { PokemonFavoriteUseCaseImpl(get(), get()) }
 }
 
 private val providePokemonFavoriteLocalDataSource = module {
-    single<PokemonFavoriteLocalDataSource>{ PokemonFavoriteLocalDataSourceImpl(get()) }
+    single<PokemonFavoriteLocalDataSource> { PokemonFavoriteLocalDataSourceImpl(get()) }
 }
 
 private val providePokemonFavoriteRepository = module {
-    single<PokemonFavoriteRepository>{ PokemonFavoriteRepositoryImpl(get(), get()) }
+    single<PokemonFavoriteRepository> { PokemonFavoriteRepositoryImpl(get(), get()) }
 }
 
 val favoritesModule = listOf(
