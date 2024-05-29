@@ -24,21 +24,22 @@ fun CustomShineImage(
         end = Offset(Float.POSITIVE_INFINITY, 0f)
     )
 
-    Canvas(modifier = modifier
-        .graphicsLayer {
-            if (scale != -1f) {
-                scaleX = scale
-                scaleY = scale
+    Canvas(
+        modifier = modifier
+            .graphicsLayer {
+                if (scale != -1f) {
+                    scaleX = scale
+                    scaleY = scale
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val blur = 150f
+                    renderEffect = RenderEffect
+                        .createBlurEffect(
+                            blur, blur, Shader.TileMode.DECAL
+                        )
+                        .asComposeRenderEffect()
+                }
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                val blur = 150f
-                renderEffect = RenderEffect
-                    .createBlurEffect(
-                        blur, blur, Shader.TileMode.DECAL
-                    )
-                    .asComposeRenderEffect()
-            }
-        }
     ) {
         drawCircle(brush)
     }

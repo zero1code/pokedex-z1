@@ -10,7 +10,7 @@ class NavGraphImpl(
     private val homeNavGraph: HomeNavGraph,
     private val favoritesNavGraph: FavoritesNavGraph,
     private val subscriptionNavGraph: SubscriptionNavGraph
-): NavGraph {
+) : NavGraph {
     override fun login() = loginNavGraph
     override fun home() = homeNavGraph
     override fun favorites() = favoritesNavGraph

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.flow
 
 class PokemonDetailsLocalDataSourceImpl(
     private val pokemonFavoriteDao: PokemonFavoriteDao
-): PokemonDetailsLocalDataSource {
+) : PokemonDetailsLocalDataSource {
     override suspend fun getPokemonFavoritesName(userId: String) =
         flow {
             pokemonFavoriteDao.getPokemonFavoriteNameList(userId)

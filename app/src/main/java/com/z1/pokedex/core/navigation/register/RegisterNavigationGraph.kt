@@ -39,10 +39,10 @@ fun NavigationGraph(
             navController = navController
         )
 
-        register(modifier = modifier,
+        register(
+            modifier = modifier,
             registerNavGraph = navGraph.subscription(),
             navController = navController
         )
     }
 }
-

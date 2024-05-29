@@ -12,22 +12,22 @@ import kotlinx.coroutines.flow.map
 class PokemonFavoriteUseCaseImpl(
     private val pokemomImageRepository: PokemonImageRepository,
     private val pokemonFavoriteRepository: PokemonFavoriteRepository
-): PokemonFavoriteUseCase {
+) : PokemonFavoriteUseCase {
     override suspend fun getPokemonFavorites(userId: String): Flow<List<Pokemon>> {
         return pokemonFavoriteRepository.getPokemonFavorites(userId).map { pokemonList ->
             val updatedPokemonList = pokemonList.map { pokemon ->
-                val updatedPokemon = pokemomImageRepository.fetchPokemonImage(pokemon.getImageUrl())?.let {
-                    val bitmap = it.toBitmap().copy(Bitmap.Config.ARGB_8888, false)
-                    val palette = Palette.from(bitmap).generate()
-                    pokemon.copy(
-                        image = bitmap,
-                        palette = palette
-                    )
-                } ?: pokemon // Se a imagem não puder ser carregada, mantenha o pokemon original
+                val updatedPokemon =
+                    pokemomImageRepository.fetchPokemonImage(pokemon.getImageUrl())?.let {
+                        val bitmap = it.toBitmap().copy(Bitmap.Config.ARGB_8888, false)
+                        val palette = Palette.from(bitmap).generate()
+                        pokemon.copy(
+                            image = bitmap,
+                            palette = palette
+                        )
+                    } ?: pokemon // Se a imagem não puder ser carregada, mantenha o pokemon original
                 updatedPokemon
             }
             updatedPokemonList
         }
     }
-
 }

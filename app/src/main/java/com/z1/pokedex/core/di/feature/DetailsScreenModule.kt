@@ -15,15 +15,15 @@ private val provideDetailsViewModel = module {
 }
 
 private val providePokemonDetailsLocalDataSource = module {
-    single<PokemonDetailsLocalDataSource>{ PokemonDetailsLocalDataSourceImpl(get()) }
+    single<PokemonDetailsLocalDataSource> { PokemonDetailsLocalDataSourceImpl(get()) }
 }
 
 private val providePokemonDetailsRemoteDataSource = module {
-    single<PokemonDetailsRemoteDataSource>{ PokemonDetailsRemoteDataSourceImpl(get()) }
+    single<PokemonDetailsRemoteDataSource> { PokemonDetailsRemoteDataSourceImpl(get()) }
 }
 
 private val providePokemonDetailsRepository = module {
-    single<PokemonDetailsRepository>{ PokemonDetailsRepositoryImpl(get(), get()) }
+    single<PokemonDetailsRepository> { PokemonDetailsRepositoryImpl(get(), get()) }
 }
 
 val detailsScreenModule = listOf(

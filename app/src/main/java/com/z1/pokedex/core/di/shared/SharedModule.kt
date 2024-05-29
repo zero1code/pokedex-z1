@@ -16,7 +16,7 @@ private val provideUserDataViewModel = module {
 }
 
 private val provideConnectionService = module {
-    single<ConnectivityService>{ ConnectivityServiceImpl(androidContext()) }
+    single<ConnectivityService> { ConnectivityServiceImpl(androidContext()) }
 }
 
 val sharedModule = listOf(

@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.update
 
 class GoogleBillingClientImpl(
     private val activity: Activity
-): GoogleBillingClient {
+) : GoogleBillingClient {
 
     private val _subscriptionState = MutableStateFlow(SubscriptionState())
     override val subscriptionState get() = _subscriptionState.asStateFlow()
@@ -34,14 +34,19 @@ class GoogleBillingClientImpl(
             BillingResponseCode.OK -> {
                 purchases?.forEach { handlePurchase(it) }
             }
+
             BillingResponseCode.USER_CANCELED -> {
             }
+
             BillingResponseCode.ERROR -> {
             }
+
             BillingResponseCode.NETWORK_ERROR -> {
             }
+
             BillingResponseCode.BILLING_UNAVAILABLE -> {
             }
+
             else -> {
                 Toast.makeText(activity, "Subscribed", Toast.LENGTH_SHORT).show()
                 _subscriptionState.update {
@@ -166,8 +171,7 @@ class GoogleBillingClientImpl(
                         if (it.basePlanId == subscriptionPlanId) {
                             offerToken = it.offerToken
                             true
-                        }
-                        else false
+                        } else false
                     } == true
                 }
                 productDetails?.let {

@@ -13,7 +13,7 @@ import com.z1.pokedex.core.navigation.navgraph.routes.subscription.SubscriptionN
 import org.koin.dsl.module
 
 private val provideNavGraph = module {
-    single<NavGraph>{ NavGraphImpl(get(), get(), get(), get()) }
+    single<NavGraph> { NavGraphImpl(get(), get(), get(), get()) }
 }
 
 private val provideLoginNavGraph = module {
@@ -21,15 +21,15 @@ private val provideLoginNavGraph = module {
 }
 
 private val provideHomeNavGraph = module {
-    factory<HomeNavGraph>{ HomeNavGraphImpl() }
+    factory<HomeNavGraph> { HomeNavGraphImpl() }
 }
 
 private val provideFavoritesNavGraph = module {
-    factory<FavoritesNavGraph>{ FavoritesNavGraphImpl() }
+    factory<FavoritesNavGraph> { FavoritesNavGraphImpl() }
 }
 
 private val provideSubscriptionNavGraph = module {
-    factory<SubscriptionNavGraph>{ SubscriptionNavGraphImpl() }
+    factory<SubscriptionNavGraph> { SubscriptionNavGraphImpl() }
 }
 
 val navigationModule = listOf(

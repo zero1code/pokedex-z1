@@ -14,14 +14,14 @@ data class Pokemon(
 ) {
     fun getImageUrl(): String {
         val index = getIndex()
-        return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/" +
-                "pokemon/other/home/$index.png"
+        return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/$index.png"
     }
 
     fun getIndex() = url.split("/".toRegex()).dropLast(1).last().toInt()
 
     fun dominantColor() = palette?.getDominantColor(16777215) ?: 16777215
-//    fun vibrantDarkColor() = palette?.getDarkVibrantColor(palette.getDarkMutedColor(2302755)) ?: 2302755
+
+    // fun vibrantDarkColor() = palette?.getDarkVibrantColor(palette.getDarkMutedColor(2302755)) ?: 2302755
     fun vibrantDarkColor() =
         when {
             palette?.darkVibrantSwatch != null -> palette.darkVibrantSwatch!!.rgb
@@ -29,6 +29,5 @@ data class Pokemon(
             palette?.dominantSwatch != null -> palette.dominantSwatch!!.rgb
             palette?.vibrantSwatch != null -> palette.vibrantSwatch!!.rgb
             else -> 2302755
-    }
-
+        }
 }

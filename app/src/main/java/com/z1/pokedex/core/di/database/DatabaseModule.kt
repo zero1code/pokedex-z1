@@ -4,7 +4,6 @@ import androidx.room.Room
 import com.z1.pokedex.core.database.AppDatabase
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
-import kotlin.math.sin
 
 private val provideRoomDatabase = module {
     single {
@@ -15,7 +14,6 @@ private val provideRoomDatabase = module {
         ).addMigrations().build()
     }
 }
-
 
 private val providePokemonDao = module {
     single { get<AppDatabase>().getPokemonDao() }

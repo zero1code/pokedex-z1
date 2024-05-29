@@ -13,13 +13,13 @@ import kotlinx.coroutines.launch
 class SubscriptionViewModel(
     private val subscriptionRepository: SubscriptionRepository,
     connectivityService: ConnectivityService
-): ViewModel() {
+) : ViewModel() {
 
     private var _uiState = MutableStateFlow(SubscriptionScreenUiState())
     val uiState get() = _uiState.asStateFlow()
 
     fun onEvent(event: SubscriptionScreenEvent) {
-        when(event) {
+        when (event) {
             is SubscriptionScreenEvent.Subscribe -> subscribe(event.userId)
         }
     }
