@@ -69,6 +69,7 @@ import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -81,8 +82,10 @@ import com.z1.pokedex.core.common.designsystem.components.CustomLazyList
 import com.z1.pokedex.core.common.designsystem.components.CustomLoading
 import com.z1.pokedex.core.common.designsystem.components.CustomShineImage
 import com.z1.pokedex.core.common.designsystem.components.CustomTopAppBar
+import com.z1.pokedex.core.common.designsystem.components.GRID_LAZY_LIST_TEST_TAG
 import com.z1.pokedex.core.common.designsystem.components.ImageWithShadow
 import com.z1.pokedex.core.common.designsystem.components.ListType
+import com.z1.pokedex.core.common.designsystem.components.MODAL_DRAWER_TEST_TAG
 import com.z1.pokedex.core.common.designsystem.extensions.normalizedItemPosition
 import com.z1.pokedex.core.common.designsystem.theme.CustomRippleTheme
 import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
@@ -222,7 +225,6 @@ private fun PokemonList(
     onPokemonClick: (pokemon: Pokemon) -> Unit,
     onMenuNavigationClick: () -> Unit
 ) {
-
     val threshold = remember { 5 }
     val isLastItemVisible by if (isShowGridList) {
         remember {
@@ -328,6 +330,7 @@ private fun PokemonList(
         CustomTopAppBar(
             navigationIcon = {
                 CustomIconButton(
+                    modifier = Modifier.testTag(MODAL_DRAWER_TEST_TAG),
                     onIconButtonClick = onMenuNavigationClick,
                     iconImageVector = Icons.Rounded.Menu,
                     iconTint = MaterialTheme.colorScheme.onBackground
@@ -351,6 +354,7 @@ private fun PokemonList(
                 )
 
                 CustomIconButton(
+                    modifier = Modifier.testTag(GRID_LAZY_LIST_TEST_TAG),
                     onIconButtonClick = {
                         onLayoutListChange(!isShowGridList)
                     },

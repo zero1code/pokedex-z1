@@ -26,8 +26,7 @@ class UserDataViewModel(
         state.copy(
             data = signedInUser.data,
             message = signedInUser.message,
-            subscriptionState = subscriptionState,
-            isConnected = isConnected
+            subscriptionState = subscriptionState
         )
     }.stateIn(
         viewModelScope,
