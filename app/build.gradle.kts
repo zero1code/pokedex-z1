@@ -66,6 +66,10 @@ android {
         additionalEditorconfigFile.set(file("${project.rootDir}/.editorConfig"))
         disabledRules.set(setOf("no-wildcard-imports", "import-ordering"))
     }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
+    }
 }
 
 dependencies {
@@ -128,8 +132,17 @@ dependencies {
     // Billing
     implementation("com.android.billingclient:billing-ktx:6.2.1")
 
+    // MockK
+    testImplementation("io.mockk:mockk-android:1.13.11")
+    testImplementation("io.mockk:mockk-agent:1.13.11")
+
     // Test
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
+
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.08.00"))
