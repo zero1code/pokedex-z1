@@ -1,5 +1,8 @@
 package com.z1.pokedex.core.testing
 
+import com.z1.pokedex.core.common.model.google.SubscriptionState
+import com.z1.pokedex.core.common.model.google.UserData
+import com.z1.pokedex.feature.details.domain.model.PokemonDetails
 import com.z1.pokedex.feature.home.domain.model.Pokemon
 
 val pokemonPage1DataTest = listOf(
@@ -46,4 +49,21 @@ val pokemonPage2DataTest = listOf(
     Pokemon(name = "Sandshrew", url = "https://pokeapi.co/api/v2/pokemon/38/"),
     Pokemon(name = "Sandslash", url = "https://pokeapi.co/api/v2/pokemon/39/"),
     Pokemon(name = "Nidoran♀", url = "https://pokeapi.co/api/v2/pokemon/40/")
+)
+
+val fakePokemonDetails = PokemonDetails(
+    id = 0,
+    name = pokemonPage1DataTest[0].name,
+    height = 7,
+    weight = 7,
+    experience = 105
+)
+
+val fakeUser = UserData(
+    userId = "11111",
+    userName = "test",
+    profilePictureUrl = ""
+)
+val fakeSubscription = SubscriptionState(
+    subscriptions = listOf(fakeUser.userId)
 )

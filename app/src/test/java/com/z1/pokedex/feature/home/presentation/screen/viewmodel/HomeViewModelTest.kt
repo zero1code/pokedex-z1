@@ -134,7 +134,6 @@ class HomeViewModelTest : BaseTest() {
         assertFalse(uiState.isFirstLoading)
     }
 
-
     @Test
     fun `should return last selected pokemon and add his name in pokemonClickedList in the uiState`() =
         runTest {

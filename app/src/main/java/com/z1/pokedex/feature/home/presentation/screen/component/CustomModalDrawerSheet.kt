@@ -259,8 +259,7 @@ private fun DrawerContentPreview() {
             userData = UserDataState(
                 UserData("1", "Airton Oliveira", ""),
                 "Airton Oliveira",
-                SubscriptionState(),
-                true
+                SubscriptionState()
             ),
             onNavigationItemClick = {},
             onLogoutClick = {}

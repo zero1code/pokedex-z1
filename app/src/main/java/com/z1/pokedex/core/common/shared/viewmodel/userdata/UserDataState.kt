@@ -8,8 +8,7 @@ import com.z1.pokedex.core.common.model.google.SubscriptionState
 data class UserDataState(
     val data: UserData? = null,
     val message: String? = null,
-    val subscriptionState: SubscriptionState? = null,
-    val isConnected: Boolean = false
+    val subscriptionState: SubscriptionState? = null
 ) {
     fun isLoading() = data == null && message == null
 
