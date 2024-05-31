@@ -5,7 +5,7 @@ import com.z1.pokedex.core.common.shared.domain.repository.PokemonImageRepositor
 
 class PokemonImageRepositoryImpl(
     private val pokedexClient: PokedexClient
-): PokemonImageRepository {
+) : PokemonImageRepository {
     override suspend fun fetchPokemonImage(imageUrl: String) =
         pokedexClient.fetchPokemonImage(imageUrl)
 }

@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 
 enum class ListType {
     VERTICAL,
@@ -43,7 +44,7 @@ fun <T> CustomLazyList(
     when (listType) {
         ListType.VERTICAL -> {
             LazyColumn(
-                modifier = modifier,
+                modifier = modifier.testTag(VERTICAL_LAZY_LIST_TEST_TAG),
                 horizontalAlignment = Alignment.End,
                 state = listState,
                 flingBehavior = rememberSnapFlingBehavior(lazyListState = listState),
@@ -114,3 +115,4 @@ fun <T> CustomLazyList(
         }
     }
 }
+const val VERTICAL_LAZY_LIST_TEST_TAG = "vertical-lazy-list"

@@ -9,7 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.z1.pokedex.feature.favorites.presentation.FavoritesContainer
 
-class FavoritesNavGraphImpl: FavoritesNavGraph {
+class FavoritesNavGraphImpl : FavoritesNavGraph {
     private val baseRoute = "favorites"
     override fun route() = baseRoute
 
@@ -46,9 +46,9 @@ class FavoritesNavGraphImpl: FavoritesNavGraph {
             }
         ) {
             FavoritesContainer(
-               onNavigationIconClick = {
-                   navController.popBackStack()
-               }
+                onNavigationIconClick = {
+                    navController.popBackStack()
+                }
             )
         }
     }

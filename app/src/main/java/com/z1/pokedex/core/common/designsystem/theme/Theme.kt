@@ -61,7 +61,7 @@ fun PokedexZ1Theme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            //window.statusBarColor = colorScheme.background.copy(alpha = 0.9f).toArgb()
+            // window.statusBarColor = colorScheme.background.copy(alpha = 0.9f).toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }

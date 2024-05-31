@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.CancellationException
 
-
 class GoogleAuthClientImpl(
     private val oneTapClient: SignInClient
 ) : GoogleAuthClient {

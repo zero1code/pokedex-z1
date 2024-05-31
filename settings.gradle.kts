@@ -6,6 +6,7 @@ pluginManagement {
     }
 }
 dependencyResolutionManagement {
+    includeBuild("build-logic")
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
@@ -15,4 +16,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Pokedex Z1"
 include(":app")
- 

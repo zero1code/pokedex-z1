@@ -9,7 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.z1.pokedex.feature.subscription.presentation.SubscriptionContainer
 
-class SubscriptionNavGraphImpl: SubscriptionNavGraph {
+class SubscriptionNavGraphImpl : SubscriptionNavGraph {
     private val baseRoute = "subscription"
     override fun route() = baseRoute
 

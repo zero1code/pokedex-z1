@@ -10,8 +10,7 @@ class ConnectivityServiceImpl(
     context: Context
 ) : ConnectivityService {
     private val _isConnected = MutableStateFlow(false)
-
-    override val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     override val isConnected get() = _isConnected.asStateFlow()
 
     init {

@@ -73,8 +73,7 @@ fun FavoritesScreen(
             if (targetState != null) {
                 slideInHorizontally(
                     tween(easing = FastOutLinearInEasing)
-                ) { it } togetherWith
-                        ExitTransition.KeepUntilTransitionsFinished
+                ) { it } togetherWith ExitTransition.KeepUntilTransitionsFinished
             } else {
                 slideInHorizontally { -it } togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
             }

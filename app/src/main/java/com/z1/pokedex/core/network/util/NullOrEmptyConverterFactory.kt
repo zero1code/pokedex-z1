@@ -5,7 +5,6 @@ import retrofit2.Converter
 import retrofit2.Retrofit
 import java.lang.reflect.Type
 
-
 /**
  * O método "responseBodyConverter" é sobrescrito nesta classe para criar um conversor personalizado para converter o corpo da resposta da API em um objeto.
  * Esse conversor primeiro chama o conversor padrão do Retrofit, que é retornado pelo método "nextResponseBodyConverter",

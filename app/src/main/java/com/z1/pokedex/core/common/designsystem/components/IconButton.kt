@@ -26,3 +26,5 @@ fun CustomIconButton(
         )
     }
 }
+const val GRID_LAZY_LIST_TEST_TAG = "grid-lazy-list"
+const val MODAL_DRAWER_TEST_TAG = "open-modal-drawer-sheet"

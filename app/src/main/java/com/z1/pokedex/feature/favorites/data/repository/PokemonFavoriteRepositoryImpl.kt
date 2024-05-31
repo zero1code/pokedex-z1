@@ -25,5 +25,4 @@ class PokemonFavoriteRepositoryImpl(
 
     override suspend fun deletePokemonFavorite(pokemon: Pokemon, userId: String) =
         pokemonFavoriteDao.deletePokemonFavorite(pokemon.asFavoriteEntity(userId))
-
 }

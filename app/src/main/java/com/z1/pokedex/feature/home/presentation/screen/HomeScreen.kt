@@ -69,6 +69,7 @@ import androidx.compose.ui.graphics.asComposeRenderEffect
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -81,8 +82,10 @@ import com.z1.pokedex.core.common.designsystem.components.CustomLazyList
 import com.z1.pokedex.core.common.designsystem.components.CustomLoading
 import com.z1.pokedex.core.common.designsystem.components.CustomShineImage
 import com.z1.pokedex.core.common.designsystem.components.CustomTopAppBar
+import com.z1.pokedex.core.common.designsystem.components.GRID_LAZY_LIST_TEST_TAG
 import com.z1.pokedex.core.common.designsystem.components.ImageWithShadow
 import com.z1.pokedex.core.common.designsystem.components.ListType
+import com.z1.pokedex.core.common.designsystem.components.MODAL_DRAWER_TEST_TAG
 import com.z1.pokedex.core.common.designsystem.extensions.normalizedItemPosition
 import com.z1.pokedex.core.common.designsystem.theme.CustomRippleTheme
 import com.z1.pokedex.core.common.designsystem.theme.PokedexZ1Theme
@@ -163,9 +166,7 @@ fun HomeScreen(
                     if (targetState != null) {
                         slideInHorizontally(
                             tween(300, 0, FastOutLinearInEasing)
-                        ) { it } togetherWith
-                                ExitTransition.KeepUntilTransitionsFinished
-
+                        ) { it } togetherWith ExitTransition.KeepUntilTransitionsFinished
                     } else {
                         slideInHorizontally { -it } togetherWith (slideOutHorizontally { it / 3 } + fadeOut())
                     }
@@ -203,7 +204,7 @@ fun HomeScreen(
     }
 
     BackHandler(uiState.lastPokemonClicked != null) {
-        if (uiState.lastPokemonClicked != null)onEvent( HomeScreenEvent.PokemonClicked(null))
+        if (uiState.lastPokemonClicked != null) onEvent(HomeScreenEvent.PokemonClicked(null))
     }
 
     BackHandler(drawerState.isOpen) {
@@ -224,7 +225,6 @@ private fun PokemonList(
     onPokemonClick: (pokemon: Pokemon) -> Unit,
     onMenuNavigationClick: () -> Unit
 ) {
-
     val threshold = remember { 5 }
     val isLastItemVisible by if (isShowGridList) {
         remember {
@@ -291,7 +291,7 @@ private fun PokemonList(
                             .graphicsLayer {
                                 val value =
                                     1 - (listState.layoutInfo.normalizedItemPosition(item.name).absoluteValue * 0.25F)
-                                //alpha = value
+                                // alpha = value
                                 scaleX = value
                                 scaleY = value
                             }
@@ -330,6 +330,7 @@ private fun PokemonList(
         CustomTopAppBar(
             navigationIcon = {
                 CustomIconButton(
+                    modifier = Modifier.testTag(MODAL_DRAWER_TEST_TAG),
                     onIconButtonClick = onMenuNavigationClick,
                     iconImageVector = Icons.Rounded.Menu,
                     iconTint = MaterialTheme.colorScheme.onBackground
@@ -347,14 +348,13 @@ private fun PokemonList(
             },
             actions = {
                 CustomIconButton(
-                    onIconButtonClick = {
-
-                    },
+                    onIconButtonClick = {},
                     iconImageVector = Icons.Rounded.Search,
                     iconTint = MaterialTheme.colorScheme.onBackground
                 )
 
                 CustomIconButton(
+                    modifier = Modifier.testTag(GRID_LAZY_LIST_TEST_TAG),
                     onIconButtonClick = {
                         onLayoutListChange(!isShowGridList)
                     },
@@ -367,9 +367,6 @@ private fun PokemonList(
         )
     }
 }
-
-
-
 @Composable
 private fun PokemonItem(
     modifier: Modifier = Modifier,
@@ -405,7 +402,7 @@ private fun PokemonItem(
 
     val animationRotation by animateFloatAsState(
         targetValue = if (startAnimation) 360f else 0f,
-        animationSpec = tween(500, easing = LinearEasing) ,
+        animationSpec = tween(500, easing = LinearEasing),
         label = "animation-rotation"
     )
 

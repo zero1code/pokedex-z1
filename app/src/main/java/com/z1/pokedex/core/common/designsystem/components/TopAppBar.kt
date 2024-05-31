@@ -23,8 +23,7 @@ fun CustomTopAppBar(
     actions: @Composable (RowScope.() -> Unit)? = null,
 ) {
     TopAppBar(
-        modifier = modifier
-            ,
+        modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = containerColor
         ),

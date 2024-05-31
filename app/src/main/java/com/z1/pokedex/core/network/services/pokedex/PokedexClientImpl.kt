@@ -10,16 +10,17 @@ import com.z1.pokedex.core.network.util.Constants
 class PokedexClientImpl(
     private val context: Context,
     private val api: PokedexApi
-): PokedexClient {
+) : PokedexClient {
     override suspend fun fetchPokemonPage(page: Int): PokemonPageDto {
         return api.fetchPokemonPage(page * Constants.PAGE_SIZE, Constants.PAGE_SIZE)
-                .takeIf { it.isSuccessful }
-                ?.body().takeIf { it?.nextPage != null }
-                ?: throw Exception("Response data is null")
+            .takeIf { it.isSuccessful }
+            ?.body().takeIf { it?.nextPage != null }
+            ?: throw Exception("Response data is null")
     }
 
     override suspend fun fetchPokemonImage(imageUrl: String) =
-        Coil.imageLoader(context).execute(ImageRequest.Builder(context).data(imageUrl).build()).drawable
+        Coil.imageLoader(context)
+            .execute(ImageRequest.Builder(context).data(imageUrl).build()).drawable
 
     override suspend fun fetchPokemonDetails(pokemonName: String): PokemonDetailsDTO {
         return api.fetchPokemonDetails(pokemonName)

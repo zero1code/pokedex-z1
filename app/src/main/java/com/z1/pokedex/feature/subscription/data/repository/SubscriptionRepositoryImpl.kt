@@ -5,7 +5,7 @@ import com.z1.pokedex.feature.subscription.domain.repository.SubscriptionReposit
 
 class SubscriptionRepositoryImpl(
     private val subscriptionRemoteDataSource: SubscriptionRemoteDataSource
-): SubscriptionRepository {
+) : SubscriptionRepository {
     override fun checkSubscriptionStatus(subscriptionPlanId: String, accountId: String) =
         subscriptionRemoteDataSource.checkSubscriptionStatus(subscriptionPlanId, accountId)
 }

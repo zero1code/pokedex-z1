@@ -75,7 +75,7 @@ fun PokemonItem(
                 .graphicsLayer {
                     val value =
                         1 - (listState.layoutInfo.normalizedItemPosition(pokemon.name).absoluteValue * 0.25F)
-                    //alpha = value
+                    // alpha = value
                     scaleX = value
                     scaleY = value
                 }
@@ -97,7 +97,7 @@ fun PokemonItem(
 
     val animationRotation by animateFloatAsState(
         targetValue = if (startAnimation) 360f else 0f,
-        animationSpec = tween(500, easing = LinearEasing) ,
+        animationSpec = tween(500, easing = LinearEasing),
         label = "animation-rotation"
     )
 
